@@ -54,3 +54,23 @@ body {
     font-style: normal;
     color: rgb(110, 110, 110);
 }
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .calendar-container {
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    max-width: 100%; /* Ensure no overflow beyond viewport */
+    max-height: 100%; /* Prevent any overflow */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    padding: 10px; /* Optional: add a little padding */
+  }
+  
+  .fc {
+    height: 100%; /* Ensure the FullCalendar takes all of the container height */
+  }
