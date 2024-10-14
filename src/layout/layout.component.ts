@@ -89,27 +89,20 @@ export class LayoutComponent {
 
 
   // Api calls for data events
-  data: Booking[] = [];
+  bookingData: Booking[] = [];
   conferenceID: number = 1;
 
   onLoadCalendarEvents() {
     this.bookingServ.onGetBookingByConferenceId(this.conferenceID).subscribe({
       next: (res) => {
         if(res.isSuccess){
-          this.data = res.data
-          const events = this.data.map((booking: Booking) => {
-            const event: { title: string; start?: Date; end?: Date } = {
-                title: booking.purpose || 'No Title' // Provide a default title if purpose is undefined
-            };
-
-            // Assign start and end only if they are valid
-            if (booking.bookingStart) {
-                event.start = booking.bookingStart; // Use the ISO string directly
-            }
-            if (booking.bookingEnd) {
-                event.end = booking.bookingEnd; // Use the ISO string directly
-            }
-
+          this.bookingData = res.data
+          const events = this.bookingData.map((booking: Booking) => {
+            const event: {} = {
+                title: booking.purpose || 'No Title',
+                start: booking.bookingStart,
+                end: booking.bookingEnd
+            };            
             return event; // Return the constructed event
         });
 
