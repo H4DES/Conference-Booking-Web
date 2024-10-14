@@ -39,7 +39,6 @@ export class LayoutComponent {
   ConferenceRoom: Conference[] = [];
   ConferenceData: Conference = new Conference;
   selectedRoom: ConferenceRoom | undefined;
-  conferenceName: string[] = [];
 
   constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router) {}
 
@@ -169,7 +168,8 @@ export class LayoutComponent {
   }
   onConferenceChange() {
     if (this.ConferenceData) {
-      this.onLoadCalendarEvents(this.ConferenceData.conferenceId as number); // Assuming `id` is the property for conference ID
+      this.onLoadCalendarEvents(this.ConferenceData.conferenceId as number);
+      console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString()); // Assuming `id` is the property for conference ID
     }
   }
 
