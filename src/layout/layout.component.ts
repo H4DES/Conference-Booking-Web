@@ -13,11 +13,17 @@ import { KeyFilterModule } from 'primeng/keyfilter';
 import { Booking } from '../model/booking';
 import { BookingService } from '../services/booknig-service/booking.service';
 import { Title } from '@angular/platform-browser';
+import { DropdownModule } from 'primeng/dropdown';
+
+interface ConferenceRoom {
+  name: string;
+  code: string;
+}
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, DialogModule, ButtonModule, InputTextModule,  KeyFilterModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
@@ -27,6 +33,9 @@ export class LayoutComponent {
   selectedDate: string = '';
   private timer: any;
 
+  //Dropdown part
+  ConferenceRoom: ConferenceRoom[] | undefined;
+  selectedRoom: ConferenceRoom | undefined;
 
   constructor(private bookingServ: BookingService, private router: Router) {}
 
@@ -34,6 +43,15 @@ export class LayoutComponent {
   ngOnInit(): void {
     this.startClock();
     this.onLoadCalendarEvents();
+
+    //sample data diri i load ang naa didto sa ConferenceBooking table
+    this.ConferenceRoom = [
+      { name: 'New York', code: 'NY' },
+      { name: 'Rome', code: 'RM' },
+      { name: 'London', code: 'LDN' },
+      { name: 'Istanbul', code: 'IST' },
+      { name: 'Paris', code: 'PRS' }
+  ];
   }
 
   startClock() {

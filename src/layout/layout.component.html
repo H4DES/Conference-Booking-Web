@@ -3,7 +3,11 @@
     <div class="container booking-card">
         <div class="booking-info">
             <h1>BOOKING</h1>
-            <p>CONFERENCE</p>
+                <p-dropdown 
+                    [options]="ConferenceRoom" 
+                    [(ngModel)]="selectedRoom" 
+                    optionLabel="name"
+                    placeholder="Select Conference Room" />
         </div>
         <div class="booking-time">
             <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
