@@ -24,6 +24,7 @@ import { Title } from '@angular/platform-browser';
 export class LayoutComponent {
   visible: boolean = false;
   currentTime: Date = new Date();
+  selectedDate: string = '';
   private timer: any;
 
 
@@ -80,6 +81,7 @@ export class LayoutComponent {
     // Allow clicking on other days but not Sundays
     if (arg.date.getDay() !== 0) {
       this.visible = true;
+      this.selectedDate = arg.dateStr;
       // alert('date click! ' + arg.dateStr);
     }
   }
