@@ -79,6 +79,11 @@ export class LayoutComponent {
       { title: 'event 1', date: '2023-04-01' },
       { title: 'event 2', date: '2023-04-02' }
     ],
+    eventTimeFormat: {
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true 
+    },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
       if (info.date.getDay() === 0) {
@@ -102,27 +107,20 @@ export class LayoutComponent {
 
 
   // Api calls for data events
-  data: Booking[] = [];
+  bookingData: Booking[] = [];
   conferenceID: number = 1;
 
   onLoadCalendarEvents() {
     this.bookingServ.onGetBookingByConferenceId(this.conferenceID).subscribe({
       next: (res) => {
         if(res.isSuccess){
-          this.data = res.data
-          const events = this.data.map((booking: Booking) => {
-            const event: { title: string; start?: string; end?: string } = {
-                title: booking.purpose || 'No Title' // Use purpose as title or a default
-            };
-
-            // Only assign start and end if they are valid
-            if (booking.bookingStart) {
-                event.start = new Date(booking.bookingStart).toISOString(); // Convert to ISO string
-            }
-            if (booking.bookingEnd) {
-                event.end = new Date(booking.bookingEnd).toISOString(); // Convert to ISO string
-            }
-
+          this.bookingData = res.data
+          const events = this.bookingData.map((booking: Booking) => {
+            const event: {} = {
+                title: booking.purpose || 'No Title',
+                start: booking.bookingStart,
+                end: booking.bookingEnd
+            };            
             return event; // Return the constructed event
         });
 
