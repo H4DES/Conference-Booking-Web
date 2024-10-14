@@ -60,6 +60,11 @@ export class LayoutComponent {
       { title: 'event 1', date: '2023-04-01' },
       { title: 'event 2', date: '2023-04-02' }
     ],
+    eventTimeFormat: {
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true 
+    },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
       if (info.date.getDay() === 0) {
@@ -91,16 +96,16 @@ export class LayoutComponent {
         if(res.isSuccess){
           this.data = res.data
           const events = this.data.map((booking: Booking) => {
-            const event: { title: string; start?: string; end?: string } = {
-                title: booking.purpose || 'No Title' // Use purpose as title or a default
+            const event: { title: string; start?: Date; end?: Date } = {
+                title: booking.purpose || 'No Title' // Provide a default title if purpose is undefined
             };
 
-            // Only assign start and end if they are valid
+            // Assign start and end only if they are valid
             if (booking.bookingStart) {
-                event.start = new Date(booking.bookingStart).toISOString(); // Convert to ISO string
+                event.start = booking.bookingStart; // Use the ISO string directly
             }
             if (booking.bookingEnd) {
-                event.end = new Date(booking.bookingEnd).toISOString(); // Convert to ISO string
+                event.end = booking.bookingEnd; // Use the ISO string directly
             }
 
             return event; // Return the constructed event
