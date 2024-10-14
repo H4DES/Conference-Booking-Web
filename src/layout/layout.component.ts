@@ -46,7 +46,6 @@ export class LayoutComponent {
 
   ngOnInit(): void {
     this.startClock();
-    this.onLoadCalendarEvents();
     this.onLoadConference();
 
     //sample data diri i load ang naa didto sa ConferenceBooking table
@@ -113,13 +112,13 @@ export class LayoutComponent {
 
   // Api calls for data events
   bookingData: Booking[] = [];
-  conferenceID: number = 1;
 
-  onLoadCalendarEvents() {
-    this.bookingServ.onGetBookingByConferenceId(this.conferenceID).subscribe({
+  onLoadCalendarEvents(conferenceID: number) {
+    this.bookingServ.onGetBookingByConferenceId(conferenceID).subscribe({
       next: (res) => {
         if(res.isSuccess){
           this.bookingData = res.data
+          console.table(this.bookingData);
           const events = this.bookingData.map((booking: Booking) => {
             const event: {} = {
                 title: booking.purpose || 'No Title',
@@ -140,22 +139,22 @@ export class LayoutComponent {
     })
   }
 
-  onLoadConference(){
+  onLoadConference() {
     this.conferenceServ.onGetAllConference().subscribe({
       next: (res) => {
-        if(res.isSuccess){
-          this.ConferenceRoom = res.data;
-          this.conferenceName = this.getConferenceName();
-          console.log("this is the data: " + this.conferenceName)
-        }else{
+        if (res.isSuccess) {
+          this.ConferenceRoom = res.data; // Load all conference data
+          console.log("Conference Rooms: ", this.ConferenceRoom);
+          this.ConferenceData = this.ConferenceRoom[0]; 
+          this.onLoadCalendarEvents(this.ConferenceRoom[0].conferenceId as number)
+        } else {
           console.error("Error: " + res.errorMessage);
-
         }
       },
       error: (err) => {
         console.error("Error: " + err);
       }
-    })
+    });
   }
 
   getConferenceName(): string[] {
@@ -167,6 +166,11 @@ export class LayoutComponent {
       }
     }
     return Array.from(conferenceName);
+  }
+  onConferenceChange() {
+    if (this.ConferenceData) {
+      this.onLoadCalendarEvents(this.ConferenceData.conferenceId as number); // Assuming `id` is the property for conference ID
+    }
   }
 
   
