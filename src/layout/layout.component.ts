@@ -5,15 +5,21 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { FormsModule } from '@angular/forms';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { KeyFilterModule } from 'primeng/keyfilter';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, DialogModule, ButtonModule, InputTextModule,  KeyFilterModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
+  visible: boolean = false;
   currentTime: Date = new Date();
   private timer: any;
 
@@ -34,6 +40,10 @@ export class LayoutComponent {
     }
   }
 
+  showDialog() {
+    this.visible = true;
+  }
+
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
@@ -45,10 +55,10 @@ export class LayoutComponent {
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
       if (info.date.getDay() === 0) {
-        // Style Sundays directly using JavaScript
-        info.el.style.pointerEvents = 'none'; // Disable clicking on Sundays
-        info.el.style.backgroundColor = 'rgb(169, 169, 169)'; // Set background color to RGB value (this is similar to 'darkgrey')
-        info.el.style.color = 'rgb(255, 255, 255)'; // Change text color for readability
+        
+        info.el.style.pointerEvents = 'none';
+        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
+        info.el.style.color = 'rgb(255, 255, 255)';
       }
     },
   };
@@ -56,7 +66,8 @@ export class LayoutComponent {
   handleDateClick(arg: any) {
     // Allow clicking on other days but not Sundays
     if (arg.date.getDay() !== 0) {
-      alert('date click! ' + arg.dateStr);
+      this.visible = true;
+      // alert('date click! ' + arg.dateStr);
     }
   }
 
