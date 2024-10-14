@@ -14,6 +14,8 @@ import { Booking } from '../model/booking';
 import { BookingService } from '../services/booknig-service/booking.service';
 import { Title } from '@angular/platform-browser';
 import { DropdownModule } from 'primeng/dropdown';
+import { ConferenceService } from '../services/conference-service/conference.service';
+import { Conference } from '../model/conference';
 
 interface ConferenceRoom {
   name: string;
@@ -35,10 +37,12 @@ export class LayoutComponent {
   private timer: any;
 
   //Dropdown part
-  ConferenceRoom: ConferenceRoom[] | undefined;
+  ConferenceRoom: Conference[] = [];
+  ConferenceData: Conference = new Conference;
   selectedRoom: ConferenceRoom | undefined;
+  conferenceName: string[] = [];
 
-  constructor(private bookingServ: BookingService, private router: Router) {}
+  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router) {}
 
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
@@ -46,15 +50,16 @@ export class LayoutComponent {
   ngOnInit(): void {
     this.startClock();
     this.onLoadCalendarEvents();
+    this.onLoadConference();
 
     //sample data diri i load ang naa didto sa ConferenceBooking table
-    this.ConferenceRoom = [
-      { name: 'New York', code: 'NY' },
-      { name: 'Rome', code: 'RM' },
-      { name: 'London', code: 'LDN' },
-      { name: 'Istanbul', code: 'IST' },
-      { name: 'Paris', code: 'PRS' }
-  ];
+  //   this.ConferenceRoom = [
+  //     { name: 'New York', code: 'NY' },
+  //     { name: 'Rome', code: 'RM' },
+  //     { name: 'London', code: 'LDN' },
+  //     { name: 'Istanbul', code: 'IST' },
+  //     { name: 'Paris', code: 'PRS' }
+  // ];
   }
 
   startClock() {
@@ -160,6 +165,35 @@ export class LayoutComponent {
     })
   }
 
+  onLoadConference(){
+    this.conferenceServ.onGetAllConference().subscribe({
+      next: (res) => {
+        if(res.isSuccess){
+          this.ConferenceRoom = res.data;
+          this.conferenceName = this.getConferenceName();
+          console.log("this is the data: " + this.conferenceName)
+        }else{
+          console.error("Error: " + res.errorMessage);
 
+        }
+      },
+      error: (err) => {
+        console.error("Error: " + err);
+      }
+    })
+  }
+
+  getConferenceName(): string[] {
+    const conferenceName = new Set<string>();
+
+    for(const items of this.ConferenceRoom){
+      if(items.conferenceName){
+        conferenceName.add(items.conferenceName);
+      }
+    }
+    return Array.from(conferenceName);
+  }
+
+  
 
 }
