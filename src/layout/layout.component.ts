@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -10,6 +10,9 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { Booking } from '../model/booking';
+import { BookingService } from '../services/booknig-service/booking.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-layout',
@@ -24,8 +27,13 @@ export class LayoutComponent {
   selectedDate: string = '';
   private timer: any;
 
+
+  constructor(private bookingServ: BookingService, private router: Router) {}
+
+
   ngOnInit(): void {
     this.startClock();
+    this.onLoadCalendarEvents();
   }
 
   startClock() {
@@ -72,5 +80,45 @@ export class LayoutComponent {
       // alert('date click! ' + arg.dateStr);
     }
   }
+
+
+
+  // Api calls for data events
+  data: Booking[] = [];
+  conferenceID: number = 1;
+
+  onLoadCalendarEvents() {
+    this.bookingServ.onGetBookingByConferenceId(this.conferenceID).subscribe({
+      next: (res) => {
+        if(res.isSuccess){
+          this.data = res.data
+          const events = this.data.map((booking: Booking) => {
+            const event: { title: string; start?: string; end?: string } = {
+                title: booking.purpose || 'No Title' // Use purpose as title or a default
+            };
+
+            // Only assign start and end if they are valid
+            if (booking.bookingStart) {
+                event.start = new Date(booking.bookingStart).toISOString(); // Convert to ISO string
+            }
+            if (booking.bookingEnd) {
+                event.end = new Date(booking.bookingEnd).toISOString(); // Convert to ISO string
+            }
+
+            return event; // Return the constructed event
+        });
+
+          this.calendarOptions.events = events;
+        }else {
+          console.log("No booking events found");
+        }
+      },
+      error: (err) => {
+        console.error("Error loading bookings", err)
+      }
+    })
+  }
+
+
 
 }
