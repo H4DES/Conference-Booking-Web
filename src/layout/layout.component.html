@@ -4,9 +4,8 @@
         <div class="booking-info">
             <h1>BOOKING</h1>
                 <p-dropdown 
-                    [options]="ConferenceRoom" 
-                    [(ngModel)]="selectedRoom" 
-                    optionLabel="name"
+                    [options]="" 
+                    [(ngModel)]="ConferenceData.conferenceName" 
                     placeholder="Select Conference Room" />
         </div>
         <div class="booking-time">
@@ -26,7 +25,7 @@
         <span class="p-text-secondary block mb-5 ">Date: {{ selectedDate }}</span>
 
             <div class="form-floating mb-3">
-                <input pInputText type="text" class="form-control small-input" id="floatingInput" pKeyFilter="num" placeholder="name@example.com">
+                <input pInputText type="date" class="form-control small-input" id="floatingInput" pKeyFilter="num" placeholder="name@example.com">
                 <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
             </div>
 
