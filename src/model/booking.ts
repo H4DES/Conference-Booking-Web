@@ -3,8 +3,9 @@ import { BookingModel } from "./booking.model";
 export class Booking implements BookingModel{
   bookingId: number | null; // Nullable int
   approvedBy: string; // Required string
-  bookingStart: Date | null; // Nullable Date
-  bookingEnd: Date | null; // Nullable Date
+  bookedDate: Date | null;
+  bookingStart: string;
+  bookingEnd: string;
   organizer: string | null; // Nullable string
   department: string | null; // Nullable string
   contactNumber: string | null; // Nullable string
@@ -18,8 +19,9 @@ export class Booking implements BookingModel{
   constructor() { 
     this.bookingId = 0;//
     this.approvedBy = '';
-    this.bookingStart = null;//
-    this.bookingEnd = null;//
+    this.bookedDate = null;
+    this.bookingStart = '';//
+    this.bookingEnd = '';//
     this.organizer = '';//
     this.department = '';//
     this.contactNumber = '';//
