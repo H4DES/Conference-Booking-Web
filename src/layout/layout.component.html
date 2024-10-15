@@ -83,6 +83,14 @@
                 <input pInputText type="text" class="form-control small-input" id="numAttendees" placeholder="Number of Attendees">
                 <label for="numAttendees" class="font-bold block mb-2"> Expected Number of Attendees </label>
             </div>
+
+            <div class="card flex justify-content-center">
+                Recurring Meeting
+                <p-checkbox 
+                    [(ngModel)]="checked" 
+                    [binary]="true" 
+                    inputId="binary" />
+            </div>
         </div>
     </ng-template>
 

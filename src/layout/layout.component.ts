@@ -10,6 +10,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { CheckboxModule } from 'primeng/checkbox';
 import { Booking } from '../model/booking';
 import { BookingService } from '../services/booknig-service/booking.service';
 import { Title } from '@angular/platform-browser';
@@ -25,7 +26,9 @@ interface ConferenceRoom {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, 
+            DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule, 
+            CheckboxModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
@@ -34,6 +37,7 @@ export class LayoutComponent {
   currentTime: Date = new Date();
   selectedDate: string = '';
   currentStep: number = 1;
+  checked: boolean = false;
   currentTitle: string = "Organizer Information";
   private timer: any;
 
