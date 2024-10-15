@@ -68,35 +68,7 @@ export class LayoutComponent {
   // ];
   }
 
-  get bookingStart() {
-    return this.data.bookingStart
-      ? this.data.bookingStart.toISOString().substring(11, 16)
-      : '';
-  }
 
-  set bookingStart(value: string) {
-    if (this.selectedDate && value) {
-      const dateTimeString = `${this.selectedDate}T${value}:00`;
-      this.data.bookingStart = new Date(dateTimeString);
-    } else {
-      this.data.bookingStart = null;
-    }
-  }
-
-   get bookingEnd() {
-    return this.data.bookingEnd
-      ? this.data.bookingEnd.toISOString().substring(11, 16)
-      : '';
-  }
-
-  set bookingEnd(value: string) {
-    if (this.selectedDate && value) {
-      const dateTimeString = `${this.selectedDate}T${value}:00`;
-      this.data.bookingEnd = new Date(dateTimeString);
-    } else {
-      this.data.bookingEnd = null; 
-    }
-  }
 
   BookConference(data: Booking){
     debugger;
