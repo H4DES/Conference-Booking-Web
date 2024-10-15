@@ -37,6 +37,7 @@ export class LayoutComponent {
   visible: boolean = false;
   currentTime: Date = new Date();
   selectedDate: string = '';
+  currentDate: Date | null = null;
   currentStep: number = 1;
   checked: boolean = false;
   currentTitle: string = "Organizer Information";
@@ -68,29 +69,61 @@ export class LayoutComponent {
   // ];
   }
 
+  convertSelectedDateToCurrentDate() {
+    if (this.selectedDate) {
+      this.currentDate = new Date(this.selectedDate);
+      
+      if (isNaN(this.currentDate.getTime())) {
+        console.error("Invalid date format");
+        this.currentDate = null; // Handle invalid date
+      }
+    }
+  }
+  
 
-
-  BookConference(data: Booking){
-    debugger;
+  BookConference(data: Booking) {
+    
     data.bookingId = null;
     data.conferenceId = this.currentID;
+  
+    // Convert the time to the correct format (HH:mm:ss) before sending to the backend
+    const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
+    const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
+  
+    if (bookingStart && bookingEnd) {
+      data.bookingStart = bookingStart;
+      data.bookingEnd = bookingEnd;
+    }
+    data.bookedDate = this.currentDate;
+
+    console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
       next: (res) => {
         console.log(res);
-        if(res.isSuccess){
+        if (res.isSuccess) {
           alert("Booked Success");
-        }else{
+        } else {
           alert("Insert Failed!");
         }
       },
       error: (err) => {
         console.error('Error inserting:', err); // Log any errors
       },
-      complete: () =>{
+      complete: () => {
         this.onLoadConference();
       }
     });
   }
+  
+  // Helper function to convert time (HH:mm) to SQL format (HH:mm:ss)
+  convertTimeToSQLFormat(time: string): string {
+    // Check if time is already in the correct format
+    if (time && time.length === 5) {
+      return `${time}:00`; // Append seconds to the HH:mm format
+    }
+    return '';
+  }
+  
 
   startClock() {
     // Update the time every second
@@ -185,6 +218,10 @@ export class LayoutComponent {
     if (arg.date.getDay() !== 0) {
       this.visible = true;
       this.selectedDate = arg.dateStr;
+      this.convertSelectedDateToCurrentDate();
+      // this.currentDate = new Date(this.selectedDate);
+      // alert(this.currentDate);
+      
       // alert('date click! ' + arg.dateStr);
     }
   }
@@ -262,7 +299,7 @@ export class LayoutComponent {
       console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
       this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       console.log(this.currentID);
-      alert(this.currentID);
+      // alert(this.currentID);
     }
   }
 
