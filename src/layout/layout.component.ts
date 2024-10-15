@@ -34,6 +34,7 @@ export class LayoutComponent {
   currentTime: Date = new Date();
   selectedDate: string = '';
   currentStep: number = 1;
+  currentTitle: string = "Organizer Information";
   private timer: any;
 
   //Dropdown part
@@ -73,6 +74,14 @@ export class LayoutComponent {
     }
   }
 
+  resetModal() {
+    this.currentStep = 1;           // Reset the step to 1
+    this.currentTitle = "Organizer Information";  // Reset title to initial step
+    this.ConferenceData = new Conference(); // Optionally reset conference data
+    this.selectedDate = ''; // Clear selected date
+    
+  }
+
   showDialog() {
     this.visible = true;
     this.currentStep = 1;
@@ -80,11 +89,13 @@ export class LayoutComponent {
 
   nextStep() {
     this.currentStep++;
+    this.currentTitle = "Meeting Details";
   }
 
   previousStep() {
     if (this.currentStep > 1) {
       this.currentStep--;
+      this.currentTitle = "Organizer Information";
     }
   }
 

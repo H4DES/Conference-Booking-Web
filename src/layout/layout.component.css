@@ -82,3 +82,11 @@ html, body {
     line-height: 1.25;     /* Adjust line height for better alignment */
 }
 
+::ng-deep .p-button {
+    border-radius: 6px;
+  }
+
+
+
+
+
