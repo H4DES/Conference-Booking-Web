@@ -25,7 +25,7 @@
     </div>
 
     <div class="card flex justify-content-center">
-        <p-dialog header="Section 1: Organizer Information" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem'}">
+        <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem'}" (onHide)="resetModal()">
             <span class="p-text-secondary block mb-5 ">Date: {{ selectedDate }}</span>
 
             <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
@@ -34,14 +34,14 @@
                 <p-button label="Cancel" severity="secondary" (onClick)="visible = false"></p-button>
                 <p-button *ngIf="currentStep > 1" label="Previous" (onClick)="previousStep()"></p-button>
                 <p-button *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
-                <p-button *ngIf="currentStep === 2" label="Submit" (onClick)="visible = false"></p-button>
+                <p-button *ngIf="currentStep === 2" label="Book" (onClick)="visible = false"></p-button>
             </div>    
         </p-dialog>
     </div>
 
     <ng-template #step1>
         <div class="form-floating mb-3">
-            <input pInputText type="date" class="form-control small-input" id="floatingInput" placeholder="Name of Organizer">
+            <input pInputText type="text" class="form-control small-input" id="floatingInput" placeholder="Name of Organizer">
             <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
         </div>
     
