@@ -153,6 +153,22 @@ export class LayoutComponent {
       minute: '2-digit', 
       hour12: true 
     },
+    // TIME FORMAT CHANGES
+    eventContent: (arg) => {
+      const startTime = arg.event.start;
+      const endTime = arg.event.end;
+    
+      if (!startTime || !endTime) {
+        return { html: 'Time not available' }; // Fallback in case times are not available
+      }
+    
+      const timeDisplay = `${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      const title = arg.event.title || 'No Title';
+    
+      return {
+        html: `<div>${timeDisplay} ${title}</div>`, // Added space here
+      };
+    },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
       if (info.date.getDay() === 0) {
@@ -187,8 +203,9 @@ export class LayoutComponent {
           const events = this.bookingData.map((booking: Booking) => {
             const event: {} = {
                 title: booking.purpose || 'No Title',
-                start: booking.bookingStart,
-                end: booking.bookingEnd
+                // CONCAT BOOKED DATE WITH THE TIME
+                start: `${booking.bookedDate}T${booking.bookingStart}`,
+                end: `${booking.bookedDate}T${booking.bookingEnd}`
             };            
             return event; // Return the constructed event
         });
