@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -17,183 +17,182 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ConferenceService } from '../services/conference-service/conference.service';
 import { Conference } from '../model/conference';
 
+
 interface ConferenceRoom {
-  name: string;
-  code: string;
+  name: string;
+  code: string;
 }
+
 
 @Component({
-  selector: 'app-layout',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule],
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css'
+  selector: 'app-layout',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule],
+  templateUrl: './layout.component.html',
+  styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
-  visible: boolean = false;
-  currentTime: Date = new Date();
-  selectedDate: string = '';
-  currentStep: number = 1;
-  private timer: any;
+  visible: boolean = false;
+  currentTime: Date = new Date();
+  selectedDate: string = '';
+  private timer: any;
 
-  //Dropdown part
-  ConferenceRoom: Conference[] = [];
-  ConferenceData: Conference = new Conference;
-  selectedRoom: ConferenceRoom | undefined;
-  conferenceName: string[] = [];
 
-  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router) {}
+  //Dropdown part
+  ConferenceRoom: Conference[] = [];
+  ConferenceData: Conference = new Conference;
+  selectedRoom: ConferenceRoom | undefined;
 
-  @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
-  @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
 
-  ngOnInit(): void {
-    this.startClock();
-    this.onLoadCalendarEvents();
-    this.onLoadConference();
-
-    //sample data diri i load ang naa didto sa ConferenceBooking table
-  //   this.ConferenceRoom = [
-  //     { name: 'New York', code: 'NY' },
-  //     { name: 'Rome', code: 'RM' },
-  //     { name: 'London', code: 'LDN' },
-  //     { name: 'Istanbul', code: 'IST' },
-  //     { name: 'Paris', code: 'PRS' }
-  // ];
-  }
-
-  startClock() {
-    // Update the time every second
-    this.timer = setInterval(() => {
-      this.currentTime = new Date();
-    }, 1000);
-  }
-
-  ngOnDestroy(): void {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
-
-  showDialog() {
-    this.visible = true;
-    this.currentStep = 1;
-  }
-
-  nextStep() {
-    this.currentStep++;
-  }
-
-  previousStep() {
-    if (this.currentStep > 1) {
-      this.currentStep--;
-    }
-  }
-
-  getCurrentStepTemplate(): TemplateRef<any> {
-    switch (this.currentStep) {
-      case 1:
-        return this.step1Template;
-      case 2:
-        return this.step2Template;
-      default:
-        return this.step1Template;
-    }
-  }
-
-  calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin, interactionPlugin],
-    dateClick: (arg) => this.handleDateClick(arg),
-    events: [
-      { title: 'event 1', date: '2023-04-01' },
-      { title: 'event 2', date: '2023-04-02' }
-    ],
-    eventTimeFormat: {
-      hour: '2-digit', 
-      minute: '2-digit', 
-      hour12: true 
-    },
-    aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
-    dayCellDidMount: (info) => {
-      if (info.date.getDay() === 0) {
-        
-        info.el.style.pointerEvents = 'none';
-        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-        info.el.style.color = 'rgb(255, 255, 255)';
-      }
-    },
-  };
-
-  handleDateClick(arg: any) {
-    // Allow clicking on other days but not Sundays
-    if (arg.date.getDay() !== 0) {
-      this.visible = true;
-      this.selectedDate = arg.dateStr;
-      // alert('date click! ' + arg.dateStr);
-    }
-  }
+  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router) {}
 
 
 
-  // Api calls for data events
-  bookingData: Booking[] = [];
-  conferenceID: number = 1;
+  ngOnInit(): void {
+    this.startClock();
+    this.onLoadConference();
 
-  onLoadCalendarEvents() {
-    this.bookingServ.onGetBookingByConferenceId(this.conferenceID).subscribe({
-      next: (res) => {
-        if(res.isSuccess){
-          this.bookingData = res.data
-          const events = this.bookingData.map((booking: Booking) => {
-            const event: {} = {
-                title: booking.purpose || 'No Title',
-                start: booking.bookingStart,
-                end: booking.bookingEnd
-            };            
-            return event; // Return the constructed event
-        });
 
-          this.calendarOptions.events = events;
-        }else {
-          console.log("No booking events found");
-        }
-      },
-      error: (err) => {
-        console.error("Error loading bookings", err)
-      }
-    })
-  }
+    //sample data diri i load ang naa didto sa ConferenceBooking table
+  //   this.ConferenceRoom = [
+  //     { name: 'New York', code: 'NY' },
+  //     { name: 'Rome', code: 'RM' },
+  //     { name: 'London', code: 'LDN' },
+  //     { name: 'Istanbul', code: 'IST' },
+  //     { name: 'Paris', code: 'PRS' }
+  // ];
+  }
 
-  onLoadConference(){
-    this.conferenceServ.onGetAllConference().subscribe({
-      next: (res) => {
-        if(res.isSuccess){
-          this.ConferenceRoom = res.data;
-          this.conferenceName = this.getConferenceName();
-          console.log("this is the data: " + this.conferenceName)
-        }else{
-          console.error("Error: " + res.errorMessage);
 
-        }
-      },
-      error: (err) => {
-        console.error("Error: " + err);
-      }
-    })
-  }
+  startClock() {
+    // Update the time every second
+    this.timer = setInterval(() => {
+      this.currentTime = new Date();
+    }, 1000);
+  }
 
-  getConferenceName(): string[] {
-    const conferenceName = new Set<string>();
 
-    for(const items of this.ConferenceRoom){
-      if(items.conferenceName){
-        conferenceName.add(items.conferenceName);
-      }
-    }
-    return Array.from(conferenceName);
-  }
+  ngOnDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  }
 
-  
+
+  showDialog() {
+    this.visible = true;
+  }
+
+
+  calendarOptions: CalendarOptions = {
+    initialView: 'dayGridMonth',
+    plugins: [dayGridPlugin, interactionPlugin],
+    dateClick: (arg) => this.handleDateClick(arg),
+    events: [
+      { title: 'event 1', date: '2023-04-01' },
+      { title: 'event 2', date: '2023-04-02' }
+    ],
+    eventTimeFormat: {
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true 
+    },
+    aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
+    dayCellDidMount: (info) => {
+      if (info.date.getDay() === 0) {
+        
+        info.el.style.pointerEvents = 'none';
+        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
+        info.el.style.color = 'rgb(255, 255, 255)';
+      }
+    },
+  };
+
+
+  handleDateClick(arg: any) {
+    // Allow clicking on other days but not Sundays
+    if (arg.date.getDay() !== 0) {
+      this.visible = true;
+      this.selectedDate = arg.dateStr;
+      // alert('date click! ' + arg.dateStr);
+    }
+  }
+
+
+
+
+  // Api calls for data events
+  bookingData: Booking[] = [];
+
+
+  onLoadCalendarEvents(conferenceID: number) {
+    this.bookingServ.onGetBookingByConferenceId(conferenceID).subscribe({
+      next: (res) => {
+        if(res.isSuccess){
+          this.bookingData = res.data
+          console.table(this.bookingData);
+          const events = this.bookingData.map((booking: Booking) => {
+            const event: {} = {
+                title: booking.purpose || 'No Title',
+                start: booking.bookingStart,
+                end: booking.bookingEnd
+            };            
+            return event; // Return the constructed event
+        });
+
+
+          this.calendarOptions.events = events;
+        }else {
+          console.log("No booking events found");
+        }
+      },
+      error: (err) => {
+        console.error("Error loading bookings", err)
+      }
+    })
+  }
+
+
+  onLoadConference() {
+    this.conferenceServ.onGetAllConference().subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.ConferenceRoom = res.data; // Load all conference data
+          console.log("Conference Rooms: ", this.ConferenceRoom);
+          this.ConferenceData = this.ConferenceRoom[0]; 
+          this.onLoadCalendarEvents(this.ConferenceRoom[0].conferenceId as number)
+        } else {
+          console.error("Error: " + res.errorMessage);
+        }
+      },
+      error: (err) => {
+        console.error("Error: " + err);
+      }
+    });
+  }
+
+
+  getConferenceName(): string[] {
+    const conferenceName = new Set<string>();
+
+
+    for(const items of this.ConferenceRoom){
+      if(items.conferenceName){
+        conferenceName.add(items.conferenceName);
+      }
+    }
+    return Array.from(conferenceName);
+  }
+  onConferenceChange() {
+    if (this.ConferenceData) {
+      this.onLoadCalendarEvents(this.ConferenceData.conferenceId as number);
+      console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString()); // Assuming `id` is the property for conference ID
+    }
+  }
+
+
+  
+
 
 }
+
