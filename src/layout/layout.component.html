@@ -34,29 +34,30 @@
                 <p-button label="Cancel" severity="secondary" (onClick)="visible = false"></p-button>
                 <p-button *ngIf="currentStep > 1" label="Previous" (onClick)="previousStep()"></p-button>
                 <p-button *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
-                <p-button *ngIf="currentStep === 2" label="Book" (onClick)="visible = false"></p-button>
+                <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)" (onClick)="visible = false"></p-button>
             </div>    
         </p-dialog>
     </div>
 
     <ng-template #step1>
         <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" id="floatingInput" placeholder="Name of Organizer">
+            <input pInputText type="text" class="form-control small-input" name="organizer" id="floatingInput" placeholder="Name of Organizer" [(ngModel)]="data.organizer">
             <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
         </div>
     
         <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" id="floatingInput" pKeyFilter="num" placeholder="name@example.com">
+            <input pInputText type="text" class="form-control small-input" name="department" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.department">
             <label for="floatingInput" class="font-bold block mb-2"> Department </label>
         </div>
     
         <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" id="floatingInput" pKeyFilter="num" placeholder="name@example.com">
+            <!-- this should be a >> pKeyFilter="num" << -->
+            <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" placeholder="Enter contact number" [(ngModel)]="data.contactNumber">
             <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
         </div>
     
         <div class="form-floating mb-3">
-            <input pInputText type="email" class="form-control small-input" id="floatingInput" pKeyFilter="num" placeholder="name@example.com">
+            <input pInputText type="email" class="form-control small-input" name="emailAddress" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.emailAddress">
             <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
         </div>
 
@@ -65,22 +66,22 @@
     <ng-template #step2>
         <div class="row g-3">
             <div class="form-floating col-12">
-                <input pInputText type="text" class="form-control small-input" id="numAttendees" placeholder="Number of Attendees">
+                <input pInputText type="text" class="form-control small-input" name="purpose" id="numAttendees" placeholder="Meeting Title" [(ngModel)]="data.purpose">
                 <label for="numAttendees" class="font-bold block mb-2"> Meeting Title </label>
             </div>
     
             <div class="form-floating col-md-6">
-                <input pInputText type="time" class="form-control small-input" id="preferredRoom" placeholder="Preferred Room">
+                <input pInputText type="time" class="form-control small-input" name="bookingStart" id="preferredRoom" placeholder="Preferred Room" [(ngModel)]="bookingStart">
                 <label for="preferredRoom" class="font-bold block mb-2"> Start Time </label>
             </div>
         
             <div class="form-floating col-md-6">
-                <input pInputText type="time" class="form-control small-input" id="numAttendees" placeholder="Number of Attendees">
+                <input pInputText type="time" class="form-control small-input" name="bookingEnd" id="numAttendees" placeholder="Number of Attendees" [(ngModel)]="bookingEnd">
                 <label for="numAttendees" class="font-bold block mb-2"> End Time </label>
             </div>
         
             <div class="form-floating col-12">
-                <input pInputText type="text" class="form-control small-input" id="numAttendees" placeholder="Number of Attendees">
+                <input pInputText type="text" class="form-control small-input" name="expectedAttendees" id="numAttendees" placeholder="Number of Attendees" [(ngModel)]="data.expectedAttendees">
                 <label for="numAttendees" class="font-bold block mb-2"> Expected Number of Attendees </label>
             </div>
 

@@ -16,18 +16,18 @@ export class Booking implements BookingModel{
   conferenceId: number; // Required int
 
   constructor() { 
-    this.bookingId = 0;
+    this.bookingId = 0;//
     this.approvedBy = '';
-    this.bookingStart = null;
-    this.bookingEnd = null;
-    this.organizer = '';
-    this.department = '';
-    this.contactNumber = '';
-    this.emailAddress = '';
-    this.expectedAttendees = 0;
-    this.purpose = '';
+    this.bookingStart = null;//
+    this.bookingEnd = null;//
+    this.organizer = '';//
+    this.department = '';//
+    this.contactNumber = '';//
+    this.emailAddress = '';//
+    this.expectedAttendees = 0;//
+    this.purpose = '';//
     this.description = '';
-    this.status = '';
+    this.status = '';//Default to pending when inserting
     this.conferenceId = 0;
   }
 

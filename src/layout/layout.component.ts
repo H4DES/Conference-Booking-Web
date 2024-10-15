@@ -14,6 +14,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { Booking } from '../model/booking';
 import { BookingService } from '../services/booknig-service/booking.service';
 import { Title } from '@angular/platform-browser';
+import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConferenceService } from '../services/conference-service/conference.service';
 import { Conference } from '../model/conference';
@@ -28,7 +29,7 @@ interface ConferenceRoom {
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, 
             DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule, 
-            CheckboxModule],
+            CheckboxModule, CalendarModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
@@ -39,6 +40,9 @@ export class LayoutComponent {
   currentStep: number = 1;
   checked: boolean = false;
   currentTitle: string = "Organizer Information";
+  currentID: number = 0;
+  data: Booking = new Booking();
+  time: Date[] | undefined;
   private timer: any;
 
   //Dropdown part
@@ -54,7 +58,6 @@ export class LayoutComponent {
   ngOnInit(): void {
     this.startClock();
     this.onLoadConference();
-
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -63,6 +66,58 @@ export class LayoutComponent {
   //     { name: 'Istanbul', code: 'IST' },
   //     { name: 'Paris', code: 'PRS' }
   // ];
+  }
+
+  get bookingStart() {
+    return this.data.bookingStart
+      ? this.data.bookingStart.toISOString().substring(11, 16)
+      : '';
+  }
+
+  set bookingStart(value: string) {
+    if (this.selectedDate && value) {
+      const dateTimeString = `${this.selectedDate}T${value}:00`;
+      this.data.bookingStart = new Date(dateTimeString);
+    } else {
+      this.data.bookingStart = null;
+    }
+  }
+
+   get bookingEnd() {
+    return this.data.bookingEnd
+      ? this.data.bookingEnd.toISOString().substring(11, 16)
+      : '';
+  }
+
+  set bookingEnd(value: string) {
+    if (this.selectedDate && value) {
+      const dateTimeString = `${this.selectedDate}T${value}:00`;
+      this.data.bookingEnd = new Date(dateTimeString);
+    } else {
+      this.data.bookingEnd = null; 
+    }
+  }
+
+  BookConference(data: Booking){
+    debugger;
+    data.bookingId = null;
+    data.conferenceId = this.currentID;
+    this.bookingServ.onAddOrUpdateBooking(data).subscribe({
+      next: (res) => {
+        console.log(res);
+        if(res.isSuccess){
+          alert("Booked Success");
+        }else{
+          alert("Insert Failed!");
+        }
+      },
+      error: (err) => {
+        console.error('Error inserting:', err); // Log any errors
+      },
+      complete: () =>{
+        this.onLoadConference();
+      }
+    });
   }
 
   startClock() {
@@ -80,8 +135,7 @@ export class LayoutComponent {
 
   resetModal() {
     this.currentStep = 1;           // Reset the step to 1
-    this.currentTitle = "Organizer Information";  // Reset title to initial step
-    this.ConferenceData = new Conference(); // Optionally reset conference data
+    this.currentTitle = "Organizer Information";  // Reset title to initial step // Optionally reset conference data
     this.selectedDate = ''; // Clear selected date
     
   }
@@ -184,8 +238,14 @@ export class LayoutComponent {
         if (res.isSuccess) {
           this.ConferenceRoom = res.data; // Load all conference data
           console.log("Conference Rooms: ", this.ConferenceRoom);
-          this.ConferenceData = this.ConferenceRoom[0]; 
-          this.onLoadCalendarEvents(this.ConferenceRoom[0].conferenceId as number)
+          
+          // Set default to the first conference in the list
+          if (this.ConferenceRoom.length > 0) {
+            this.ConferenceData = this.ConferenceRoom[0]; 
+            
+            // Call onConferenceChange here to load calendar events and alert the ID
+            this.onConferenceChange();
+          }
         } else {
           console.error("Error: " + res.errorMessage);
         }
@@ -195,6 +255,7 @@ export class LayoutComponent {
       }
     });
   }
+  
 
   getConferenceName(): string[] {
     const conferenceName = new Set<string>();
@@ -209,7 +270,10 @@ export class LayoutComponent {
   onConferenceChange() {
     if (this.ConferenceData) {
       this.onLoadCalendarEvents(this.ConferenceData.conferenceId as number);
-      console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString()); // Assuming `id` is the property for conference ID
+      console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
+      this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
+      console.log(this.currentID);
+      alert(this.currentID);
     }
   }
 
