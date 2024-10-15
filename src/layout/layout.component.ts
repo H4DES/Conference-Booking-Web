@@ -166,7 +166,7 @@ export class LayoutComponent {
       const title = arg.event.title || 'No Title';
     
       return {
-        html: `<div>${timeDisplay} ${title}</div>`, // Added space here
+        html: `<div>${timeDisplay} <b>${title}<b></div>`, // Added space here
       };
     },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
