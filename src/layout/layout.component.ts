@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -33,6 +33,7 @@ export class LayoutComponent {
   visible: boolean = false;
   currentTime: Date = new Date();
   selectedDate: string = '';
+  currentStep: number = 1;
   private timer: any;
 
   //Dropdown part
@@ -42,6 +43,8 @@ export class LayoutComponent {
 
   constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router) {}
 
+  @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
+  @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
 
   ngOnInit(): void {
     this.startClock();
@@ -72,6 +75,28 @@ export class LayoutComponent {
 
   showDialog() {
     this.visible = true;
+    this.currentStep = 1;
+  }
+
+  nextStep() {
+    this.currentStep++;
+  }
+
+  previousStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  getCurrentStepTemplate(): TemplateRef<any> {
+    switch (this.currentStep) {
+      case 1:
+        return this.step1Template;
+      case 2:
+        return this.step2Template;
+      default:
+        return this.step1Template;
+    }
   }
 
   calendarOptions: CalendarOptions = {
