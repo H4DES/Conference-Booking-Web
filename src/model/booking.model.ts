@@ -1,7 +1,7 @@
 export interface BookingModel {
     bookingId: number | null; // Nullable int
     approvedBy: string; // Required string
-    bookedDate: Date | null;
+    bookedDate: string;
     bookingStart: string | null; // Nullable Date
     bookingEnd: string | null; // Nullable Date
     organizer: string | null; // Nullable string

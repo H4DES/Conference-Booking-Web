@@ -37,7 +37,7 @@ export class LayoutComponent {
   visible: boolean = false;
   currentTime: Date = new Date();
   selectedDate: string = '';
-  currentDate: Date | null = null;
+  // currentDate: Date | null = null;
   currentStep: number = 1;
   checked: boolean = false;
   currentTitle: string = "Organizer Information";
@@ -69,22 +69,12 @@ export class LayoutComponent {
   // ];
   }
 
-  convertSelectedDateToCurrentDate() {
-    if (this.selectedDate) {
-      this.currentDate = new Date(this.selectedDate);
-      
-      if (isNaN(this.currentDate.getTime())) {
-        console.error("Invalid date format");
-        this.currentDate = null; // Handle invalid date
-      }
-    }
-  }
-  
-
   BookConference(data: Booking) {
     
     data.bookingId = null;
     data.conferenceId = this.currentID;
+    data.bookedDate = this.selectedDate;
+    
   
     // Convert the time to the correct format (HH:mm:ss) before sending to the backend
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
@@ -94,7 +84,6 @@ export class LayoutComponent {
       data.bookingStart = bookingStart;
       data.bookingEnd = bookingEnd;
     }
-    data.bookedDate = this.currentDate;
 
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
@@ -114,6 +103,16 @@ export class LayoutComponent {
       }
     });
   }
+
+  // Helper function to format Date to 'YYYY-MM-DD'
+  formatDateToSQLFormat(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, hence adding 1
+  const day = date.getDate().toString().padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
+
   
   // Helper function to convert time (HH:mm) to SQL format (HH:mm:ss)
   convertTimeToSQLFormat(time: string): string {
@@ -218,10 +217,7 @@ export class LayoutComponent {
     if (arg.date.getDay() !== 0) {
       this.visible = true;
       this.selectedDate = arg.dateStr;
-      this.convertSelectedDateToCurrentDate();
-      // this.currentDate = new Date(this.selectedDate);
-      // alert(this.currentDate);
-      
+      alert(this.selectedDate);
       // alert('date click! ' + arg.dateStr);
     }
   }
