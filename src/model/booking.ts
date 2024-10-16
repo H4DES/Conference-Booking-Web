@@ -3,7 +3,7 @@ import { BookingModel } from "./booking.model";
 export class Booking implements BookingModel{
   bookingId: number | null; // Nullable int
   approvedBy: string; // Required string
-  bookedDate: Date | null;
+  bookedDate: string;
   bookingStart: string;
   bookingEnd: string;
   organizer: string | null; // Nullable string
@@ -19,7 +19,7 @@ export class Booking implements BookingModel{
   constructor() { 
     this.bookingId = 0;//
     this.approvedBy = '';
-    this.bookedDate = null;
+    this.bookedDate = '';
     this.bookingStart = '';//
     this.bookingEnd = '';//
     this.organizer = '';//
