@@ -10,7 +10,7 @@ export class Booking implements BookingModel{
   department: string | null; // Nullable string
   contactNumber: string | null; // Nullable string
   emailAddress: string | null; // Nullable string
-  expectedAttendees: number | null; // Nullable int
+  expectedAttendees: string | null; // Nullable int
   purpose: string; // Required string
   description: string | null; // Nullable string
   status: string | null; // Nullable string
@@ -26,7 +26,7 @@ export class Booking implements BookingModel{
     this.department = '';//
     this.contactNumber = '';//
     this.emailAddress = '';//
-    this.expectedAttendees = 0;//
+    this.expectedAttendees = null;//
     this.purpose = '';//
     this.description = '';
     this.status = '';//Default to pending when inserting

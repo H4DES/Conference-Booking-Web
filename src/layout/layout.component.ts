@@ -69,12 +69,47 @@ export class LayoutComponent {
   // ];
   }
 
+  DisplayBookingByID(id: number){
+    this.bookingServ.onGetBookingByBookingId(id).subscribe({
+      next: (res) => {
+        console.log(res);
+        if (res.isSuccess) {
+          alert("Get success!");
+        } else {
+          alert("Get failed!");
+        }
+      },
+      error: (err) => {
+        console.error('Error inserting:', err); // Log any errors
+      },
+      complete: () => {
+        // this.onLoadConference();
+      }
+    });
+  }
+
+  // onInventoryDisplay() {
+  //   this.invObj.onInventoryDisplay().subscribe({
+  //     next: (res) => {
+  //       console.log(res);
+  //       if (res.isSuccess) {
+  //         this.table = res.data;
+  //         console.log(this.table);
+  //       } else {
+  //         alert("Failed!");
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching inventory:', err); // Log any errors
+  //     }
+  //   });
+  // }
+
   BookConference(data: Booking) {
     
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
-    
   
     // Convert the time to the correct format (HH:mm:ss) before sending to the backend
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
@@ -194,7 +229,8 @@ export class LayoutComponent {
         return { html: 'Time not available' }; // Fallback in case times are not available
       }
     
-      const timeDisplay = `<b>●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      const timeDisplay = `<b style="color: green">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+
       const title = arg.event.title || 'No Title';
     
       return {
@@ -210,16 +246,33 @@ export class LayoutComponent {
         info.el.style.color = 'rgb(255, 255, 255)';
       }
     },
+    eventClick: this.handleEventClick.bind(this)
   };
+
+  handleEventClick(info: any) {
+    this.DisplayBookingByID(info.event.id);
+    const eventDetails = `
+      ID: ${info.event.id}
+      Meeting Title: ${info.event.title}
+      Start: ${info.event.start}
+      End: ${info.event.end || 'Not set'}
+      Description: ${info.event.extendedProps.description || 'No description'}
+      Location: ${info.event.extendedProps.location || 'No location'}
+      Speaker: ${info.event.extendedProps.speaker || 'No speaker'}
+    `;
+    
+    alert(eventDetails);  // Display the event details in an alert
+  }
 
   handleDateClick(arg: any) {
     // Allow clicking on other days but not Sundays
     if (arg.date.getDay() !== 0) {
       this.visible = true;
       this.selectedDate = arg.dateStr;
-      alert(this.selectedDate);
       // alert('date click! ' + arg.dateStr);
     }
+
+    
   }
 
 
@@ -234,7 +287,9 @@ export class LayoutComponent {
           this.bookingData = res.data
           console.table(this.bookingData);
           const events = this.bookingData.map((booking: Booking) => {
+            // alert("TEST" + booking.bookingId);
             const event: {} = {
+                id: booking.bookingId,
                 title: booking.purpose || 'No Title',
                 // CONCAT BOOKED DATE WITH THE TIME
                 start: `${booking.bookedDate}T${booking.bookingStart}`,
