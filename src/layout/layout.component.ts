@@ -194,11 +194,11 @@ export class LayoutComponent {
         return { html: 'Time not available' }; // Fallback in case times are not available
       }
     
-      const timeDisplay = `${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      const timeDisplay = `<b>●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
       const title = arg.event.title || 'No Title';
     
       return {
-        html: `<div>${timeDisplay} <b>${title}<b></div>`, // Added space here
+        html: `<div>${timeDisplay} <b>${title}</b></div>`, // Added space here
       };
     },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
