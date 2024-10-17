@@ -98,7 +98,7 @@ export class LayoutComponent {
   }
 
   BookConference(data: Booking) {
-    
+
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
