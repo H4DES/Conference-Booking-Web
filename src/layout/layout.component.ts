@@ -102,7 +102,6 @@ export class LayoutComponent {
       title: "The Internet?",
       text: "That thing is still around?",
       icon: "question",
-      target: ""
     });
     data.bookingId = null;
     data.conferenceId = this.currentID;

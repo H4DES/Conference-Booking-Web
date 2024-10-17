@@ -27,6 +27,7 @@
 <div class="card flex justify-content-center">
     <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" 
               [draggable]="false" [modal]="true" 
+              [baseZIndex]="100"
               [(visible)]="isBookingModalVisible" 
               [style]="{ width: '35rem' }" 
               (onHide)="resetModal()">
