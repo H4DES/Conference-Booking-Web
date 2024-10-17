@@ -112,9 +112,15 @@ export class LayoutComponent {
       data.bookingEnd = bookingEnd;
     }
     if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
+      this.data.expectedAttendees = 0
       return alert(`Expected attendees exceeded the conference capacity!: ${this.ConferenceData.capacity}`)
     }
 
+    if (data.bookingStart > data.bookingEnd){
+      this.data.bookingStart = ""
+      this.data.bookingEnd = ""
+      return alert("Start time shouldn't be ahead of the booked end time")
+    }
 
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({

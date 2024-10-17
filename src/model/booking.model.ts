@@ -8,7 +8,7 @@ export interface BookingModel {
     department: string | null; // Nullable string
     contactNumber: string | null; // Nullable string
     emailAddress: string | null; // Nullable string
-    expectedAttendees: string | null; // Nullable int
+    expectedAttendees: number | null; // Nullable int
     purpose: string; // Required string
     description: string | null; // Nullable string
     status: string | null; // Nullable string
