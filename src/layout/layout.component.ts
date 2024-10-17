@@ -47,6 +47,8 @@ export class LayoutComponent {
   time: Date[] | undefined;
   private timer: any;
 
+  eventLegend: string = "";
+
   //Dropdown part
   ConferenceRoom: Conference[] = [];
   ConferenceData: Conference = new Conference;
@@ -211,17 +213,34 @@ export class LayoutComponent {
     eventContent: (arg) => {
       const startTime = arg.event.start;
       const endTime = arg.event.end;
-    
+      const status = arg.event.extendedProps['status']; // Get the status
+
+      let dotColor = 'black'; // Default color
+
+      // Change dot color based on the status
+      switch (status) {
+        case 'approved':
+          dotColor = 'green';
+          break;
+        case 'pending':
+          dotColor = 'orange';
+          break;
+        case 'canceled':
+          dotColor = 'red';
+          break;
+        default:
+          dotColor = 'black'; // Fallback color
+      }
+
       if (!startTime || !endTime) {
         return { html: 'Time not available' }; // Fallback in case times are not available
       }
-    
-      const timeDisplay = `<b style="color: green">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
 
+      const timeDisplay = `<b style="color: ${dotColor}">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
       const title = arg.event.title || 'No Title';
-    
+
       return {
-        html: `<div>${timeDisplay} <b>${title}</b></div>`, // Added space here
+        html: `<div>${timeDisplay} <b>${title}</b></div>`,
       };
     },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
@@ -280,7 +299,10 @@ export class LayoutComponent {
                 title: booking.purpose || 'No Title',
                 // CONCAT BOOKED DATE WITH THE TIME
                 start: `${booking.bookedDate}T${booking.bookingStart}`,
-                end: `${booking.bookedDate}T${booking.bookingEnd}`
+                end: `${booking.bookedDate}T${booking.bookingEnd}`,
+                extendedProps: {
+                  status: booking.status // Include status here
+                }
             };            
             return event; // Return the constructed event
         });

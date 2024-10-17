@@ -29,7 +29,7 @@ export class Booking implements BookingModel{
     this.expectedAttendees = null;//
     this.purpose = '';//
     this.description = '';
-    this.status = '';//Default to pending when inserting
+    this.status = null;//Default to pending when inserting
     this.conferenceId = 0;
   }
 
