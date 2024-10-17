@@ -34,7 +34,8 @@ interface ConferenceRoom {
   styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
-  visible: boolean = false;
+  isBookingModalVisible: boolean = false;
+  isEventModalVisible: boolean = false;
   currentTime: Date = new Date();
   selectedDate: string = '';
   // currentDate: Date | null = null;
@@ -175,9 +176,13 @@ export class LayoutComponent {
   }
 
   showDialog() {
-    this.visible = true;
+    this.isBookingModalVisible = true;
     this.currentStep = 1;
   }
+
+  showEventDialog() {
+    this.isEventModalVisible = true;
+}
 
   nextStep() {
     this.currentStep++;
@@ -286,14 +291,14 @@ export class LayoutComponent {
       Location: ${info.event.extendedProps.location || 'No location'}
       Speaker: ${info.event.extendedProps.speaker || 'No speaker'}
     `;
-    
-    alert(eventDetails);  // Display the event details in an alert
+    this.showEventDialog();
+    // alert(eventDetails);  // Display the event details in an alert
   }
 
   handleDateClick(arg: any) {
     // Allow clicking on other days but not Sundays
     if (arg.date.getDay() !== 0) {
-      this.visible = true;
+      this.isBookingModalVisible = true;
       this.selectedDate = arg.dateStr;
       // alert('date click! ' + arg.dateStr);
     }
