@@ -109,17 +109,12 @@ export class LayoutComponent {
       data.bookingEnd = bookingEnd;
     }
 
-    if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)) {      
-      return alert("Expected attendees is more than the conference capacity!");
-    }
-    
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
       next: (res) => {
         console.log(res);
         if (res.isSuccess) {
           alert("Booked Success");
-          this.isBookingModalVisible = false
         } else {
           alert("Insert Failed!");
         }
@@ -129,7 +124,6 @@ export class LayoutComponent {
       },
       complete: () => {
         this.onLoadConference();
-
       }
     });
   }
