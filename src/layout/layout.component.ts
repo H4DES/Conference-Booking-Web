@@ -19,6 +19,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ConferenceService } from '../services/conference-service/conference.service';
 import { Conference } from '../model/conference';
 import { retry } from 'rxjs';
+import Swal from 'sweetalert2';
+
 
 interface ConferenceRoom {
   name: string;
