@@ -34,7 +34,7 @@
                 <p-button label="Cancel" severity="secondary" (onClick)="visible = false"></p-button>
                 <p-button *ngIf="currentStep > 1" label="Previous" (onClick)="previousStep()"></p-button>
                 <p-button *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
-                <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)" (onClick)="visible = false"></p-button>
+                <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)"></p-button>
             </div>    
         </p-dialog>
     </div>
