@@ -248,6 +248,12 @@ export class LayoutComponent {
         html: `<div>${timeDisplay} <b>${title}</b></div>`,
       };
     },
+    eventDidMount: (info) => {
+      info.el.style.backgroundColor = 'lightblue';
+      info.el.style.borderRadius = '4px';
+      info.el.style.padding = '5px';
+      info.el.style.color = '#505050';
+    },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
       if (info.date.getDay() === 0) {
