@@ -98,11 +98,7 @@ export class LayoutComponent {
   }
 
   BookConference(data: Booking) {
-    return Swal.fire({
-      title: "The Internet?",
-      text: "That thing is still around?",
-      icon: "question",
-    });
+
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
