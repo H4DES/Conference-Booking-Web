@@ -43,6 +43,7 @@ export class LayoutComponent {
   currentTitle: string = "Organizer Information";
   currentID: number = 0;
   data: Booking = new Booking();
+  bookingById: Booking = new Booking();
   time: Date[] | undefined;
   private timer: any;
 
@@ -75,6 +76,9 @@ export class LayoutComponent {
         console.log(res);
         if (res.isSuccess) {
           alert("Get success!");
+          this.bookingById = res.data
+          console.table(this.bookingById)
+
         } else {
           alert("Get failed!");
         }
@@ -87,23 +91,6 @@ export class LayoutComponent {
       }
     });
   }
-
-  // onInventoryDisplay() {
-  //   this.invObj.onInventoryDisplay().subscribe({
-  //     next: (res) => {
-  //       console.log(res);
-  //       if (res.isSuccess) {
-  //         this.table = res.data;
-  //         console.log(this.table);
-  //       } else {
-  //         alert("Failed!");
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching inventory:', err); // Log any errors
-  //     }
-  //   });
-  // }
 
   BookConference(data: Booking) {
     

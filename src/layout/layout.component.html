@@ -25,7 +25,7 @@
     </div>
 
     <div class="card flex justify-content-center">
-        <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem'}" (onHide)="resetModal()">
+        <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" [draggable]="false" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem'}" (onHide)="resetModal()">
             <span class="p-text-secondary block mb-5 ">Date: {{ selectedDate }}</span>
 
             <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
