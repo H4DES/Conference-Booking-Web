@@ -87,6 +87,7 @@ html, body {
     color: white;
 }
 
+
 ::ng-deep .p-dialog .p-dialog-header{
     background-color: var(--accent-color);
     color: white;
@@ -100,3 +101,12 @@ html, body {
 
 
 
+::ng-deep .p-dialog .p-dialog-header{
+    background-color: var(--accent-color);
+    color: white;
+}
+
+::ng-deep .p-dialog p {
+    padding-top: 20px;
+}
+  

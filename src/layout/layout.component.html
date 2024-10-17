@@ -1,14 +1,15 @@
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <header>
-        <div class="container booking-card">
-            <div class="booking-info">
-                <h1>BOOKING</h1>
-                <p-dropdown 
-                    [options]="ConferenceRoom" 
-                    [(ngModel)]="ConferenceData" 
-                    optionLabel="conferenceName" 
-                    placeholder="Select Conference Room" 
-                    (onChange)="onConferenceChange()" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<header>
+    <div class="container booking-card">
+        <div class="booking-info">
+            <h1>BOOKING</h1>
+            <p-dropdown 
+                [options]="ConferenceRoom" 
+                [(ngModel)]="ConferenceData" 
+                optionLabel="conferenceName" 
+                placeholder="Select Conference Room" 
+                (onChange)="onConferenceChange()" />
+
 
             <!-- test changes part 2-->
             </div>
@@ -17,19 +18,59 @@
                 <p>{{ currentTime | date: 'MMMM d, y' }}</p>
             </div>
         </div>
-    </header>
+        <div class="booking-time">
+            <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
+            <p>{{ currentTime | date: 'MMMM d, y' }}</p>
+        </div>
+    </div>
+</header>
 
-    <div class="calendar-container">
-        
-    <full-calendar [options]="calendarOptions"></full-calendar>
+<div class="calendar-container">
+    
+<full-calendar [options]="calendarOptions"></full-calendar>
+</div>
+
+<div class="card flex justify-content-center">
+    <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" [draggable]="false" [modal]="true" [(visible)]="isBookingModalVisible" [style]="{ width: '35rem'}" (onHide)="resetModal()">
+        <span class="p-text-secondary block mb-5 ">Date: {{ selectedDate }}</span>
+
+        <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" severity="secondary" (onClick)="isBookingModalVisible = false"></p-button>
+            <p-button *ngIf="currentStep > 1" label="Previous" (onClick)="previousStep()"></p-button>
+            <p-button *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
+            <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)" (onClick)="isBookingModalVisible = false"></p-button>
+        </div>    
+    </p-dialog>
+</div>
+
+<ng-template #step1>
+    <div class="form-floating mb-3">
+        <input pInputText type="text" class="form-control small-input" name="organizer" id="floatingInput" placeholder="Name of Organizer" [(ngModel)]="data.organizer">
+        <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input pInputText type="text" class="form-control small-input" name="department" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.department">
+        <label for="floatingInput" class="font-bold block mb-2"> Department </label>
     </div>
 
     <div class="card flex justify-content-center">
         <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" [draggable]="false" [modal]="true" [(visible)]="isBookingModalVisible" [style]="{ width: '35rem'}" (onHide)="resetModal()">
             <span class="p-text-secondary block mb-5 ">Date: {{ selectedDate }}</span>
 
-            <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
 
+    <div class="form-floating mb-3">
+        <!-- this should be a >> pKeyFilter="num" << -->
+        <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" placeholder="Enter contact number" [(ngModel)]="data.contactNumber">
+        <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
+    </div>
+
+
+    <div class="form-floating mb-3">
+        <input pInputText type="email" class="form-control small-input" name="emailAddress" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.emailAddress">
+        <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
             <div class="d-flex justify-content-end gap-2 mt-4">
                 <p-button label="Cancel" severity="secondary" (onClick)="isBookingModalVisible = false"></p-button>
                 <p-button *ngIf="currentStep > 1" label="Previous" (onClick)="previousStep()"></p-button>
@@ -39,61 +80,40 @@
         </p-dialog>
     </div>
 
-    <ng-template #step1>
-        <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" name="organizer" id="floatingInput" placeholder="Name of Organizer" [(ngModel)]="data.organizer">
-            <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
-        </div>
-    
-        <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" name="department" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.department">
-            <label for="floatingInput" class="font-bold block mb-2"> Department </label>
-        </div>
-    
-        <div class="form-floating mb-3">
-            <!-- this should be a >> pKeyFilter="num" << -->
-            <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" placeholder="Enter contact number" [(ngModel)]="data.contactNumber">
-            <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
-        </div>
-    
-        <div class="form-floating mb-3">
-            <input pInputText type="email" class="form-control small-input" name="emailAddress" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.emailAddress">
-            <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
+</ng-template>
+
+<ng-template #step2>
+    <div class="row g-3">
+        <div class="form-floating col-12">
+            <input pInputText type="text" class="form-control small-input" name="purpose" id="numAttendees" placeholder="Meeting Title" [(ngModel)]="data.purpose">
+            <label for="numAttendees" class="font-bold block mb-2"> Meeting Title </label>
         </div>
 
-    </ng-template>
-
-    <ng-template #step2>
-        <div class="row g-3">
-            <div class="form-floating col-12">
-                <input pInputText type="text" class="form-control small-input" name="purpose" id="numAttendees" placeholder="Meeting Title" [(ngModel)]="data.purpose">
-                <label for="numAttendees" class="font-bold block mb-2"> Meeting Title </label>
-            </div>
-    
-            <div class="form-floating col-md-6">
-                <input pInputText type="time" class="form-control small-input" name="bookingStart" id="startTime" placeholder="Preferred Room" [(ngModel)]="data.bookingStart">
-                <label for="preferredRoom" class="font-bold block mb-2"> Start Time </label>
-            </div>
-        
-            <div class="form-floating col-md-6">
-                <input pInputText type="time" class="form-control small-input" name="bookingEnd" id="endTime" placeholder="Number of Attendees" [(ngModel)]="data.bookingEnd">
-                <label for="numAttendees" class="font-bold block mb-2"> End Time </label>
-            </div>
-        
-            <div class="form-floating col-12">
-                <input pInputText type="text" class="form-control small-input" name="expectedAttendees" id="numAttendees" placeholder="Number of Attendees" [(ngModel)]="data.expectedAttendees">
-                <label for="numAttendees" class="font-bold block mb-2"> Expected Number of Attendees </label>
-            </div>
-
-            <div class="card flex justify-content-center">
-                Recurring Meeting
-                <p-checkbox 
-                    [(ngModel)]="checked" 
-                    [binary]="true" 
-                    inputId="binary" />
-            </div>
+        <div class="form-floating col-md-6">
+            <input pInputText type="time" class="form-control small-input" name="bookingStart" id="startTime" placeholder="Preferred Room" [(ngModel)]="data.bookingStart">
+            <label for="preferredRoom" class="font-bold block mb-2"> Start Time </label>
         </div>
-    </ng-template>
+    
+        <div class="form-floating col-md-6">
+            <input pInputText type="time" class="form-control small-input" name="bookingEnd" id="endTime" placeholder="Number of Attendees" [(ngModel)]="data.bookingEnd">
+            <label for="numAttendees" class="font-bold block mb-2"> End Time </label>
+        </div>
+    
+        <div class="form-floating col-12">
+            <input pInputText type="text" class="form-control small-input" name="expectedAttendees" id="numAttendees" placeholder="Number of Attendees" [(ngModel)]="data.expectedAttendees">
+            <label for="numAttendees" class="font-bold block mb-2"> Expected Number of Attendees </label>
+        </div>
+
+        <div class="card flex justify-content-center">
+            Recurring Meeting
+            <p-checkbox 
+                [(ngModel)]="checked" 
+                [binary]="true" 
+                inputId="binary" />
+        </div>
+    </div>
+</ng-template>
+
 
     <div class="card flex justify-content-center">
         <p-button (onClick)="showEventDialog()" label="Show" />
@@ -112,5 +132,5 @@
         </p-dialog>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <router-outlet></router-outlet>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<router-outlet></router-outlet>
