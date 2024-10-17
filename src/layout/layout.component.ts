@@ -119,7 +119,7 @@ export class LayoutComponent {
         console.log(res);
         if (res.isSuccess) {
           alert("Booked Success");
-          this.visible = false;
+          this.isBookingModalVisible = false
         } else {
           alert("Insert Failed!");
         }
