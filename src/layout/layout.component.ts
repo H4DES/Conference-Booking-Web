@@ -18,6 +18,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConferenceService } from '../services/conference-service/conference.service';
 import { Conference } from '../model/conference';
+import { retry } from 'rxjs';
 
 interface ConferenceRoom {
   name: string;
@@ -108,6 +109,10 @@ export class LayoutComponent {
       data.bookingStart = bookingStart;
       data.bookingEnd = bookingEnd;
     }
+    if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
+      return alert(`Expected attendees exceeded the conference capacity!: ${this.ConferenceData.capacity}`)
+    }
+
 
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
@@ -115,6 +120,7 @@ export class LayoutComponent {
         console.log(res);
         if (res.isSuccess) {
           alert("Booked Success");
+          this.isBookingModalVisible = false
         } else {
           alert("Insert Failed!");
         }
