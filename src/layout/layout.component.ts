@@ -98,12 +98,7 @@ export class LayoutComponent {
   }
 
   BookConference(data: Booking) {
-    return Swal.fire({
-      title: "The Internet?",
-      text: "That thing is still around?",
-      icon: "question",
-      target: ""
-    });
+    
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
@@ -117,20 +112,17 @@ export class LayoutComponent {
       data.bookingEnd = bookingEnd;
     }
     if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
-      this.data.expectedAttendees = 0
-      return alert(`Expected attendees exceeded the conference capacity!: ${this.ConferenceData.capacity}`)
-    }
+      this.isBookingModalVisible = false;
 
-    if (data.bookingStart > data.bookingEnd){
-      this.data.bookingStart = ""
-      this.data.bookingEnd = ""
       return Swal.fire({
         title: "The Internet?",
         text: "That thing is still around?",
         icon: "question",
-        position: 'top-start'
+      }).then(() => {
+        this.isBookingModalVisible = true;  // Re-enable/show your custom modal
       });
     }
+
 
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
