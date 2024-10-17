@@ -98,7 +98,12 @@ export class LayoutComponent {
   }
 
   BookConference(data: Booking) {
-    
+    return Swal.fire({
+      title: "The Internet?",
+      text: "That thing is still around?",
+      icon: "question",
+      target: ""
+    });
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
@@ -119,7 +124,12 @@ export class LayoutComponent {
     if (data.bookingStart > data.bookingEnd){
       this.data.bookingStart = ""
       this.data.bookingEnd = ""
-      return alert("Start time shouldn't be ahead of the booked end time")
+      return Swal.fire({
+        title: "The Internet?",
+        text: "That thing is still around?",
+        icon: "question",
+        position: 'top-start'
+      });
     }
 
     console.table(data);
