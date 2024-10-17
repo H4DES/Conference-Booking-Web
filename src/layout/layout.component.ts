@@ -78,10 +78,9 @@ export class LayoutComponent {
       next: (res) => {
         console.log(res);
         if (res.isSuccess) {
-          alert("Get success!");
           this.bookingById = res.data
           console.table(this.bookingById)
-
+          
         } else {
           alert("Get failed!");
         }

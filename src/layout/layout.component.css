@@ -84,7 +84,18 @@ html, body {
 
 ::ng-deep .p-button {
     border-radius: 6px;
-  }
+    color: white;
+}
+
+::ng-deep .p-dialog .p-dialog-header{
+    background-color: var(--accent-color);
+    color: white;
+}
+
+::ng-deep .p-dialog p {
+    padding-top: 20px;
+}
+  
 
 
 
