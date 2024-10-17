@@ -249,9 +249,17 @@ export class LayoutComponent {
     },
     eventDidMount: (info) => {
       info.el.style.backgroundColor = 'lightblue';
-      info.el.style.borderRadius = '4px';
-      info.el.style.padding = '5px';
+      info.el.style.borderRadius = '6px';
       info.el.style.color = '#505050';
+
+      info.el.addEventListener('mouseenter', () => {
+        info.el.style.backgroundColor = 'lightslategray'; // Change to a darker color
+        info.el.style.color = '#ffffff';
+      });
+      info.el.addEventListener('mouseleave', () => {
+        info.el.style.backgroundColor = 'lightblue'; // Revert to original color
+        info.el.style.color = '#505050';
+    });
     },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
