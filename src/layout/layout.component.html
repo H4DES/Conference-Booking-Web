@@ -47,24 +47,35 @@
 
 <!-- Step 1 Template -->
 <ng-template #step1>
-    <div class="form-floating mb-3">
-        <input pInputText type="text" class="form-control small-input" name="organizer" id="floatingInput" placeholder="Name of Organizer" [(ngModel)]="data.organizer">
-        <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
-    </div>
-
-    <div class="form-floating mb-3">
-        <input pInputText type="text" class="form-control small-input" name="department" id="floatingInput" placeholder="Department" [(ngModel)]="data.department">
-        <label for="floatingInput" class="font-bold block mb-2"> Department </label>
-    </div>
-
-    <div class="form-floating mb-3">
-        <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" placeholder="Enter contact number" [(ngModel)]="data.contactNumber">
-        <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
-    </div>
-
-    <div class="form-floating mb-3">
-        <input pInputText type="email" class="form-control small-input" name="emailAddress" id="floatingInput" placeholder="name@example.com" [(ngModel)]="data.emailAddress">
-        <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
+    <div class="user-input">
+       
+            <div class="textbox">
+                <p-floatLabel>
+                    <input pInputText type="text" class="form-control small-input" name="organizer" id="floatingInput"[(ngModel)]="data.organizer">
+                    <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
+                </p-floatLabel>
+            </div>
+        
+            <div class="textbox">
+                <p-floatLabel>
+                    <input pInputText type="text" class="form-control small-input" name="department" id="floatingInput" [(ngModel)]="data.department">
+                    <label for="floatingInput" class="font-bold block mb-2"> Department </label>
+                </p-floatLabel>
+            </div>
+        
+            <div class="textbox">
+                <p-floatLabel>
+                    <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" [(ngModel)]="data.contactNumber">
+                    <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
+                </p-floatLabel>
+            </div>
+        
+            <div class="textbox">
+                <p-floatLabel>
+                    <input pInputText type="email" class="form-control small-input" name="emailAddress" id="floatingInput" [(ngModel)]="data.emailAddress">
+                    <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
+                </p-floatLabel>
+            </div>
     </div>
 </ng-template>
 

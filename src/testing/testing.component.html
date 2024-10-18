@@ -49,22 +49,36 @@
 
         <!-- Step 1 Template -->
     <ng-template #ConferenceModal>
-        <div class="form-floating mb-3">
-            <p-floatLabel>
-                <input pInputText type="text" id="conferenceName" class="form-control small-input" name="conferenceName" [(ngModel)]="conferenceData.conferenceName">
-                <label for="conferenceName" class="font-bold block mb-2"> Conference Name </label>
-            </p-floatLabel>
+        <div class="user-input">
+            <div class="input-group">
+                <div class="textbox">
+                    <p-floatLabel>
+                        <input pInputText type="text" id="conferenceName" class="form-control small-input" name="conferenceName" [(ngModel)]="conferenceData.conferenceName">
+                        <label for="conferenceName" class="font-bold block mb-2"> Conference Name </label>
+                    </p-floatLabel>
+                </div>
+            </div>
+            <div class="input-group">
+    
+                <div class="textbox">
+                    <p-floatLabel>
+                        <input pInputText type="text" class="form-control small-input" name="capacity" id="floatingInput" [(ngModel)]="conferenceData.capacity">
+                        <label for="floatingInput" class="font-bold block mb-2"> Capacity </label>
+                    </p-floatLabel>
+                </div>
+                
+            </div>
+            <div class="input-group">
+                <div class="textbox">
+                    <p-floatLabel>
+                        <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput">
+                        <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
+                    </p-floatLabel>
+                </div>
+    
+            </div>
         </div>
         
-        <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" name="capacity" id="floatingInput" placeholder="Capacity" [(ngModel)]="conferenceData.capacity">
-            <label for="floatingInput" class="font-bold block mb-2"> Capacity </label>
-        </div>
-        
-        <div class="form-floating mb-3">
-            <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" placeholder="Enter contact number">
-            <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
-        </div>
 
 
     </ng-template>
