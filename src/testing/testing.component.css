@@ -33,3 +33,24 @@
 .form-floating > .form-control {
     width: 100%;
 }
+
+
+.user-input{
+    margin: 33px;
+}
+
+.user-input input{
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.input-group {
+    display: flex;
+    gap: 20px; /* Adjust as needed for spacing between the elements */
+}
+
+.textbox{
+    margin-bottom: 25px;
+    flex: 1;
+  }

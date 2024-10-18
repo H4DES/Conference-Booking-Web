@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 * {
-    padding: 0;
-    margin: 0;
+    padding: 0 ;
     box-sizing: border-box;
 }
 
@@ -75,12 +74,7 @@ html, body {
     height: 100%; /* Ensure the FullCalendar takes all of the container height */
   }
 
-  .small-input {
-    height: 2rem;          /* Set the desired height (default is about 3rem) */
-    padding: 0.375rem 0.75rem;  /* Adjust padding for a smaller look */
-    font-size: 0.9rem;     /* Reduce font size slightly to match the smaller height */
-    line-height: 1.25;     /* Adjust line height for better alignment */
-}
+ 
 
 ::ng-deep .p-button{
     border-radius: 6px;
@@ -113,4 +107,20 @@ html, body {
 
 ::ng-deep .p-dialog p {
     padding-top: 20px;
+}
+
+
+.user-input{
+    margin: 33px;
+}
+
+.user-input input{
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.textbox{
+    margin-bottom: 25px;
+    flex: 1;
 }

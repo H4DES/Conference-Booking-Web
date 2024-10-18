@@ -20,6 +20,7 @@ import { ConferenceService } from '../services/conference-service/conference.ser
 import { Conference } from '../model/conference';
 import { retry } from 'rxjs';
 import Swal from 'sweetalert2';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 
 interface ConferenceRoom {
@@ -32,7 +33,7 @@ interface ConferenceRoom {
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, 
             DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule, 
-            CheckboxModule, CalendarModule],
+            CheckboxModule, CalendarModule, FloatLabelModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
