@@ -1,0 +1,70 @@
+<div class="outer-container">
+    <div class="actions">
+        <p-button label="Add conference" icon="pi pi-plus" iconPos="right" (onClick)="showConferenceModal()"></p-button>
+    </div>
+    <div class="card">
+        <p-table 
+            [value]="Conferences"
+            styleClass="p-datatable-gridlines" 
+            [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Conference ID</th>
+                    <th>Name</th>
+                    <th>Capacity</th>
+                    <th>Active</th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-conference>
+                <tr>
+                    <td>{{ conference.conferenceId }}</td>
+                    <td>{{ conference.conferenceName }}</td>
+                    <td>{{ conference.capacity }}</td>
+                    <td>
+                        <p-tag [value]="conference.isActive ? 'ACTIVE' : 'INACTIVE'" [severity]="getActiveStatus(conference.isActive)" />
+                    </td>
+                    <td><p-button icon="pi pi-pen-to-square" severity="contrast"/></td>
+                </tr>
+            </ng-template>
+        </p-table>
+        
+    </div>
+    <div class="card flex justify-content-center">
+        <p-dialog header="Add conference" 
+                  [draggable]="false" [modal]="true" 
+                  [(visible)]="isConferenceModalVisible" 
+                  [style]="{ width: '35rem' }">
+            
+            <!-- <span class="p-text-secondary block mb-5">Date: {{ selectedDate }}</span> -->
+    
+            <ng-container *ngTemplateOutlet="ConferenceModal"></ng-container>
+    
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <p-button label="Cancel" severity="secondary" (onClick)="isConferenceModalVisible = false"></p-button>
+                <p-button label="Save" type="submit" (onClick)="onAddConference(conferenceData)"></p-button>
+            </div>    
+        </p-dialog>
+    </div>
+
+        <!-- Step 1 Template -->
+    <ng-template #ConferenceModal>
+        <div class="form-floating mb-3">
+            <input pInputText type="text" class="form-control small-input" name="conferenceName" id="floatingInput" placeholder="Conference Name" [(ngModel)]="conferenceData.conferenceName">
+            <label for="floatingInput" class="font-bold block mb-2"> Conference Name </label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input pInputText type="text" class="form-control small-input" name="capacity" id="floatingInput" placeholder="Capacity" [(ngModel)]="conferenceData.capacity">
+            <label for="floatingInput" class="font-bold block mb-2"> Capacity </label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" placeholder="Enter contact number">
+            <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
+        </div>
+
+    </ng-template>
+
+  </div>
+  
