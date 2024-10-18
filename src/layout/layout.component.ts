@@ -115,9 +115,9 @@ export class LayoutComponent {
       this.isBookingModalVisible = false;
 
       Swal.fire({
-        title: "The Internet?",
-        text: "That thing is still around?",
-        icon: "question",
+        title: "Error!",
+        text: `The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity} `,
+        icon: "error",
       }).then(() => {
         this.isBookingModalVisible = true;  // Re-enable/show your custom modal
       });
@@ -179,10 +179,7 @@ export class LayoutComponent {
   }
 
   resetModal() {
-    this.currentStep = 1;           // Reset the step to 1
-    this.currentTitle = "Organizer Information";  // Reset title to initial step // Optionally reset conference data
-    this.selectedDate = ''; // Clear selected date
-    
+    this.currentStep = 1;
   }
 
   showDialog() {
