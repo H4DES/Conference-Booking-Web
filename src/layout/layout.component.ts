@@ -254,7 +254,8 @@ export class LayoutComponent {
         return { html: `<div><strong>Time not available</strong></div>` }; // Fallback in case times are not available
       }
 
-      const timeDisplay = `<b style="color: ${dotColor}">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      // const timeDisplay = `<b style="color: ${dotColor}">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      const timeDisplay = `<span class="pi pi-circle-fill" style="font-size: 0.55rem; color: ${dotColor}">  </span> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
       const title = arg.event.title || 'No Title';
 
       return {
@@ -277,14 +278,6 @@ export class LayoutComponent {
     });
     },
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
-    dayCellDidMount: (info) => {
-      if (info.date.getDay() === 0) {
-        
-        info.el.style.pointerEvents = 'none';
-        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-        info.el.style.color = 'rgb(255, 255, 255)';
-      }
-    },
     eventClick: this.handleEventClick.bind(this)
   };
 
