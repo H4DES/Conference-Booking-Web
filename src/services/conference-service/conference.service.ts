@@ -19,7 +19,7 @@ export class ConferenceService {
 
   // Post calls
   public onAddOrUpdateConference(data: Conference): Observable<IApiResponse<Conference>> {
-    return this.http.post<IApiResponse<Conference>>(this.apiUrl + 'Conference/AddOrUpdate', data)
+    return this.http.post<IApiResponse<Conference>>(this.apiUrl + 'Conference/AddOrUpdateConference', data)
   }
 
   // Delete calls

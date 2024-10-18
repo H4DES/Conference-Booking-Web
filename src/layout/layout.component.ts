@@ -119,10 +119,8 @@ export class LayoutComponent {
         text: `The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity} `,
         icon: "error",
       }).then(() => {
-
         this.isBookingModalVisible = true;  // Re-enable/show your custom modal
       });
-
       return;
     }
 
@@ -253,7 +251,7 @@ export class LayoutComponent {
       }
 
       if (!startTime || !endTime) {
-        return { html: 'Time not available' }; // Fallback in case times are not available
+        return { html: `<div><strong>Time not available</strong></div>` }; // Fallback in case times are not available
       }
 
       const timeDisplay = `<b style="color: ${dotColor}">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
@@ -267,6 +265,7 @@ export class LayoutComponent {
       info.el.style.backgroundColor = 'lightblue';
       info.el.style.borderRadius = '6px';
       info.el.style.color = '#505050';
+      info.el.style.padding = "4px 6px"
 
       info.el.addEventListener('mouseenter', () => {
         info.el.style.backgroundColor = 'lightslategray'; // Change to a darker color
