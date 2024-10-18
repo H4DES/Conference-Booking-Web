@@ -114,13 +114,16 @@ export class LayoutComponent {
     if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
       this.isBookingModalVisible = false;
 
-      return Swal.fire({
-        title: "The Internet?",
-        text: "That thing is still around?",
-        icon: "question",
+      Swal.fire({
+        title: "Error!",
+        text: `The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity} `,
+        icon: "error",
       }).then(() => {
+
         this.isBookingModalVisible = true;  // Re-enable/show your custom modal
       });
+
+      return;
     }
 
 
@@ -178,10 +181,7 @@ export class LayoutComponent {
   }
 
   resetModal() {
-    this.currentStep = 1;           // Reset the step to 1
-    this.currentTitle = "Organizer Information";  // Reset title to initial step // Optionally reset conference data
-    this.selectedDate = ''; // Clear selected date
-    
+    this.currentStep = 1;
   }
 
   showDialog() {
