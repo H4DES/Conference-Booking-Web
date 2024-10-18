@@ -10,11 +10,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import Swal from 'sweetalert2';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-testing',
   standalone: true,
-  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule],
+  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule],
   templateUrl: './testing.component.html',
   styleUrl: './testing.component.css'
 })

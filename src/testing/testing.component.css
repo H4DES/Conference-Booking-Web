@@ -25,3 +25,11 @@
     border-radius: 6px;
     color: white;
 }
+
+.form-floating {
+    margin: 25px 0;
+}
+
+.form-floating > .form-control {
+    width: 100%;
+}
