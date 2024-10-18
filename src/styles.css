@@ -4,4 +4,5 @@
 @import "primeicons/primeicons.css";
 :root {
     --accent-color: rgb(247 67 67);
+    --accent-color-hover: rgb(241, 27, 27);
   }
