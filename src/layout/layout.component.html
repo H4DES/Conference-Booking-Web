@@ -32,14 +32,14 @@
               [style]="{ width: '35rem' }" 
               (onHide)="resetModal()">
         
-        <span class="p-text-secondary block mb-5">Date: {{ selectedDate }}</span>
+        <h5 class="p-text-secondary block mb-3 mt-3"><i class="pi pi-calendar-clock" style="font-size: 1.3rem"></i>Date: {{ selectedDate }}</h5>
 
         <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
 
         <div class="d-flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel" severity="secondary" (onClick)="isBookingModalVisible = false"></p-button>
-            <p-button *ngIf="currentStep > 1" label="Previous" (onClick)="previousStep()"></p-button>
-            <p-button *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
+            <p-button styleClass="cancel" label="Cancel" severity="secondary" (onClick)="isBookingModalVisible = false"></p-button>
+            <p-button *ngIf="currentStep > 1" label="Previous"s (onClick)="previousStep()"></p-button>
+            <p-button class="red-button" *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
             <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)"></p-button>
         </div>    
     </p-dialog>

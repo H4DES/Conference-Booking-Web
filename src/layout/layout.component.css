@@ -82,26 +82,34 @@ html, body {
     line-height: 1.25;     /* Adjust line height for better alignment */
 }
 
-::ng-deep .p-button {
+::ng-deep .p-button{
     border-radius: 6px;
     color: white;
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
+::ng-deep .p-button:hover{
+    background-color: var(--accent-color-hover);
+    border-color: var(--accent-color-hover);
+}
 
 ::ng-deep .p-dialog .p-dialog-header{
     background-color: var(--accent-color);
     color: white;
 }
+
+::ng-deep .cancel {
+    background-color: rgb(136, 136, 136) !important;
+    border-color: rgb(136, 136, 136) !important;
+    color: white !important; /* To make the text color readable */
+}
+
 
 ::ng-deep .p-dialog p {
     padding-top: 20px;
 }
   
-
-::ng-deep .p-dialog .p-dialog-header{
-    background-color: var(--accent-color);
-    color: white;
-}
 
 ::ng-deep .p-dialog p {
     padding-top: 20px;
