@@ -10,7 +10,7 @@ import { Conference } from '../../model/conference';
 })
 export class BookingService {
 
-  private apiUrl = "https://conferencebooking.local/api/";
+  private apiUrl = "https://desktop-7v5akct.tailfd7e1a.ts.net:2401/api/";
   constructor(private http: HttpClient) { }
 
 
