@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class ConferenceService {
 
-  private apiUrl = "https://100.90.130.38:7026/api/";
+  private apiUrl = "https://conferencebooking.local/api/";
   constructor(private http: HttpClient) { }
 
   // Get calls
