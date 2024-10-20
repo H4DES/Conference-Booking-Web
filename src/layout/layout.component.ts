@@ -12,7 +12,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Booking } from '../model/booking';
-import { BookingService } from '../services/booknig-service/booking.service';
+import { BookingService } from '../services/booking-service/booking.service';
 import { Title } from '@angular/platform-browser';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
