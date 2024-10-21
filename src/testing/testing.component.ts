@@ -11,11 +11,12 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-testing',
   standalone: true,
-  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule],
+  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule, RadioButtonModule],
   templateUrl: './testing.component.html',
   styleUrl: './testing.component.css'
 })
@@ -24,6 +25,7 @@ export class TestingComponent implements OnInit {
   Conferences!: Conference[];
   conferenceData: Conference = new Conference;
   isConferenceModalVisible: boolean = false;
+  updateModal: boolean = false;
 
   constructor(private conferenceServ: ConferenceService, private router: Router) {}
 
@@ -32,8 +34,16 @@ export class TestingComponent implements OnInit {
     this.onLoadConference();
   }
 
-  showConferenceModal(){
-    this.isConferenceModalVisible = true;
+  showConferenceModal(conference: Conference | null = null){
+    if (conference?.conferenceId == null) {
+      this.updateModal = false
+      this.conferenceData = new Conference;
+    }
+    else {
+      this.updateModal = true;
+      this.conferenceData = { ...conference };
+    }
+      this.isConferenceModalVisible = true;
   }
 
   getActiveStatus(active: boolean){
@@ -45,10 +55,13 @@ export class TestingComponent implements OnInit {
     }
   }
 
-  onAddConference(data: Conference) {
+  
+  onAddorUpdateConference(data: Conference) {
     debugger;
-    data.isActive = true;
-    data.conferenceId = null;
+    if (!this.updateModal){
+      data.conferenceId = null;
+      data.isActive = true;
+    }
     this.conferenceServ.onAddOrUpdateConference(data).subscribe({
       next: (res) => {
         if (res.isSuccess){

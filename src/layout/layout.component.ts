@@ -12,11 +12,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Booking } from '../model/booking';
-import { BookingService } from '../services/booknig-service/booking.service';
 import { Title } from '@angular/platform-browser';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConferenceService } from '../services/conference-service/conference.service';
+import { BookingService } from '../services/booking-service/booking.service';
 import { Conference } from '../model/conference';
 import { retry } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -108,6 +108,18 @@ export class LayoutComponent {
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
     const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
   
+    if(data.bookingStart > data.bookingEnd) {
+      this.isBookingModalVisible = false;
+      Swal.fire({
+        title: "Error!",
+        text: "Booking end time can't be earlier than booking start time!",
+        icon: "error",
+      }).then(() => {
+        this.isBookingModalVisible = true;
+      });
+      return;
+    }
+
     if (bookingStart && bookingEnd) {
       data.bookingStart = bookingStart;
       data.bookingEnd = bookingEnd;

@@ -24,7 +24,7 @@
                     <td>
                         <p-tag [value]="conference.isActive ? 'ACTIVE' : 'INACTIVE'" [severity]="getActiveStatus(conference.isActive)" />
                     </td>
-                    <td><p-button icon="pi pi-pen-to-square" severity="contrast"/></td>
+                    <td><p-button icon="pi pi-pen-to-square" severity="contrast" (onClick)="showConferenceModal(conference)"/></td>
                 </tr>
             </ng-template>
         </p-table>
@@ -42,7 +42,7 @@
     
             <div class="d-flex justify-content-end gap-2 mt-4">
                 <p-button label="Cancel" severity="secondary" (onClick)="isConferenceModalVisible = false"></p-button>
-                <p-button label="Save" type="submit" (onClick)="onAddConference(conferenceData)"></p-button>
+                <p-button label="Save" type="submit" (onClick)="onAddorUpdateConference(conferenceData)"></p-button>
             </div>    
         </p-dialog>
     </div>
@@ -68,12 +68,22 @@
                 </div>
                 
             </div>
-            <div class="input-group">
+            <div class="input-group" *ngIf="updateModal">
                 <div class="textbox">
-                    <p-floatLabel>
-                        <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput">
-                        <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
-                    </p-floatLabel>
+                    <p-radioButton 
+                    name="Status" 
+                    [value]="true" 
+                    [(ngModel)]="conferenceData.isActive" 
+                    inputId="active" />
+                    <label for="active" class="ml-2">Active</label>
+                </div>
+                <div class="textbox">
+                    <p-radioButton 
+                    name="Status" 
+                    [value]="false" 
+                    [(ngModel)]="conferenceData.isActive" 
+                    inputId="inactive" />
+                    <label for="inactive" class="ml-2">Inactive</label>
                 </div>
     
             </div>
