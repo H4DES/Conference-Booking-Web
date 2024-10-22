@@ -35,7 +35,7 @@
 
 
 .user-input{
-    margin: 33px;
+    margin: 10px;
 }
 
 .user-input input{
@@ -52,4 +52,4 @@
 .textbox{
     margin-bottom: 25px;
     flex: 1;
-  }
+}

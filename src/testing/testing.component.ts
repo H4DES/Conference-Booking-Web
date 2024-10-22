@@ -26,6 +26,7 @@ export class TestingComponent implements OnInit {
   conferenceData: Conference = new Conference;
   isConferenceModalVisible: boolean = false;
   updateModal: boolean = false;
+  deleteModal: boolean = false;
 
   constructor(private conferenceServ: ConferenceService, private router: Router) {}
 
@@ -34,12 +35,28 @@ export class TestingComponent implements OnInit {
     this.onLoadConference();
   }
 
-  showConferenceModal(conference: Conference | null = null){
+  get dialogTitle(): string {
+    if (this.updateModal) return "Update Conference"
+    else if (this.deleteModal) return "Delete Conference"
+    else return "Add Conference"
+
+  }
+
+
+
+  showConferenceModal(conference: Conference | null = null, conferenceDelete: boolean | null = null){
     if (conference?.conferenceId == null) {
-      this.updateModal = false
+      this.deleteModal = false;
+      this.updateModal = false;
       this.conferenceData = new Conference;
     }
+    else if (conferenceDelete){
+      this.updateModal = false
+      this.deleteModal = true;
+      this.conferenceData = { ...conference };
+    }
     else {
+      this.deleteModal = false;
       this.updateModal = true;
       this.conferenceData = { ...conference };
     }
@@ -55,7 +72,29 @@ export class TestingComponent implements OnInit {
     }
   }
 
-  
+  onConferenceDelete(id: number){
+    this.conferenceServ.onConferenceDelete(id).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.isConferenceModalVisible = false;
+          Swal.fire({
+            title: "Deleted",
+            text: String(res.data),
+            icon: "warning"
+          });
+          this.onLoadConference();
+        }
+        else{
+          Swal.fire({
+            title: "ERROR",
+            text: String(res.errorMessage),
+            icon: "error"
+          });
+        }
+      }
+    })
+  }
+
   onAddorUpdateConference(data: Conference) {
     debugger;
     if (!this.updateModal){
