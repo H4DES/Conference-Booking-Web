@@ -51,7 +51,7 @@ export class TestingComponent implements OnInit {
       this.conferenceData = new Conference;
     }
     else if (conferenceDelete){
-      this.updateModal = false
+      this.updateModal = false;
       this.deleteModal = true;
       this.conferenceData = { ...conference };
     }
