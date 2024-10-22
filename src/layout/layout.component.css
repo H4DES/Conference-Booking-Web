@@ -25,33 +25,19 @@ body {
     align-items: center;
 }
 
+.booking-info {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+}
+
 .booking-info h1 {
-    font-family: "Poppins", sans-serif;
-    font-weight: 600;
-    font-style: normal;
-    margin-bottom: 5px;
+    margin: 0 15px; /* Add some space around the h1 */
 }
 
-.booking-info p {
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    color: rgb(90, 90, 90);
-}
-
-.booking-time h2 {
-    font-family: "Poppins", sans-serif;
-    font-weight: 600;
-    font-size: 40px;
-    font-style: normal;
-}
-
-.booking-time p {
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    font-size: 18px;
-    font-style: normal;
-    color: rgb(110, 110, 110);
+.booking-time {
+    display: flex;
+    flex-direction: column; /* Stack time and date vertically */
+    align-items: flex-end; /* Align to the right */
 }
 
 html, body {
@@ -124,3 +110,49 @@ html, body {
     margin-bottom: 25px;
     flex: 1;
 }
+.sidebar-header{
+    text-align: center;
+    padding-top: 15px;
+    margin-bottom: 0px;
+}
+
+::ng-deep .booking-info .p-button {
+    background-color: transparent;
+    color: #454545;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+
+::ng-deep .sidebar-buttons .p-button {
+    text-align: left;
+    width: 100%;
+    background-color: transparent;
+    color: #454545;
+    border-color: transparent;
+    outline: none; 
+    box-shadow: none; 
+    padding: 15px 50px;
+}
+::ng-deep .sidebar-buttons .p-button:hover{
+    background: #eee;
+}
+
+::ng-deep .booking-info .p-dropdown {
+    background-color: transparent;
+    border-color: transparent;
+    width: 100%;
+    font-weight: 600;    
+    outline: none; 
+    box-shadow: none; 
+}
+
+
+::ng-deep .booking-info .p-dropdown .p-dropdown-label {
+    font-size: 2.5rem; /* Apply font size to the dropdown label */
+    color: #333333;
+
+}
+
+
+/*Testing Css*/

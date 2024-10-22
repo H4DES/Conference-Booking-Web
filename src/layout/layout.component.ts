@@ -21,6 +21,13 @@ import { Conference } from '../model/conference';
 import { retry } from 'rxjs';
 import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { SidebarModule } from 'primeng/sidebar';
+import { RippleModule } from 'primeng/ripple';
+import { AvatarModule } from 'primeng/avatar';
+import { StyleClassModule } from 'primeng/styleclass';
+import { Sidebar } from 'primeng/sidebar';
+import { DividerModule } from 'primeng/divider';
+
 
 
 interface ConferenceRoom {
@@ -31,9 +38,27 @@ interface ConferenceRoom {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FullCalendarModule, FormsModule, 
-            DialogModule, ButtonModule, InputTextModule,  KeyFilterModule, DropdownModule, 
-            CheckboxModule, CalendarModule, FloatLabelModule],
+  imports: [
+              CommonModule,
+              RouterOutlet,
+              RouterLink,
+              FullCalendarModule,
+              FormsModule,
+              DialogModule,
+              ButtonModule,
+              InputTextModule,
+              KeyFilterModule,
+              DropdownModule, 
+              CheckboxModule,
+              CalendarModule,
+              FloatLabelModule,
+              SidebarModule,
+              ButtonModule,
+              RippleModule,
+              AvatarModule,
+              StyleClassModule,
+              DividerModule
+            ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
@@ -51,6 +76,15 @@ export class LayoutComponent {
   bookingById: Booking = new Booking();
   time: Date[] | undefined;
   private timer: any;
+
+  //for side bar
+  @ViewChild('sidebarRef') sidebarRef!: Sidebar;
+
+  closeCallback(e: Event): void {
+      this.sidebarRef.close(e);
+  }
+
+  sidebarVisible: boolean = false;
 
   eventLegend: string = "";
 
