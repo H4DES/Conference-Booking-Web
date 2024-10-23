@@ -11,11 +11,12 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-testing',
   standalone: true,
-  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule],
+  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule, RadioButtonModule],
   templateUrl: './testing.component.html',
   styleUrl: './testing.component.css'
 })
@@ -24,6 +25,8 @@ export class TestingComponent implements OnInit {
   Conferences!: Conference[];
   conferenceData: Conference = new Conference;
   isConferenceModalVisible: boolean = false;
+  updateModal: boolean = false;
+  deleteModal: boolean = false;
 
   constructor(private conferenceServ: ConferenceService, private router: Router) {}
 
@@ -32,8 +35,32 @@ export class TestingComponent implements OnInit {
     this.onLoadConference();
   }
 
-  showConferenceModal(){
-    this.isConferenceModalVisible = true;
+  get dialogTitle(): string {
+    if (this.updateModal) return "Update Conference"
+    else if (this.deleteModal) return "Delete Conference"
+    else return "Add Conference"
+
+  }
+
+
+
+  showConferenceModal(conference: Conference | null = null, conferenceDelete: boolean | null = null){
+    if (conference?.conferenceId == null) {
+      this.deleteModal = false;
+      this.updateModal = false;
+      this.conferenceData = new Conference;
+    }
+    else if (conferenceDelete){
+      this.updateModal = false;
+      this.deleteModal = true;
+      this.conferenceData = { ...conference };
+    }
+    else {
+      this.deleteModal = false;
+      this.updateModal = true;
+      this.conferenceData = { ...conference };
+    }
+      this.isConferenceModalVisible = true;
   }
 
   getActiveStatus(active: boolean){
@@ -45,10 +72,35 @@ export class TestingComponent implements OnInit {
     }
   }
 
-  onAddConference(data: Conference) {
+  onConferenceDelete(id: number){
+    this.conferenceServ.onConferenceDelete(id).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.isConferenceModalVisible = false;
+          Swal.fire({
+            title: "Deleted",
+            text: String(res.data),
+            icon: "warning"
+          });
+          this.onLoadConference();
+        }
+        else{
+          Swal.fire({
+            title: "ERROR",
+            text: String(res.errorMessage),
+            icon: "error"
+          });
+        }
+      }
+    })
+  }
+
+  onAddorUpdateConference(data: Conference) {
     debugger;
-    data.isActive = true;
-    data.conferenceId = null;
+    if (!this.updateModal){
+      data.conferenceId = null;
+      data.isActive = true;
+    }
     this.conferenceServ.onAddOrUpdateConference(data).subscribe({
       next: (res) => {
         if (res.isSuccess){

@@ -5,8 +5,16 @@
     <div class="card">
         <p-table 
             [value]="Conferences"
-            styleClass="p-datatable-gridlines" 
-            [tableStyle]="{ 'min-width': '50rem' }">
+            styleClass="p-datatable-striped" 
+            [tableStyle]="{ 
+              'width': '100%',
+              'overflow': 'auto',
+              'border': '1px solid #ccc',
+              'background-color': '#f9f9f9',
+              'box-shadow': '0 4px 8px rgba(0,0,0,0.1)',
+              'border-radius': '8px',
+              'padding': '10px'
+            }">
             <ng-template pTemplate="header">
                 <tr>
                     <th>Conference ID</th>
@@ -24,32 +32,39 @@
                     <td>
                         <p-tag [value]="conference.isActive ? 'ACTIVE' : 'INACTIVE'" [severity]="getActiveStatus(conference.isActive)" />
                     </td>
-                    <td><p-button icon="pi pi-pen-to-square" severity="contrast"/></td>
+                    <td>
+                        <div class="input-group">
+                            <p-button icon="pi pi-pen-to-square" severity="contrast" (onClick)="showConferenceModal(conference)"/>
+                            <p-button icon="pi pi-trash" severity="danger" (onClick)="showConferenceModal(conference, true)"/>
+                            
+                        </div>
+
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
         
     </div>
     <div class="card flex justify-content-center">
-        <p-dialog header="Add conference" 
+        <p-dialog [header]="dialogTitle" 
                   [draggable]="false" [modal]="true" 
                   [(visible)]="isConferenceModalVisible" 
                   [style]="{ width: '35rem' }">
-            
-            <!-- <span class="p-text-secondary block mb-5">Date: {{ selectedDate }}</span> -->
-    
+
             <ng-container *ngTemplateOutlet="ConferenceModal"></ng-container>
     
-            <div class="d-flex justify-content-end gap-2 mt-4">
+            <div class="d-flex justify-content-end gap-2" style="padding-right: 10px;">
                 <p-button label="Cancel" severity="secondary" (onClick)="isConferenceModalVisible = false"></p-button>
-                <p-button label="Save" type="submit" (onClick)="onAddConference(conferenceData)"></p-button>
+                <p-button *ngIf="!deleteModal" label="Save" type="submit" (onClick)="onAddorUpdateConference(conferenceData)"></p-button>
+                <p-button *ngIf="deleteModal" label="Delete" type="submit" severity="danger" (onClick)="onConferenceDelete(conferenceData.conferenceId!)"></p-button>
+
             </div>    
         </p-dialog>
     </div>
 
         <!-- Step 1 Template -->
     <ng-template #ConferenceModal>
-        <div class="user-input">
+        <div *ngIf="!deleteModal" class="user-input">
             <div class="input-group">
                 <div class="textbox">
                     <p-floatLabel>
@@ -68,19 +83,34 @@
                 </div>
                 
             </div>
-            <div class="input-group">
+            <div class="input-group" *ngIf="updateModal">
                 <div class="textbox">
-                    <p-floatLabel>
-                        <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput">
-                        <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
-                    </p-floatLabel>
+                    <p-radioButton 
+                    name="Status" 
+                    [value]="true" 
+                    [(ngModel)]="conferenceData.isActive" 
+                    inputId="active" />
+                    <label for="active" class="ml-2">Active</label>
                 </div>
-    
+                <div class="textbox">
+                    <p-radioButton 
+                    name="Status" 
+                    [value]="false" 
+                    [(ngModel)]="conferenceData.isActive" 
+                    inputId="inactive" />
+                    <label for="inactive" class="ml-2">Inactive</label>
+                </div>    
             </div>
         </div>
-        
-
-
+        <div *ngIf="deleteModal" class="user-input">
+            <div class="input-group">
+    
+                <div class="textbox">
+                    <input pInputText type="text" [disabled]="true" class="form-control small-input" name="conferenceName" id="floatingInput" [(ngModel)]="conferenceData.conferenceName">
+                    <label style="text-align: center;width: 100%;margin-top: 20px;font-size: 20px;"> This action's cannot be undone! </label>
+                </div>
+            </div>
+        </div>
     </ng-template>
 
   </div>
