@@ -4,7 +4,7 @@
     <div class="container booking-card">
         <div class="booking-info">
             <p-button (onClick)="sidebarVisible = true" icon="pi pi-bars"></p-button>
-            <h1>BOOK</h1>
+          
             <p-dropdown 
                 [options]="ConferenceRoom" 
                 [(ngModel)]="ConferenceData" 
@@ -32,8 +32,8 @@
               [(visible)]="isBookingModalVisible" 
               [style]="{ width: '35rem' }" 
               (onHide)="resetModal()">
-        
-        <h5 class="p-text-secondary block mb-3 mt-3"><i class="pi pi-calendar-clock" style="font-size: 1.3rem"></i>Date: {{ selectedDate }}</h5>
+              <!-- <i class="pi pi-calendar-clock" style="font-size: 1.3rem"></i> -->
+        <h5 class="p-text-secondary block mb-3 mt-3"><b>{{ formattedDate }}</b></h5>
 
         <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
 
@@ -52,28 +52,28 @@
        
             <div class="textbox">
                 <p-floatLabel>
-                    <input pInputText type="text" class="form-control small-input" name="organizer" id="floatingInput"[(ngModel)]="data.organizer">
+                    <input pInputText type="text" class="form-control small-input primengFloat" name="organizer" id="floatingInput"[(ngModel)]="data.organizer">
                     <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
                 </p-floatLabel>
             </div>
         
             <div class="textbox">
                 <p-floatLabel>
-                    <input pInputText type="text" class="form-control small-input" name="department" id="floatingInput" [(ngModel)]="data.department">
+                    <input pInputText type="text" class="form-control small-input primengFloat" name="department" id="floatingInput" [(ngModel)]="data.department">
                     <label for="floatingInput" class="font-bold block mb-2"> Department </label>
                 </p-floatLabel>
             </div>
         
             <div class="textbox">
                 <p-floatLabel>
-                    <input pInputText type="text" class="form-control small-input" name="contactNumber" id="floatingInput" [(ngModel)]="data.contactNumber">
+                    <input pInputText type="text" class="form-control small-input primengFloat" name="contactNumber" id="floatingInput" [(ngModel)]="data.contactNumber">
                     <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
                 </p-floatLabel>
             </div>
         
             <div class="textbox">
                 <p-floatLabel>
-                    <input pInputText type="email" class="form-control small-input" name="emailAddress" id="floatingInput" [(ngModel)]="data.emailAddress">
+                    <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.emailAddress">
                     <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
                 </p-floatLabel>
             </div>
@@ -82,32 +82,46 @@
 
 <!-- Step 2 Template -->
 <ng-template #step2>
-    <div class="row g-3">
-        <div class="form-floating col-12">
-            <input pInputText type="text" class="form-control small-input" name="purpose" id="purpose" placeholder="Meeting Title" [(ngModel)]="data.purpose">
-            <label for="purpose" class="font-bold block mb-2"> Meeting Title </label>
+    <div class="user-input">
+        <!-- Meeting Title -->
+        <div class="textbox">
+            <p-floatLabel>
+                <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.purpose">
+                <label for="floatingInput" class="font-bold block mb-2"> Meeting Details </label>
+            </p-floatLabel>
         </div>
-
-        <div class="form-floating col-md-6">
-            <input pInputText type="time" class="form-control small-input" name="bookingStart" id="startTime" placeholder="Start Time" [(ngModel)]="data.bookingStart">
-            <label for="startTime" class="font-bold block mb-2"> Start Time </label>
+    
+        <!-- Start and End Time with Bootstrap Floating Labels -->
+        <div class="d-flex justify-content-between time-inputs">
+            <div class="form-floating flex-grow-1 me-3">
+                <input type="time" class="form-control" id="startTime" placeholder="Start Time" [(ngModel)]="data.bookingStart">
+                <label for="startTime">Start Time</label>
+            </div>
+    
+            <div class="form-floating flex-grow-1">
+                <input type="time" class="form-control" id="endTime" placeholder="End Time" [(ngModel)]="data.bookingEnd">
+                <label for="endTime">End Time</label>
+            </div>
         </div>
-
-        <div class="form-floating col-md-6">
-            <input pInputText type="time" class="form-control small-input" name="bookingEnd" id="endTime" placeholder="End Time" [(ngModel)]="data.bookingEnd">
-            <label for="endTime" class="font-bold block mb-2"> End Time </label>
+    
+        <!-- Expected number of Attendees -->
+        <div class="textbox">
+            <p-floatLabel>
+                <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.expectedAttendees">
+                <label for="floatingInput" class="font-bold block mb-2"> Expected number of Attendees </label>
+            </p-floatLabel>
         </div>
-
-        <div class="form-floating col-12">
-            <input pInputText type="text" class="form-control small-input" name="expectedAttendees" id="numAttendees" placeholder="Number of Attendees" [(ngModel)]="data.expectedAttendees">
-            <label for="numAttendees" class="font-bold block mb-2"> Expected Number of Attendees </label>
-        </div>
-
-        <div class="card flex justify-content-center">
-            Recurring Meeting
-            <p-checkbox [(ngModel)]="checked" [binary]="true" inputId="binary"></p-checkbox>
+    
+        <!-- Recurring Meeting Checkbox -->
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="recurringMeeting" [(ngModel)]="checked">
+            <label class="form-check-label" for="recurringMeeting">
+                Recurring Meeting
+            </label>
         </div>
     </div>
+    
+    
 </ng-template>
 
 
