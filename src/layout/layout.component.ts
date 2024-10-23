@@ -67,6 +67,7 @@ export class LayoutComponent {
   isEventModalVisible: boolean = false;
   currentTime: Date = new Date();
   selectedDate: string = '';
+  formattedDate: string = '';
   // currentDate: Date | null = null;
   currentStep: number = 1;
   checked: boolean = false;
@@ -355,15 +356,32 @@ export class LayoutComponent {
     // Allow clicking on other days but not Sundays
     if (arg.date.getDay() !== 0) {
       this.isBookingModalVisible = true;
+  
+      // Set the selected date from the clicked date (arg.dateStr is in YYYY-MM-DD format)
       this.selectedDate = arg.dateStr;
-      // alert('date click! ' + arg.dateStr);
-    }
+  
+      // Optionally, you can convert and display the formatted date somewhere
+      // This will not change the value of selectedDate but return a formatted version
+      this.formattedDate = this.convertDateToLongFormat(this.selectedDate);
 
-    
+    }
   }
 
+  getFormattedSelectedDate(): string {
+    return this.convertDateToLongFormat(this.selectedDate);
+  }
 
-
+  convertDateToLongFormat(dateString: string): string {
+    const date = new Date(dateString); // Create a Date object from the string
+    
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: '2-digit' 
+    };
+    
+    return new Intl.DateTimeFormat('en-US', options).format(date); // Return formatted date
+  }
   // Api calls for data events
   bookingData: Booking[] = [];
 
