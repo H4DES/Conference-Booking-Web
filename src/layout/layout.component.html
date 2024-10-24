@@ -113,12 +113,34 @@
         </div>
     
         <!-- Recurring Meeting Checkbox -->
-        <div class="form-check mt-4">
+        <!-- <div class="form-check mt-4">
             <input class="form-check-input" type="checkbox" id="recurringMeeting" [(ngModel)]="checked">
             <label class="form-check-label" for="recurringMeeting">
                 Recurring Meeting
             </label>
+        </div> -->
+
+        <div class="accordion" id="accordionExample">
+            <div class="textbox">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <!-- Remove accordion-button class and add custom styling -->
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input ms-1 me-2 mb-2" type="checkbox" id="recurringMeeting" [(ngModel)]="checked" (change)="toggleAccordion('collapseOne')">
+                            <label class="form-check-label" for="recurringMeeting">
+                                Recurring Meeting
+                            </label>
+                        </div>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <strong>This is the first item's accordion body.</strong> It is hidden by default until the collapse plugin adds the appropriate classes that we use to style each element.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        
     </div>
     
     
@@ -126,20 +148,67 @@
 
 
 <div class="card flex justify-content-center">
-    <p-dialog header="Meeting details" 
+    <p-dialog 
               [(visible)]="isEventModalVisible" 
               [modal]="true" 
               [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
               [style]="{ width: '50vw' }" 
               [draggable]="false" 
               [resizable]="false">
-        
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
+
+              <ng-template pTemplate="header">
+                <div class="d-flex align-items-center">
+                    <h5 class="m-0"><strong>{{ bookingById.purpose }}</strong></h5> <!-- Header Text -->
+                    <p-tag 
+  styleClass="tag-header" 
+  [value]="bookingById.status ?? 'Pending' | titlecase" 
+  [rounded]="true" 
+  class="ml-2 tag-header" 
+  [style]="getTagStyle(bookingById.status ?? '')">
+</p-tag>
+                  
+                </div>
+            </ng-template>
+
+        <!-- Modal Content -->
+        <div class="row g-3">
+            <!-- Organizer Name -->
+            <div class="col-12 form-label-header">
+                <label for="organizerName" class="form-label">Organizer Name</label>
+                <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.organizer" disabled>
+            </div>
+
+            <!-- Start Time and End Time -->
+            <div class="col-6">
+                <label for="startTime" class="form-label">Start Time</label>
+                <input type="text" id="startTime" class="form-control" [(ngModel)]="bookingById.bookingStart" disabled>
+            </div>
+            <div class="col-6">
+                <label for="endTime" class="form-label">End Time</label>
+                <input type="text" id="endTime" class="form-control" [(ngModel)]="bookingById.bookingEnd" disabled>
+            </div>
+
+            <!-- Department -->
+            <div class="col-12">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
+            </div>
+
+            <!-- Number of Attendees -->
+            <div class="col-12">
+                <label for="attendees" class="form-label">Number of Attendees</label>
+                <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
+            </div>
+
+            <!-- Okay Button -->
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-danger">Okay</button>
+            </div>
+        </div>
+
     </p-dialog>
 </div>
+
 
 <div class="card flex justify-content-center">
     <p-sidebar [(visible)]="sidebarVisible">
