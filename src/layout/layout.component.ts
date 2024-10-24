@@ -321,7 +321,15 @@ export class LayoutComponent {
       info.el.style.backgroundColor = 'lightblue';
       info.el.style.borderRadius = '6px';
       info.el.style.color = '#505050';
-      info.el.style.padding = "4px 6px"
+      info.el.style.padding = "4px 6px";
+      
+      info.el.style.overflow = "hidden";
+  info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping
+  info.el.style.textOverflow = "ellipsis"; // Show "..." when text overflows
+
+  // Set the event width to auto but constrained by its parent cell
+
+
 
       info.el.addEventListener('mouseenter', () => {
         info.el.style.backgroundColor = 'lightslategray'; // Change to a darker color
@@ -411,9 +419,9 @@ export class LayoutComponent {
       case 'approved':
         return { color: 'green', backgroundColor: 'rgba(0, 128, 0, 0.1)' };
       case 'pending':
-        return { color: 'orange', backgroundColor: 'rgb(235, 156, 11, 0.1)' };
+        return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '2px' };
       case 'ongoing':
-        return { color: 'white', backgroundColor: 'rgb(0, 91, 196)', padding: '5px' };
+        return { color: 'white', backgroundColor: 'rgb(0, 91, 196)', padding: '2px' };
       default:
         return { color: 'red', backgroundColor: 'rgba(255, 0, 0, 0.1)' };
     }
