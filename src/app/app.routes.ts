@@ -4,6 +4,8 @@ import { HomeComponent } from '../home/home.component';
 import { TestingComponent } from '../testing/testing.component';
 import { TableComponent } from '../table/table.component';
 import { LoginComponent } from '../login/login.component';
+import { RegisterComponent } from '../register/register.component';
+import { authGuard } from '../guard/auth.guard';
 
 export const routes: Routes = [
     {
@@ -14,6 +16,7 @@ export const routes: Routes = [
     {
         path: '',
         component: LayoutComponent,
+        canActivate: [authGuard],    
         children: [
             {
                 path: 'home',
@@ -23,7 +26,7 @@ export const routes: Routes = [
     },
     {
         path: 'testing',
-        component: TestingComponent        
+        component: TestingComponent,    
     },
     {
         path: 'table',
@@ -32,5 +35,9 @@ export const routes: Routes = [
     {
         path: 'login',
         component: LoginComponent
+    },
+    {
+        path: 'register',
+        component: RegisterComponent
     }
 ];
