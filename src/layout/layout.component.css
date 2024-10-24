@@ -128,6 +128,120 @@ html, body {
     }
 }
 
+/* Adjust the checkbox size without affecting its shape */
+/* Adjust the checkbox size */
+.form-check-input {
+    transform: scale(0.6); /* Scale down the checkbox */
+    margin-right: 0.5rem; /* Add space between checkbox and label */
+    vertical-align: middle; /* Align the checkbox vertically with the label */
+    padding: 0; /* Remove additional padding */
+}
+
+/* Optional: Adjust the label for better alignment */
+.form-check-label {
+    font-size: 1rem;  /* Keep label font size consistent */
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+/* Modal Header Styling */
+::ng-deep .p-dialog .p-dialog-header {
+    background-color: var(--accent-color); /* Use your theme's accent color */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 1rem;
+}
+
+::ng-deep .p-dialog-header .p-dialog-header-icon {
+    color: white; /* Close icon white */
+}
+
+/* Form Labels */
+::ng-deep .form-label {
+    /* font-family: 'Poppins', sans-serif; */
+    font-weight: bold;
+    font-size: 1.2rem; /* Slightly larger font for form labels */
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-label-header{
+    margin-top: 2rem;
+}
+
+::ng-deep .tag-header{
+    margin-top: 1px;
+    margin-left: 2px;
+    padding: 2px;
+    /* background: rgb(235, 156, 11); */
+    /* background: rgb(32, 187, 12); */
+    /* background: rgb(0, 91, 196); */
+    /* background: rgb(255, 255, 255);
+    color: rgb(0, 91, 196); */
+    border-radius: 6px;
+}
+
+/* Form Inputs Styling */
+::ng-deep .form-control {
+    background-color: #f5f5f5; /* Light gray background */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    color: #333;
+    cursor:pointer;
+    width: 100%;
+    height: calc(2.7rem + 2px);
+}
+
+/* Align Start and End Time inputs */
+.d-flex.time-inputs {
+    display: flex;
+    gap: 20px; /* Gap between Start and End time inputs */
+    margin-bottom: 20px;
+}
+
+/* Okay Button Styling */
+::ng-deep .btn-danger {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--accent-color) !important; /* Use your theme color */
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-color: var(--accent-color);
+    border-radius: 5px;
+}
+
+/* Modal content spacing */
+.p-dialog .p-dialog-content {
+    padding: 1rem; /* Space for content inside modal */
+}
+
+/* Input Fields Alignment */
+/* .row.g-3 .col-12, .row.g-3 .col-6 {
+    margin-bottom: 0.5rem;
+} */
+
+/* Center the button */
+.text-center {
+    text-align: center;
+}
+
+/* Adjust disabled input color */
+::ng-deep .form-control[disabled] {
+    background-color: #f8f8f8;
+    /* background-color: #e9ecef; Bootstrap-like disabled input color */
+    opacity: 1;
+    color: #495057; /* Darker text color */
+}
+
+/* Responsive Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .d-flex.time-inputs {
+        flex-direction: column; /* Stack Start/End Time on small screens */
+    }
+}
 
 
 .sidebar-header{

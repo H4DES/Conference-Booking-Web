@@ -27,8 +27,9 @@ import { AvatarModule } from 'primeng/avatar';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Sidebar } from 'primeng/sidebar';
 import { DividerModule } from 'primeng/divider';
+import { TagModule } from 'primeng/tag';
 
-
+declare var bootstrap: any;
 
 interface ConferenceRoom {
   name: string;
@@ -57,7 +58,8 @@ interface ConferenceRoom {
               RippleModule,
               AvatarModule,
               StyleClassModule,
-              DividerModule
+              DividerModule,
+              TagModule
             ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
@@ -228,6 +230,8 @@ export class LayoutComponent {
 
   resetModal() {
     this.currentStep = 1;
+    this.data = new Booking();
+    this.checked = false; 
   }
 
   showDialog() {
@@ -292,6 +296,9 @@ export class LayoutComponent {
           dotColor = 'orange';
           break;
         case 'canceled':
+          dotColor = 'red';
+          break;
+        case 'ongoing':
           dotColor = 'red';
           break;
         default:
@@ -382,6 +389,38 @@ export class LayoutComponent {
     
     return new Intl.DateTimeFormat('en-US', options).format(date); // Return formatted date
   }
+
+  toggleAccordion(collapseId: string): void {
+    const element = document.getElementById(collapseId);
+    if (element) {
+      const bootstrapCollapse = new bootstrap.Collapse(element, { toggle: false }); // Initialize without toggling
+      if (this.checked) {
+        bootstrapCollapse.show(); // Open the accordion section when checked
+      } else {
+        bootstrapCollapse.hide(); // Close the accordion section when unchecked
+      }
+    }
+  }
+
+  getTagStyle(status: string | null): { [key: string]: string } {
+    if (!status) {
+      status = 'default';  // Set to a default string to avoid type issues
+    }
+    
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return { color: 'green', backgroundColor: 'rgba(0, 128, 0, 0.1)' };
+      case 'pending':
+        return { color: 'orange', backgroundColor: 'rgb(235, 156, 11, 0.1)' };
+      case 'ongoing':
+        return { color: 'white', backgroundColor: 'rgb(0, 91, 196)', padding: '5px' };
+      default:
+        return { color: 'red', backgroundColor: 'rgba(255, 0, 0, 0.1)' };
+    }
+  }
+  
+  
+  
   // Api calls for data events
   bookingData: Booking[] = [];
 
