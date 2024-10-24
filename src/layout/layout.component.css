@@ -58,8 +58,43 @@ html, body {
   }
   
   .fc {
-    height: 100%; /* Ensure the FullCalendar takes all of the container height */
+    height: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-wrap: normal;
   }
+
+  /* FullCalendar Event Ellipsis Handling */
+.fc-event {
+    display: block;
+    width: 100%; /* Ensure it takes the full width of the day cell */
+    overflow: hidden; /* Hide overflowing content */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis; /* Show "..." when the text is too long */
+    padding: 4px 6px; /* Add padding for readability */
+    box-sizing: border-box; /* Ensure padding is included in width calculations */
+}
+
+/* Ensure day cells maintain consistent size */
+.fc-daygrid-day-frame {
+    width: 100%;
+    max-width: 100%; /* Prevent any overflow */
+}
+
+/* Optional: Customize event hover styles */
+.fc-event:hover {
+    background-color: lightslategray;
+    color: white;
+}
+
+/* For mobile or small screens: make sure events still behave correctly */
+@media (max-width: 768px) {
+    .fc-event {
+        font-size: 0.9rem; /* Adjust the font size if needed */
+    }
+}
+
+
 
  
 
@@ -181,6 +216,7 @@ html, body {
     color: rgb(0, 91, 196); */
     border-radius: 6px;
 }
+
 
 /* Form Inputs Styling */
 ::ng-deep .form-control {
