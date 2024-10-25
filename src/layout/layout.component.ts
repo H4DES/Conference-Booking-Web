@@ -76,9 +76,14 @@ export class LayoutComponent {
   currentTitle: string = "Organizer Information";
   currentID: number = 0;
   data: Booking = new Booking();
-  bookingById: Booking = new Booking();
+  bookingById: Booking = new Booking;
   time: Date[] | undefined;
   private timer: any;
+  private timer2: any;
+  formattedTimeNow: string = ""
+  bookingByDate: Booking[] = [];
+  updateBookingData: Booking = new Booking();
+  formattedDateNow: string = new Date().toISOString().slice(0, 10);
 
   //for side bar
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
@@ -104,6 +109,7 @@ export class LayoutComponent {
   ngOnInit(): void {
     this.startClock();
     this.onLoadConference();
+    this.startEventOngoingChecker();
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -113,27 +119,42 @@ export class LayoutComponent {
   //     { name: 'Paris', code: 'PRS' }
   // ];
   }
-
-  DisplayBookingByID(id: number){
-    this.bookingServ.onGetBookingByBookingId(id).subscribe({
-      next: (res) => {
-        console.log(res);
-        if (res.isSuccess) {
-          this.bookingById = res.data
-          console.table(this.bookingById)
-          
-        } else {
-          alert("Get failed!");
-        }
-      },
-      error: (err) => {
-        console.error('Error inserting:', err); // Log any errors
-      },
-      complete: () => {
-        // this.onLoadConference();
-      }
-    });
+  DisplayBookingByID(id: number) {
+  console.log(`Searching for booking with ID: ${id}`);
+  const booking = this.bookingData.find(b => b.bookingId === id);
+  
+  if (booking) {
+    this.bookingById = booking;
+    console.log("Booking found:", this.bookingById);
+  } else {
+    console.error("No booking found with the provided ID.");
   }
+}
+
+
+  // DisplayBookingByID(id: number){
+  //   this.bookingById = this.bookingData.find(b => b.bookingId === id)!;
+  //   console.log("reached here");
+
+    // this.bookingServ.onGetBookingByBookingId(id).subscribe({
+    //   next: (res) => {
+    //     console.log(res);
+    //     if (res.isSuccess) {
+    //       this.bookingById = res.data
+    //       console.table(this.bookingById)
+          
+    //     } else {
+    //       alert("Get failed!");
+    //     }
+    //   },
+    //   error: (err) => {
+    //     console.error('Error inserting:', err); // Log any errors
+    //   },
+    //   complete: () => {
+    //     // this.onLoadConference();
+    //   }
+    // });
+  // }
 
   BookConference(data: Booking) {
 
@@ -215,12 +236,90 @@ export class LayoutComponent {
   }
   
 
-  startClock() {
+  startClock(){
     // Update the time every second
     this.timer = setInterval(() => {
       this.currentTime = new Date();
     }, 1000);
   }
+
+
+  onUpdateStatus(data: Booking){
+    this.bookingServ.onUpdateBookingStatus(data).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.onLoadCalendarEvents(Number(this.ConferenceData.conferenceId));
+          console.info("bruh" + res.data);
+        }
+        else{
+          console.error(res.errorMessage);
+        }
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+
+  startEventOngoingChecker(){
+    this.timer2 = setInterval(() => {
+      this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
+      this.checkEventStarting(this.formattedTimeNow);
+    }, 10000);
+  }
+
+  checkEventStarting(timeNow: string) {
+    // console.info(`${this.formattedTimeNow}`);
+    // console.log(this.bookingByDate.map(x => x.bookingStart <= timeNow));
+
+    for (let booking of this.bookingByDate) {
+        // Check if timeNow is less than bookingStart
+        if (timeNow < booking.bookingStart) {
+            continue; // Skip to the next booking
+        }
+
+        if (booking.status == "done"){
+          continue;
+        }
+        // Check if timeNow is greater than or equal to bookingEnd
+        if (timeNow >= booking.bookingEnd && booking.status == "ongoing") {
+            this.updateBookingData.bookingId = booking.bookingId;      
+            this.updateBookingData.status = "done";
+            this.onUpdateStatus(this.updateBookingData);
+            console.log("status DONE");
+            continue; // Skip to the next booking
+        }
+
+        if (booking.status == "ongoing"){
+          continue;
+        }
+        // Check if timeNow is greater than or equal to bookingStart
+        if (timeNow >= booking.bookingStart) {
+            // booking.status = "ongoing";
+            this.updateEvent();
+            // this.updateBookingData.bookingId = booking.bookingId;
+            // this.onUpdateStatus(this.updateBookingData);
+            console.log("status ONGOING");
+        }
+    }
+
+    console.log("Finished processing all bookings");
+}
+
+
+  getBookingByDate(){
+    for (let booking of this.bookingData){
+    console.info(`formatted:${this.formattedDateNow}  bookedDate:${booking.bookedDate}`);
+      if (booking.bookedDate == this.formattedDateNow){
+        this.bookingByDate.push(booking);
+        console.log("shit appended");
+      }
+    }
+    this.bookingByDate.sort((a,b) => {
+      return a.bookingStart.localeCompare(b.bookingStart);
+    })
+  }
+
 
   ngOnDestroy(): void {
     if (this.timer) {
@@ -295,8 +394,8 @@ export class LayoutComponent {
         case 'pending':
           dotColor = 'orange';
           break;
-        case 'canceled':
-          dotColor = 'red';
+        case 'done':
+          dotColor = 'gray';
           break;
         case 'ongoing':
           dotColor = 'red';
@@ -324,10 +423,10 @@ export class LayoutComponent {
       info.el.style.padding = "4px 6px";
       
       info.el.style.overflow = "hidden";
-  info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping
-  info.el.style.textOverflow = "ellipsis"; // Show "..." when text overflows
+      info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping
+      info.el.style.textOverflow = "ellipsis"; // Show "..." when text overflows
 
-  // Set the event width to auto but constrained by its parent cell
+      // Set the event width to auto but constrained by its parent cell
 
 
 
@@ -353,7 +452,7 @@ export class LayoutComponent {
   };
 
   handleEventClick(info: any) {
-    this.DisplayBookingByID(info.event.id);
+    this.DisplayBookingByID(Number(info.event.id));
     const eventDetails = `
       ID: ${info.event.id}
       Meeting Title: ${info.event.title}
@@ -427,7 +526,42 @@ export class LayoutComponent {
     }
   }
   
-  
+  updateEventStatus() {
+  this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
+
+  this.bookingData.forEach((booking: Booking) => {
+    // Update status based on current time and existing conditions
+    if (this.formattedTimeNow >= booking.bookingStart && booking.status !== "done") {
+      booking.status = "ongoing";
+    }
+
+    // Update the status in the calendar if the event exists
+  });
+}
+
+
+  updateEvent(){
+   this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
+      const events = this.bookingData.map((booking: Booking) => {
+        // alert("TEST" + booking.bookingId);
+
+        if (this.formattedTimeNow >= booking.bookingStart && booking.status === "approved"){
+          booking.status = "ongoing";
+        }
+        const event: {} = {
+          id: booking.bookingId,
+          title: booking.purpose || 'No Title',
+          // CONCAT BOOKED DATE WITH THE TIME
+          start: `${booking.bookedDate}T${booking.bookingStart}`,
+          end: `${booking.bookedDate}T${booking.bookingEnd}`,
+          extendedProps: {
+          status: booking.status
+        }
+      };            
+      return event;
+    });
+    this.calendarOptions.events = events;
+  }
   
   // Api calls for data events
   bookingData: Booking[] = [];
@@ -436,32 +570,18 @@ export class LayoutComponent {
     this.bookingServ.onGetBookingByConferenceId(conferenceID).subscribe({
       next: (res) => {
         if(res.isSuccess){
-          this.bookingData = res.data
-          console.table(this.bookingData);
-          const events = this.bookingData.map((booking: Booking) => {
-            // alert("TEST" + booking.bookingId);
-            const event: {} = {
-                id: booking.bookingId,
-                title: booking.purpose || 'No Title',
-                // CONCAT BOOKED DATE WITH THE TIME
-                start: `${booking.bookedDate}T${booking.bookingStart}`,
-                end: `${booking.bookedDate}T${booking.bookingEnd}`,
-                extendedProps: {
-                  status: booking.status // Include status here
-                }
-            };            
-            return event; // Return the constructed event
-        });
-
-          this.calendarOptions.events = events;
+          this.bookingData = res.data;
+          console.table(this.bookingData);          
+          this.updateEvent();
+          this.getBookingByDate();
         }else {
-          console.log("No booking events found");
+          console.log(res.errorMessage);
         }
       },
       error: (err) => {
         console.error("Error loading bookings", err)
       }
-    })
+    })    
   }
 
   onLoadConference() {
@@ -501,7 +621,7 @@ export class LayoutComponent {
   }
   onConferenceChange() {
     if (this.ConferenceData) {
-      this.onLoadCalendarEvents(this.ConferenceData.conferenceId as number);
+      this.onLoadCalendarEvents(Number(this.ConferenceData.conferenceId));
       console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
       this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       console.log(this.currentID);

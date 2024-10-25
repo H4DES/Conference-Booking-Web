@@ -32,6 +32,10 @@ export class BookingService {
     return this.http.post<IApiResponse<Booking>>(this.apiUrl + 'Booking/AddOrUpdateBooking', data);
   }
 
+  public onUpdateBookingStatus(data: Booking): Observable<IApiResponse<Booking>> {
+    return this.http.post<IApiResponse<Booking>>(this.apiUrl + 'Booking/UpdateBookingStatus', data);
+  }
+
   // Delete calls
   public onBookingDelete(ID: number): Observable<IApiResponse<Booking>> {
     return this.http.delete<IApiResponse<Booking>>(this.apiUrl + 'Booking/DeleteBooking/' + ID)
