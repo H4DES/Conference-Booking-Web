@@ -94,7 +94,7 @@
         <!-- Start and End Time with Bootstrap Floating Labels -->
         <div class="d-flex justify-content-between time-inputs">
             <div class="form-floating flex-grow-1 me-3">
-                <input type="time" class="form-control" id="startTime" placeholder="Start Time" [(ngModel)]="data.bookingStart">
+                <input type="time" min="08:00" max="17:00" class="form-control" id="startTime" placeholder="Start Time" [(ngModel)]="data.bookingStart">
                 <label for="startTime">Start Time</label>
             </div>
     

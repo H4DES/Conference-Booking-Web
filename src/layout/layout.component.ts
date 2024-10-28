@@ -165,6 +165,31 @@ export class LayoutComponent {
     // Convert the time to the correct format (HH:mm:ss) before sending to the backend
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
     const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
+
+    alert(data.bookingStart + " " + data.bookingEnd);
+
+    if(data.bookingStart <= '00:00:00' && data.bookingStart < '08:00:00') {
+      this.isBookingModalVisible = false;
+      Swal.fire({
+        title: "Error!",
+        text: "Start: Please select booking time from 8:00AM to 5:00PM",
+        icon: "error",
+      }).then(() => {
+        this.isBookingModalVisible = true;
+      });
+      return;
+    } 
+    else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '24:00:00'){
+      this.isBookingModalVisible = false;
+      Swal.fire({
+        title: "Error!",
+        text: "Please select booking time from 8:00AM to 5:00PM",
+        icon: "error",
+      }).then(() => {
+        this.isBookingModalVisible = true;
+      });
+       return;
+    }
   
     if(data.bookingStart > data.bookingEnd) {
       this.isBookingModalVisible = false;
