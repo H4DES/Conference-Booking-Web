@@ -6,6 +6,7 @@ import { TableComponent } from '../table/table.component';
 import { LoginComponent } from '../login/login.component';
 import { RegisterComponent } from '../register/register.component';
 import { authGuard } from '../guard/auth.guard';
+import { AdminComponent } from '../admin/admin.component';
 
 export const routes: Routes = [
     {
@@ -16,12 +17,13 @@ export const routes: Routes = [
     {
         path: '',
         component: LayoutComponent,
-        canActivate: [authGuard],    
+        canActivate: [authGuard],
+        data: { roles: ['UserRole'] },
         children: [
             {
                 path: 'home',
                 component: HomeComponent,
-            },
+            }
         ]
     },
     {
@@ -39,5 +41,11 @@ export const routes: Routes = [
     {
         path: 'register',
         component: RegisterComponent
+    },
+    {
+        path: 'admin',
+        component: AdminComponent,
+        canActivate: [authGuard],
+        data: { roles: ['AdminRole'] } 
     }
 ];

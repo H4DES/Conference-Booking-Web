@@ -120,16 +120,17 @@ export class LayoutComponent {
   // ];
   }
   DisplayBookingByID(id: number) {
-  console.log(`Searching for booking with ID: ${id}`);
-  const booking = this.bookingData.find(b => b.bookingId === id);
+    console.log(`Searching for booking with ID: ${id}`);
+    const booking = this.bookingData.find(b => b.bookingId === id);
   
-  if (booking) {
-    this.bookingById = booking;
-    console.log("Booking found:", this.bookingById);
-  } else {
-    console.error("No booking found with the provided ID.");
+    if (booking) {
+      this.bookingById = booking;
+      console.log("Booking found:", this.bookingById);
+    } 
+    else {
+      console.error("No booking found with the provided ID.");
+    }
   }
-}
 
 
   // DisplayBookingByID(id: number){
