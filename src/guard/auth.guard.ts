@@ -16,7 +16,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const allowedRoles = route.data['roles'];
 
   if (isLoggedIn) {
-    if (userRole === 'AdminRole') {
+    if (userRole === 'AdminRole' || userRole === 'SuperAdmin') {
       return true; // Admins have full access
     } else if (allowedRoles && allowedRoles.includes(userRole)) {
       return true; // Allow access to specified paths for regular users

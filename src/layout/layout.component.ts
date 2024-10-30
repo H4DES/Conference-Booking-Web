@@ -28,6 +28,8 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { Sidebar } from 'primeng/sidebar';
 import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
+import { jwtDecode } from 'jwt-decode';
+import { AuthService } from '../services/auth-service/auth.service';
 
 declare var bootstrap: any;
 
@@ -67,6 +69,7 @@ interface ConferenceRoom {
 export class LayoutComponent {
   isBookingModalVisible: boolean = false;
   isEventModalVisible: boolean = false;
+  isAdminEventModalVisible: boolean = false;
   currentTime: Date = new Date();
   selectedDate: string = '';
   formattedDate: string = '';
@@ -77,6 +80,7 @@ export class LayoutComponent {
   currentID: number = 0;
   data: Booking = new Booking();
   bookingById: Booking = new Booking;
+  tokenRole!: string | null;
   time: Date[] | undefined;
   private timer: any;
   private timer2: any;
@@ -101,7 +105,7 @@ export class LayoutComponent {
   ConferenceData: Conference = new Conference;
   selectedRoom: ConferenceRoom | undefined;
 
-  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router) {}
+  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router, private AuthServ: AuthService) {}
 
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
@@ -158,6 +162,7 @@ export class LayoutComponent {
   // }
 
   BookConference(data: Booking) {
+    debugger;
 
     data.bookingId = null;
     data.conferenceId = this.currentID;
@@ -169,7 +174,7 @@ export class LayoutComponent {
 
     alert(data.bookingStart + " " + data.bookingEnd);
 
-    if(data.bookingStart <= '00:00:00' && data.bookingStart < '08:00:00') {
+    if(data.bookingStart >= '00:00:00' && data.bookingStart < '08:00:00') {
       this.isBookingModalVisible = false;
       Swal.fire({
         title: "Error!",
@@ -332,7 +337,7 @@ export class LayoutComponent {
     console.log("Finished processing all bookings");
 }
 
-
+  
   getBookingByDate(){
     for (let booking of this.bookingData){
     console.info(`formatted:${this.formattedDateNow}  bookedDate:${booking.bookedDate}`);
@@ -364,9 +369,15 @@ export class LayoutComponent {
     this.currentStep = 1;
   }
 
-  showEventDialog() {
-    this.isEventModalVisible = true;
-}
+  showRoleEventDialog(){
+    this.tokenRole = this.AuthServ.getUserRole();
+      if (this.tokenRole == 'SuperAdmin' || this.tokenRole == 'AdminRole'){
+        this.isAdminEventModalVisible = true;
+      }
+      else {
+        this.isEventModalVisible = true;
+      }
+  }
 
   nextStep() {
     this.currentStep++;
@@ -488,9 +499,12 @@ export class LayoutComponent {
       Location: ${info.event.extendedProps.location || 'No location'}
       Speaker: ${info.event.extendedProps.speaker || 'No speaker'}
     `;
-    this.showEventDialog();
+    this.showRoleEventDialog();
     // alert(eventDetails);  // Display the event details in an alert
+
   }
+
+
 
   handleDateClick(arg: any) {
     // Allow clicking on other days but not Sundays
@@ -500,10 +514,9 @@ export class LayoutComponent {
       // Set the selected date from the clicked date (arg.dateStr is in YYYY-MM-DD format)
       this.selectedDate = arg.dateStr;
   
-      // Optionally, you can convert and display the formatted date somewhere
-      // This will not change the value of selectedDate but return a formatted version
       this.formattedDate = this.convertDateToLongFormat(this.selectedDate);
 
+      
     }
   }
 
