@@ -7,6 +7,7 @@ import { LoginComponent } from '../login/login.component';
 import { RegisterComponent } from '../register/register.component';
 import { authGuard } from '../guard/auth.guard';
 import { AdminComponent } from '../admin/admin.component';
+import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
     {
@@ -16,9 +17,9 @@ export const routes: Routes = [
     },
     {
         path: '',
-        component: LayoutComponent,
-        // canActivate: [authGuard],
-        // data: { roles: ['UserRole'] },
+        component: AdminDashboardComponent,
+        canActivate: [authGuard],
+        data: { roles: ['UserRole'] },
         children: [
             {
                 path: 'home',
@@ -45,7 +46,7 @@ export const routes: Routes = [
     {
         path: 'admin',
         component: AdminComponent,
-        // canActivate: [authGuard],
-        // data: { roles: ['AdminRole'] } 
+        canActivate: [authGuard],
+        data: { roles: ['AdminRole'] } 
     }
 ];

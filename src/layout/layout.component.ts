@@ -371,7 +371,7 @@ export class LayoutComponent {
 
   showRoleEventDialog(){
     this.tokenRole = this.AuthServ.getUserRole();
-      if (this.tokenRole == 'AdminRole'){
+      if (this.tokenRole == 'SuperAdmin' || this.tokenRole == 'AdminRole'){
         this.isAdminEventModalVisible = true;
       }
       else {

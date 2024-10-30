@@ -10,6 +10,8 @@ import { IApiResponse } from '../../model/api-response';
 export class LoginService {
 
   private apiUrl = "https://100.90.130.38:2401/api/";
+  // private apiUrl = "https://localhost:7026/api/";
+
   constructor(private http: HttpClient) { }
 
   public onLogin(data: Login): Observable<IApiResponse<Login>> {
