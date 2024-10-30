@@ -1,13 +1,20 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Login } from '../../model/login';
+import { Observable } from 'rxjs';
+import { IApiResponse } from '../../model/api-response';
 import { jwtDecode } from 'jwt-decode';
+import { Register } from '../../model/register';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  private apiUrl = "https://100.90.130.38:2401/api/";
+  constructor(private http: HttpClient) { }
+
   token!: string | null;
-  constructor() { }
 
   getNameIdentifier(): string | null {
     this.token = localStorage.getItem('authToken');
@@ -37,4 +44,13 @@ export class AuthService {
     return null;
   }
 
+  public onLogin(data: Login): Observable<IApiResponse<Login>> {
+    return this.http.post<IApiResponse<Login>>(this.apiUrl + 'UserAuth/Login', data);
+  }
+
+  public onRegisterUser(data: Register): Observable<IApiResponse<Register>> {
+    return this.http.post<IApiResponse<Register>>(this.apiUrl + 'UserAuth/RegisterUser', data);
+  }
+
+  // public onGetAdmins(): 
 }

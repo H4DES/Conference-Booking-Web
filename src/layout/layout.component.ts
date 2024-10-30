@@ -250,7 +250,6 @@ export class LayoutComponent {
       next: (res) => {
         if (res.isSuccess){
           this.onLoadCalendarEvents(Number(this.ConferenceData.conferenceId));
-          console.info("bruh" + res.data);
         }
         else{
           console.error(res.errorMessage);
@@ -368,6 +367,11 @@ export class LayoutComponent {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
+    headerToolbar: {
+    left: '',
+    center: 'title',
+    right: 'prev,next today'
+  },
     plugins: [dayGridPlugin, interactionPlugin],
     dateClick: (arg) => this.handleDateClick(arg),
     events: [
@@ -422,6 +426,7 @@ export class LayoutComponent {
       info.el.style.borderRadius = '6px';
       info.el.style.color = '#505050';
       info.el.style.padding = "4px 6px";
+      info.el.style.margin = "1px";
       
       info.el.style.overflow = "hidden";
       info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping

@@ -17,8 +17,8 @@ export const routes: Routes = [
     {
         path: '',
         component: LayoutComponent,
-        canActivate: [authGuard],
-        data: { roles: ['UserRole'] },
+        // canActivate: [authGuard],
+        // data: { roles: ['UserRole'] },
         children: [
             {
                 path: 'home',
@@ -45,7 +45,7 @@ export const routes: Routes = [
     {
         path: 'admin',
         component: AdminComponent,
-        canActivate: [authGuard],
-        data: { roles: ['AdminRole'] } 
+        // canActivate: [authGuard],
+        // data: { roles: ['AdminRole'] } 
     }
 ];

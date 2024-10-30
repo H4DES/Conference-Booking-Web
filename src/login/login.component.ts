@@ -31,11 +31,18 @@ export class LoginComponent {
  constructor(private loginServ: LoginService, private router: Router){};
 
   onLogin(){
+    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
     this.loginServ.onLogin(this.loginData).subscribe({
       next: (res) => {
         if (res.isSuccess){
           localStorage.setItem('authToken', res.data.token);
           alert("login successful");
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin'); // Clear the stored URL
+            this.router.navigateByUrl(redirectUrl); // Redirect to the original destination
+          } else {
+            this.router.navigateByUrl('/'); // Or redirect to a default home page
+          }
         }
         else {
           alert(res.errorMessage);
