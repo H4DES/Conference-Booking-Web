@@ -15,8 +15,9 @@ body {
 }
 
 .booking-card {
-    margin-top: 10px;
-    width: 1320px;
+    margin: 10px 0;
+    margin-right: 30px;
+    width: 100%;
     height: 15vh;
     background-color: #e0e0e0;
     padding: 20px 40px;
@@ -121,6 +122,9 @@ html, body {
     color: white !important; /* To make the text color readable */
 }
 
+::ng-deep .p-dialog{
+    max-height: 95%;
+}
 
 ::ng-deep .p-dialog p {
     padding-top: 20px;
@@ -195,9 +199,8 @@ html, body {
 /* Form Labels */
 ::ng-deep .form-label {
     /* font-family: 'Poppins', sans-serif; */
-    font-weight: bold;
-    font-size: 1.2rem; /* Slightly larger font for form labels */
-    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem; /* Slightly larger font for form labels */
     color: #333;
 }
 
@@ -228,7 +231,7 @@ html, body {
     color: #333;
     cursor:pointer;
     width: 100%;
-    height: calc(2.7rem + 2px);
+    height: calc(2.5rem + 2px);
 }
 
 /* Align Start and End Time inputs */
@@ -247,6 +250,11 @@ html, body {
     font-weight: bold;
     border-color: var(--accent-color);
     border-radius: 5px;
+}
+
+::ng-deep .approval-btn .p-button{
+    padding: 0.6rem 3rem;
+    margin: 10px 0.8rem;
 }
 
 /* Modal content spacing */
