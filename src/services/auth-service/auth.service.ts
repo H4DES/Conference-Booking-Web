@@ -53,8 +53,8 @@ export class AuthService {
     return this.http.post<IApiResponse<Register>>(this.apiUrl + 'UserAuth/RegisterUser', data);
   }
 
-  public onGetAdmins(): Observable<IApiResponse<Admin>> {
-    return this.http.get<IApiResponse<Admin>>(this.apiUrl + 'UserAuth/GetAllAdmins');
+  public onGetAdmins(): Observable<IApiResponse<Admin[]>> {
+    return this.http.get<IApiResponse<Admin[]>>(this.apiUrl + 'UserAuth/GetAllAdmins');
   }
 
   public onGetUserConferenceId(id: string): Observable<IApiResponse<number>> {

@@ -13,6 +13,8 @@ import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { Admin } from '../model/admin';
+import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -28,12 +30,14 @@ export class AdminComponent {
   isConferenceModalVisible: boolean = false;
   updateModal: boolean = false;
   deleteModal: boolean = false;
+  admins: Admin[] = [];
 
-  constructor(private conferenceServ: ConferenceService, private router: Router) {}
+  constructor(private conferenceServ: ConferenceService, private router: Router, private authServ: AuthService) {}
 
 
   ngOnInit() {
     this.onLoadConference();
+    this.onGetAllAdmins();
   }
 
   get dialogTitle(): string {
@@ -43,6 +47,22 @@ export class AdminComponent {
 
   }
 
+  onGetAllAdmins(){
+    this.authServ.onGetAdmins().subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.admins = res.data;
+          console.table(this.admins);
+        }
+        else{
+          console.error(res.errorMessage)
+        }
+      },
+      error: (err) => {
+        console.error(err)
+      } 
+    })
+  }
 
 
   showConferenceModal(conference: Conference | null = null, conferenceDelete: boolean | null = null){
@@ -97,11 +117,15 @@ export class AdminComponent {
   }
 
   onAddorUpdateConference(data: Conference) {
-    debugger;
     if (!this.updateModal){
       data.conferenceId = null;
       data.isActive = true;
     }
+
+    this.admins.forEach(x => {
+      data.admin.push(x)
+    })
+
     this.conferenceServ.onAddOrUpdateConference(data).subscribe({
       next: (res) => {
         if (res.isSuccess){
