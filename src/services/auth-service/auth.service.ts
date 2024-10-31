@@ -48,6 +48,8 @@ export class AuthService {
     return null;
   }
 
+  
+
   public onLogin(data: Login): Observable<IApiResponse<Login>> {
     return this.http.post<IApiResponse<Login>>(this.config.apiUrl + 'UserAuth/Login', data);
   }
@@ -56,8 +58,8 @@ export class AuthService {
     return this.http.post<IApiResponse<Register>>(this.config.apiUrl + 'UserAuth/RegisterUser', data);
   }
 
-  public onGetAdmins(): Observable<IApiResponse<Admin>> {
-    return this.http.get<IApiResponse<Admin>>(this.config.apiUrl + 'UserAuth/GetAllAdmins');
+  public onGetAdmins(): Observable<IApiResponse<Admin[]>> {
+    return this.http.get<IApiResponse<Admin[]>>(this.config.apiUrl + 'UserAuth/GetAllAdmins');
   }
 
   public onGetUserConferenceId(id: string): Observable<IApiResponse<number>> {
