@@ -29,11 +29,11 @@ import { AuthService } from '../services/auth-service/auth.service';
 export class LoginComponent {
 
  loginData: Login = new Login;
- constructor(private loginServ: LoginService, private router: Router, private authServ: AuthService){};
+ constructor(private authServ: AuthService, private router: Router){};
 
   onLogin(){
     const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
-    this.loginServ.onLogin(this.loginData).subscribe({
+    this.authServ.onLogin(this.loginData).subscribe({
       next: (res) => {
         if (res.isSuccess){
           localStorage.setItem('authToken', res.data.token);

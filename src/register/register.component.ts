@@ -10,6 +10,7 @@ import { Login } from '../model/login';
 import { Router } from '@angular/router';
 import { Register } from '../model/register';
 import { RegisterService } from '../services/auth-service/register.service';
+import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -30,10 +31,10 @@ export class RegisterComponent {
  
  registerData: Register = new Register;
 
- constructor(private registerServ: RegisterService, private router: Router){}
+ constructor(private authServ: AuthService, private router: Router){}
 
  onRegisterUser(){
-  this.registerServ.onRegisterUser(this.registerData).subscribe({
+  this.authServ.onRegisterUser(this.registerData).subscribe({
     next: (res) => {
       if (res.isSuccess){
         alert(res.data);
