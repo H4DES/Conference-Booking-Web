@@ -1,3 +1,4 @@
+import { Admin } from "./admin";
 import { ConferenceModel } from "./conference.model";
 
 export class Conference implements ConferenceModel {
@@ -5,12 +6,14 @@ export class Conference implements ConferenceModel {
   conferenceName: string | null; // Nullable string
   capacity: number | null; // Nullable int
   isActive: boolean | null; // Nullable boolean
+  admin: Admin[];
 
   constructor() {
     this.conferenceId = 0,
     this.conferenceName = '',
     this.capacity = 0,
     this.isActive = null;
+    this.admin = [];
    }
 
 }

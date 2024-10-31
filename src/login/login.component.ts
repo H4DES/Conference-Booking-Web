@@ -9,6 +9,7 @@ import { PasswordModule } from 'primeng/password';
 import { Login } from '../model/login';
 import { LoginService } from '../services/auth-service/login.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,14 +29,21 @@ import { Router } from '@angular/router';
 export class LoginComponent {
 
  loginData: Login = new Login;
- constructor(private loginServ: LoginService, private router: Router){};
+ constructor(private loginServ: LoginService, private router: Router, private authServ: AuthService){};
 
   onLogin(){
+    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
     this.loginServ.onLogin(this.loginData).subscribe({
       next: (res) => {
         if (res.isSuccess){
           localStorage.setItem('authToken', res.data.token);
           alert("login successful");
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin'); // Clear the stored URL
+            this.router.navigateByUrl(redirectUrl); // Redirect to the original destination
+          } else {
+            this.router.navigateByUrl('/'); // Or redirect to a default home page
+          }
         }
         else {
           alert(res.errorMessage);
@@ -46,6 +54,7 @@ export class LoginComponent {
         console.error("ERROR: " + err);
       },
       complete: () => {
+        
       }
     })
   }

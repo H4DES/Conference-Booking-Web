@@ -18,4 +18,5 @@ export class LoginService {
     return this.http.post<IApiResponse<Login>>(this.apiUrl + 'UserAuth/Login', data);
   }
 
+
 }

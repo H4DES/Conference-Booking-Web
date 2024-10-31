@@ -8,20 +8,14 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authServ = inject(AuthService);
   const userId = authServ.getNameIdentifier();
   const userRole = authServ.getUserRole();
-  console.log(userId, userRole);
-
   const isLoggedIn = !!userId;
-
-  // Define paths accessible by regular users
   const allowedRoles = route.data['roles'];
 
   if (isLoggedIn) {
     if (userRole === 'AdminRole' || userRole === 'SuperAdmin') {
       return true; // Admins have full access
     } else if (allowedRoles && allowedRoles.includes(userRole)) {
-      return true; // Allow access to specified paths for regular users
-      return router.parseUrl('/login?redirect=' + state.url); // Redirect if access is denied
-      
+      return true; // Allow access to specified paths for regular users      
     } else {
       return router.parseUrl('/login?redirect=' + state.url); // Redirect if access is denied
     }
