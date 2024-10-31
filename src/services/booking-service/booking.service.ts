@@ -1,45 +1,47 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IApiResponse } from '../../model/api-response';
 import { Booking } from '../../model/booking';
 import { Conference } from '../../model/conference';
+import { AppComponent } from '../../app/app.component';
+import { AppConfigService } from '../../app/AppConfigService';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
 
-  private apiUrl = "https://100.90.130.38:2401/api/";
+  // private apiUrl = "https://100.90.130.38:2401/api/";
   // private apiUrl = "https://localhost:7026/api/";
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private config: AppConfigService) { }
 
 
   // Get calls
   public onGetBookingByConferenceId(ID: number): Observable<IApiResponse<Booking[]>> {
-    return this.http.get<IApiResponse<Booking[]>>(this.apiUrl +  'Booking/GetBookingByConferenceID/' + ID)
+    return this.http.get<IApiResponse<Booking[]>>(this.config.apiUrl +  'Booking/GetBookingByConferenceID/' + ID)
   }
 
   public onGetBookingByBookingId(ID: number): Observable<IApiResponse<Booking>> {
-    return this.http.get<IApiResponse<Booking>>(this.apiUrl + 'Booking/GetBookingByBookingID/' + ID)
+    return this.http.get<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/GetBookingByBookingID/' + ID)
   }
 
   public onGetAllBooking(): Observable<IApiResponse<Booking[]>> {
-    return this.http.get<IApiResponse<Booking[]>>(this.apiUrl + 'Booking/GetAllBooking')
+    return this.http.get<IApiResponse<Booking[]>>(this.config.apiUrl + 'Booking/GetAllBooking')
   }
 
   // Post calls
   public onAddOrUpdateBooking(data: Booking): Observable<IApiResponse<Booking>> {
-    return this.http.post<IApiResponse<Booking>>(this.apiUrl + 'Booking/AddOrUpdateBooking', data);
+    return this.http.post<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/AddOrUpdateBooking', data);
   }
 
   public onUpdateBookingStatus(data: Booking): Observable<IApiResponse<Booking>> {
-    return this.http.post<IApiResponse<Booking>>(this.apiUrl + 'Booking/UpdateBookingStatus', data);
+    return this.http.post<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/UpdateBookingStatus', data);
   }
 
   // Delete calls
   public onBookingDelete(ID: number): Observable<IApiResponse<Booking>> {
-    return this.http.delete<IApiResponse<Booking>>(this.apiUrl + 'Booking/DeleteBooking/' + ID)
+    return this.http.delete<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/DeleteBooking/' + ID)
   }
 
 }
