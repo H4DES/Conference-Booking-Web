@@ -30,6 +30,7 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
+import { Admin } from '../model/admin';
 
 declare var bootstrap: any;
 
@@ -88,6 +89,8 @@ export class LayoutComponent {
   bookingByDate: Booking[] = [];
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
+  admins: Admin[] = [];
+  userConferenceId: number | null = null;
 
   //for side bar
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
@@ -114,6 +117,7 @@ export class LayoutComponent {
     this.startClock();
     this.onLoadConference();
     this.startEventOngoingChecker();
+    this.GetUserConferenceId(String(this.AuthServ.getNameIdentifier()));
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -136,6 +140,9 @@ export class LayoutComponent {
     }
   }
 
+  // GetUserConferenceId(id: string):{
+
+  // }
 
   // DisplayBookingByID(id: number){
   //   this.bookingById = this.bookingData.find(b => b.bookingId === id)!;
@@ -160,6 +167,19 @@ export class LayoutComponent {
     //   }
     // });
   // }
+
+  GetUserConferenceId(id: string) {
+    this.AuthServ.onGetUserConferenceId(id).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.userConferenceId = res.data
+        }
+        else{
+          this.userConferenceId = null;
+        }
+      }
+    })
+  }
 
   BookConference(data: Booking) {
     debugger;
@@ -370,7 +390,7 @@ export class LayoutComponent {
 
   showRoleEventDialog(){
     this.tokenRole = this.AuthServ.getUserRole();
-      if (this.tokenRole == 'SuperAdmin' || this.tokenRole == 'AdminRole'){
+      if (this.tokenRole == 'SuperAdmin' || this.userConferenceId === this.ConferenceData.conferenceId ){
         this.isAdminEventModalVisible = true;
       }
       else {

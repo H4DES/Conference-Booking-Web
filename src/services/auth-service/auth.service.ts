@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { IApiResponse } from '../../model/api-response';
 import { jwtDecode } from 'jwt-decode';
 import { Register } from '../../model/register';
+import { Admin } from '../../model/admin';
 
 @Injectable({
   providedIn: 'root'
@@ -52,5 +53,11 @@ export class AuthService {
     return this.http.post<IApiResponse<Register>>(this.apiUrl + 'UserAuth/RegisterUser', data);
   }
 
-  // public onGetAdmins(): 
+  public onGetAdmins(): Observable<IApiResponse<Admin>> {
+    return this.http.get<IApiResponse<Admin>>(this.apiUrl + 'UserAuth/GetAllAdmins');
+  }
+
+  public onGetUserConferenceId(id: string): Observable<IApiResponse<number>> {
+    return this.http.get<IApiResponse<number>>(this.apiUrl + 'UserAuth/GetUserConferenceId?userId=' + id);
+  }
 }

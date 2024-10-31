@@ -12,11 +12,12 @@ import { DialogModule } from 'primeng/dialog';
 import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule, RadioButtonModule],
+  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule, RadioButtonModule, MultiSelectModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
