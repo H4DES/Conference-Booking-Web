@@ -13,8 +13,8 @@ import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { User } from '../model/user';
 import { AuthService } from '../services/auth-service/auth.service';
+import { User } from '../model/user';
 
 @Component({
   selector: 'app-admin',
