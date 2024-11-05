@@ -334,34 +334,3 @@ html, body {
 
 
 /*Testing Css*/
-
-/* Dot styles */
-
-::ng-deep .dot-green {
-    color: green;
-  }
-  
-  ::ng-deep .dot-orange {
-    color: orange;
-  }
-  
-  ::ng-deep .dot-gray {
-    color: gray;
-  }
-  
-  ::ng-deep .dot-black {
-    color: black;
-  }
-  
-  ::ng-deep .dot-blinking-red {
-    color: red;
-    animation: blink 0.5s step-start infinite; /* Blinking animation */
-  }
-  
-  /* Blinking animation */
-  @keyframes blink {
-    50% {
-      opacity: 0;
-    }
-  }
-  

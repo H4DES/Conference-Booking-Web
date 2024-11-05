@@ -17,7 +17,7 @@ export const routes: Routes = [
     },
     {
         path: '',
-        component: AdminDashboardComponent,
+        component: LayoutComponent,
         canActivate: [authGuard],
         data: { roles: ['UserRole'] },
         children: [
@@ -26,10 +26,6 @@ export const routes: Routes = [
                 component: HomeComponent,
             }
         ]
-    },
-    {
-        path: 'layout',
-        component: LayoutComponent,    
     },
     {
         path: 'testing',

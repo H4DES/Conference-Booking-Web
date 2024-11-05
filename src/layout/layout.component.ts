@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -30,8 +30,7 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { Admin } from '../model/adminUsers';
-import { SidebarComponent } from '../app/sidebar/sidebar.component';
+import { User } from '../model/user';
 
 declare var bootstrap: any;
 
@@ -63,12 +62,10 @@ interface ConferenceRoom {
               AvatarModule,
               StyleClassModule,
               DividerModule,
-              TagModule,
-              SidebarComponent
+              TagModule
             ],
   templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css',
-  // encapsulation: ViewEncapsulation.None
+  styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
   isBookingModalVisible: boolean = false;
@@ -92,7 +89,7 @@ export class LayoutComponent {
   bookingByDate: Booking[] = [];
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
-  admins: Admin[] = [];
+  admins: User[] = [];
   userConferenceId: number | null = null;
 
   //for side bar
@@ -103,10 +100,6 @@ export class LayoutComponent {
   }
 
   sidebarVisible: boolean = false;
-
-  toggleSidebar() {
-    this.sidebarVisible = !this.sidebarVisible;
-  }
 
   eventLegend: string = "";
 
@@ -189,10 +182,12 @@ export class LayoutComponent {
   }
 
   BookConference(data: Booking) {
+    debugger;
+
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
-    
+  
     // Convert the time to the correct format (HH:mm:ss) before sending to the backend
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
     const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
@@ -258,28 +253,6 @@ export class LayoutComponent {
         console.log(res);
         if (res.isSuccess) {
           alert("Booked Success");
-          this.isBookingModalVisible = false
-        } else {
-          alert("Insert Failed!");
-        }
-      },
-      error: (err) => {
-        console.error('Error inserting:', err); // Log any errors
-      },
-      complete: () => {
-        this.onLoadConference();
-      }
-    });
-  }
-
-  AcceptBooking(data: Booking){
-    data.bookingId = this.bookingById.bookingId;
-    data.status = "approved";
-    this.bookingServ.onUpdateBookingStatus(data).subscribe({
-      next: (res) => {
-        console.log(res);
-        if (res.isSuccess) {
-          alert("Booking Accepted!");
           this.isBookingModalVisible = false
         } else {
           alert("Insert Failed!");
@@ -471,40 +444,39 @@ export class LayoutComponent {
       const startTime = arg.event.start;
       const endTime = arg.event.end;
       const status = arg.event.extendedProps['status']; // Get the status
-      
-      let dotClass = 'dot-black'; // Default class
-    
-      // Assign classes based on the status
+
+      let dotColor = 'black'; // Default color
+
+      // Change dot color based on the status
       switch (status) {
         case 'approved':
-          dotClass = 'dot-green';
+          dotColor = 'green';
           break;
         case 'pending':
-          dotClass = 'dot-orange';
+          dotColor = 'orange';
           break;
         case 'done':
-          dotClass = 'dot-gray';
+          dotColor = 'gray';
           break;
         case 'ongoing':
-          dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
+          dotColor = 'red';
           break;
         default:
-          dotClass = 'dot-black'; // Fallback class
+          dotColor = 'black'; // Fallback color
       }
-    
+
       if (!startTime || !endTime) {
-        return { html: `<div><strong>Time not available</strong></div>` };
+        return { html: `<div><strong>Time not available</strong></div>` }; // Fallback in case times are not available
       }
-    
-      const timeDisplay = `<span class="pi pi-circle-fill ${dotClass}" style="font-size: 0.55rem;"></span> 
-        ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+
+      // const timeDisplay = `<b style="color: ${dotColor}">●</b> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      const timeDisplay = `<span class="pi pi-circle-fill" style="font-size: 0.55rem; color: ${dotColor}">  </span> ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
       const title = arg.event.title || 'No Title';
-    
+
       return {
         html: `<div>${timeDisplay} <b>${title}</b></div>`,
       };
     },
-    
     eventDidMount: (info) => {
       info.el.style.backgroundColor = 'lightblue';
       info.el.style.borderRadius = '6px';
@@ -612,7 +584,7 @@ export class LayoutComponent {
       case 'pending':
         return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '2px' };
       case 'ongoing':
-        return { color: 'rgb(254, 44, 46)', backgroundColor: 'white', padding: '2px', borderColor: 'white' };
+        return { color: 'white', backgroundColor: 'rgb(0, 91, 196)', padding: '2px' };
       default:
         return { color: 'red', backgroundColor: 'rgba(255, 0, 0, 0.1)' };
     }
