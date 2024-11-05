@@ -3,7 +3,7 @@
 <header>    
     <div class="booking-card">
         <div class="booking-info">
-            <p-button (onClick)="toggleSidebar()" icon="pi pi-bars"></p-button>
+            <p-button (onClick)="sidebarVisible = true" icon="pi pi-bars"></p-button>
           
             <p-dropdown 
                 [options]="ConferenceRoom" 
@@ -267,7 +267,7 @@
 
             <!-- Okay Button -->
             <div class="col-12 text-center approval-btn">
-                <p-button (onClick)="AcceptBooking(data)" label="Approve" type="submit"></p-button>
+                <p-button label="Approve" type="submit"></p-button>
                 <p-button styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
             </div>
         </div>
@@ -275,7 +275,7 @@
     </p-dialog>
 </div>
 
-<!-- <div class="card flex justify-content-center">
+<div class="card flex justify-content-center">
     <p-sidebar [(visible)]="sidebarVisible">
         <ng-template pTemplate="headless">
             <div class="sidebar">
@@ -295,8 +295,8 @@
             </div>
         </ng-template>
     </p-sidebar>
-</div> -->
-<app-sidebar [(visible)]="sidebarVisible"></app-sidebar>
+</div>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

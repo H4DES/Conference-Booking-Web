@@ -1,23 +1,37 @@
 <nav class="navbar bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand">
-      <p-button (onClick)="toggleSidebar()" class="menu-btn p-button-text" icon="pi pi-bars"></p-button>
+      <p-button (onClick)="sidebarVisible = true" pButton class="menu-btn p-button-text" icon="pi pi-bars"></p-button>
       Admin Dashboard
+      
     </a>
-    <div class="icon-group">
-      <i class="pi pi-calendar" title="Calendar"></i>
-      <i class="pi pi-user" title="User"></i>
-      <i class="pi pi-cog" title="Settings"></i>
+      <div class="icon-group">
+        <i class="pi pi-calendar" title="Calendar"></i>
+        <i class="pi pi-user" title="User"></i>
+        <i class="pi pi-cog" title="Settings"></i>
+
     </div>
   </div>
+
+  <div class="card flex justify-content-center">
+    <p-sidebar [(visible)]="sidebarVisible">
+      <ng-template pTemplate="header">
+          <div class="flex align-items-center gap-2">
+              <p-avatar 
+                  image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" 
+                  shape="circle" />
+              <span class="font-bold">
+                  Amy Elsner
+              </span>
+          </div>
+      </ng-template>
+      <p>
+          Lorem ipsum dolor sit amet...
+      </p>
+  </p-sidebar>
+</div>
 </nav>
 
-<!-- Sidebar Component -->
-<!-- Sidebar Component -->
-<app-sidebar [(visible)]="sidebarVisible"></app-sidebar>
-
-
-<!-- Dashboard Cards -->
 <div class="dashboard-cards">
   <p-card class="card">
     <div class="card-content">
@@ -31,7 +45,7 @@
       <i class="pi pi-shopping-cart"></i>
     </div>
   </p-card>
-
+  
   <p-card class="card">
     <div class="card-content">
       <div class="card-title">Revenue</div>
@@ -44,7 +58,7 @@
       <i class="pi pi-map-marker"></i>
     </div>
   </p-card>
-
+  
   <p-card class="card">
     <div class="card-content">
       <div class="card-title">Customers</div>
@@ -57,15 +71,22 @@
       <i class="pi pi-user"></i>
     </div>
   </p-card>
-
+  
   <p-card class="card">
-    <div class="card-title">Comments</div>
-    <div class="card-value">152 Unread</div>
-    <div class="card-info">
-      <span class="card-highlight">85</span> responded
-    </div>
+
+      <div class="card-title">Comments</div>
+      <div class="card-value">152 Unread</div>
+      <div class="card-info">
+        <span class="card-highlight">85</span> responded
+      </div>
+
     <div class="card-icon">
       <i class="pi pi-comments"></i>
     </div>
   </p-card>
 </div>
+
+
+
+
+
