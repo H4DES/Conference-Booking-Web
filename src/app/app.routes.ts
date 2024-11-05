@@ -44,6 +44,10 @@ export const routes: Routes = [
         component: RegisterComponent
     },
     {
+        path: 'admin-dashboard',
+        component: AdminDashboardComponent
+    },
+    {
         path: 'admin',
         component: AdminComponent,
         canActivate: [authGuard],
