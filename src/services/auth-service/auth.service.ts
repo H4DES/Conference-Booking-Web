@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { IApiResponse } from '../../model/api-response';
 import { jwtDecode } from 'jwt-decode';
 import { Register } from '../../model/register';
-import { User } from '../../model/user';
+import { Admin } from '../../model/adminUsers';
 import { AppComponent } from '../../app/app.component';
 import { AppConfigService } from '../../app/AppConfigService';
 
@@ -58,12 +58,8 @@ export class AuthService {
     return this.http.post<IApiResponse<Register>>(this.config.apiUrl + 'UserAuth/RegisterUser', data);
   }
 
-  public onGetAdmins(): Observable<IApiResponse<User[]>> {
-    return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetAdmins');
-  }
-
-  public onGetUsers(): Observable<IApiResponse<User[]>> {
-    return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetUsers');
+  public onGetAdmins(): Observable<IApiResponse<Admin[]>> {
+    return this.http.get<IApiResponse<Admin[]>>(this.config.apiUrl + 'UserAuth/GetAdmins');
   }
 
   public onGetUserConferenceId(id: string): Observable<IApiResponse<number>> {

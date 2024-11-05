@@ -1,6 +1,6 @@
-import { UserModel } from "./user.model";
+import { AdminModel } from "./adminUsers.model";
 
-export class User implements UserModel{
+export class Admin implements AdminModel{
 	userId: number | null;
 	userName: string;
 	conferenceId: number | null;
