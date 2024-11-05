@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { Admin } from '../model/admin';
+import { Admin } from '../model/adminUsers';
 import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
@@ -31,6 +31,7 @@ export class AdminComponent {
   updateModal: boolean = false;
   deleteModal: boolean = false;
   admins: Admin[] = [];
+  selectedAdmins: Admin[] = [];
 
   constructor(private conferenceServ: ConferenceService, private router: Router, private authServ: AuthService) {}
 
@@ -48,6 +49,7 @@ export class AdminComponent {
   }
 
   onGetAllAdmins(){
+    console.log("started...");
     this.authServ.onGetAdmins().subscribe({
       next: (res) => {
         if (res.isSuccess){
@@ -66,20 +68,25 @@ export class AdminComponent {
 
 
   showConferenceModal(conference: Conference | null = null, conferenceDelete: boolean | null = null){
+    //for inserting new conference
     if (conference?.conferenceId == null) {
       this.deleteModal = false;
       this.updateModal = false;
       this.conferenceData = new Conference;
     }
+    //for the delete modal
     else if (conferenceDelete){
       this.updateModal = false;
       this.deleteModal = true;
       this.conferenceData = { ...conference };
     }
+    //for the update modal
     else {
+      this.selectedAdmins = [];
       this.deleteModal = false;
       this.updateModal = true;
       this.conferenceData = { ...conference };
+      // console.table(this.conferenceData.adminUserDtos)
     }
       this.isConferenceModalVisible = true;
   }
@@ -89,7 +96,7 @@ export class AdminComponent {
       case true:
         return 'success';
       case false:
-        return 'danger';
+        return 'contrast';
     }
   }
 
@@ -122,10 +129,6 @@ export class AdminComponent {
       data.isActive = true;
     }
 
-    this.admins.forEach(x => {
-      data.admin.push(x)
-    })
-
     this.conferenceServ.onAddOrUpdateConference(data).subscribe({
       next: (res) => {
         if (res.isSuccess){
@@ -153,7 +156,8 @@ export class AdminComponent {
       next: (res) => {
         if (res.isSuccess) {
           this.Conferences = res.data; // Load all conference data
-          console.log("Conference Rooms: ", this.Conferences);         
+          console.info("bruh has started");
+          console.table(this.Conferences.forEach(x => x.adminUserDtos));         
           // Set default to the first conference in the list
           
         } else {

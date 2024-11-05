@@ -1,4 +1,4 @@
-import { AdminModel } from "./admin.model";
+import { AdminModel } from "./adminUsers.model";
 
 export class Admin implements AdminModel{
 	userId: number | null;
