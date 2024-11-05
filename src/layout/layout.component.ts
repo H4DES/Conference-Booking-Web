@@ -30,7 +30,7 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { Admin } from '../model/adminUsers';
+import { User } from '../model/user';
 
 declare var bootstrap: any;
 
@@ -89,7 +89,7 @@ export class LayoutComponent {
   bookingByDate: Booking[] = [];
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
-  admins: Admin[] = [];
+  admins: User[] = [];
   userConferenceId: number | null = null;
 
   //for side bar
