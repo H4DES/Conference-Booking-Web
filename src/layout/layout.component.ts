@@ -30,7 +30,7 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { Admin } from '../model/adminUsers';
+import { User } from '../model/user';
 
 declare var bootstrap: any;
 
@@ -89,7 +89,7 @@ export class LayoutComponent {
   bookingByDate: Booking[] = [];
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
-  admins: Admin[] = [];
+  admins: User[] = [];
   userConferenceId: number | null = null;
 
   //for side bar
@@ -194,22 +194,22 @@ export class LayoutComponent {
 
     alert(data.bookingStart + " " + data.bookingEnd);
 
-    if(data.bookingStart >= '00:00:00' && data.bookingStart < '08:00:00') {
+    if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
       this.isBookingModalVisible = false;
       Swal.fire({
         title: "Error!",
-        text: "Start: Please select booking time from 8:00AM to 5:00PM",
+        text: "Start: Please select booking time from 8:00AM to 5:00PM  phase 1",
         icon: "error",
       }).then(() => {
         this.isBookingModalVisible = true;
       });
       return;
     } 
-    else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '24:00:00'){
+    else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '23:59:00'){
       this.isBookingModalVisible = false;
       Swal.fire({
         title: "Error!",
-        text: "Please select booking time from 8:00AM to 5:00PM",
+        text: "Please select booking time from 8:00AM to 5:00PM  phase 2",
         icon: "error",
       }).then(() => {
         this.isBookingModalVisible = true;
@@ -233,6 +233,7 @@ export class LayoutComponent {
       data.bookingStart = bookingStart;
       data.bookingEnd = bookingEnd;
     }
+
     if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
       this.isBookingModalVisible = false;
 
@@ -362,7 +363,6 @@ export class LayoutComponent {
     console.info(`formatted:${this.formattedDateNow}  bookedDate:${booking.bookedDate}`);
       if (booking.bookedDate == this.formattedDateNow){
         this.bookingByDate.push(booking);
-        console.log("shit appended");
       }
     }
     this.bookingByDate.sort((a,b) => {
