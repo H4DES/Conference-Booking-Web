@@ -7,7 +7,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { Login } from '../model/login';
-import { LoginService } from '../services/auth-service/login.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth-service/auth.service';
 
