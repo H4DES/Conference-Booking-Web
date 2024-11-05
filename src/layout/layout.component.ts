@@ -199,7 +199,7 @@ export class LayoutComponent {
 
     alert(data.bookingStart + " " + data.bookingEnd);
 
-    if(data.bookingStart >= '00:00:00' && data.bookingStart < '08:00:00') {
+    if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
       this.isBookingModalVisible = false;
       Swal.fire({
         title: "Error!",
@@ -210,7 +210,7 @@ export class LayoutComponent {
       });
       return;
     } 
-    else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '24:00:00'){
+    else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '23:59:00'){
       this.isBookingModalVisible = false;
       Swal.fire({
         title: "Error!",
@@ -637,7 +637,7 @@ export class LayoutComponent {
       const events = this.bookingData.map((booking: Booking) => {
         // alert("TEST" + booking.bookingId);
 
-        if (this.formattedTimeNow >= booking.bookingStart && booking.status === "approved"){
+        if (this.formattedTimeNow >= booking.bookingStart && booking.status === "approved" && this.formattedDateNow === booking.bookedDate){
           booking.status = "ongoing";
         }
         const event: {} = {
