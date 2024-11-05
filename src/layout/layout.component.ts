@@ -30,7 +30,7 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { Admin } from '../model/admin';
+import { Admin } from '../model/adminUsers';
 
 declare var bootstrap: any;
 

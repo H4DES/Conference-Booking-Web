@@ -9,7 +9,6 @@ import { PasswordModule } from 'primeng/password';
 import { Login } from '../model/login';
 import { Router } from '@angular/router';
 import { Register } from '../model/register';
-import { RegisterService } from '../services/auth-service/register.service';
 import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({

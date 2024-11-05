@@ -81,7 +81,20 @@
                         <label for="floatingInput" class="font-bold block mb-2"> Capacity </label>
                     </p-floatLabel>
                 </div>
-                
+                <div class="textbox">
+                    <p-floatLabel>
+                        <p-multiSelect 
+                            inputId="multiselect"
+                            [options]="admins" 
+                            [(ngModel)]="conferenceData.adminUserDtos" 
+                            optionLabel="userName"
+                            [filter]="false"
+                            appendTo="body" 
+                            placeholder="Select Admins"/>
+                        <label for="multiselectc">Select Admins</label>
+                    </p-floatLabel>
+                    
+                </div>
             </div>
             <div class="input-group" *ngIf="updateModal">
                 <div class="textbox">
@@ -100,6 +113,7 @@
                     inputId="inactive" />
                     <label for="inactive" class="ml-2">Inactive</label>
                 </div>
+                
                     
             </div>
         </div>

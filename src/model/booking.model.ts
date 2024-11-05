@@ -13,5 +13,4 @@ export interface BookingModel {
     description: string | null; // Nullable string
     status: string | null; // Nullable string
     conferenceId: number; // Required int
-
 }
