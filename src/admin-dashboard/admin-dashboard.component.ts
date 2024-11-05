@@ -20,6 +20,7 @@ import { CardModule } from 'primeng/card';
   styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent {
+  
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
 
     closeCallback(e: any): void {
