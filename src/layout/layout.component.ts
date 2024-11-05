@@ -30,7 +30,11 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
+<<<<<<< HEAD
 import { User } from '../model/user';
+=======
+import { Admin } from '../model/adminUsers';
+>>>>>>> parent of 13a60aa (Modify the status color added an animation)
 
 declare var bootstrap: any;
 
