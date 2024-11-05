@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { Admin } from "./adminUsers";
 import { ConferenceModel } from "./conference.model";
 
 export class Conference implements ConferenceModel {
@@ -6,7 +6,7 @@ export class Conference implements ConferenceModel {
   conferenceName: string | null; // Nullable string
   capacity: number | null; // Nullable int
   isActive: boolean | null; // Nullable boolean
-  adminUserDtos: User[];
+  adminUserDtos: Admin[];
 
   constructor() {
     this.conferenceId = 0,

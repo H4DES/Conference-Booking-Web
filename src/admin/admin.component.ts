@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { User } from '../model/user';
+import { Admin } from '../model/adminUsers';
 import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
@@ -30,8 +30,8 @@ export class AdminComponent {
   isConferenceModalVisible: boolean = false;
   updateModal: boolean = false;
   deleteModal: boolean = false;
-  admins: User[] = [];
-  selectedAdmins: User[] = [];
+  admins: Admin[] = [];
+  selectedAdmins: Admin[] = [];
 
   constructor(private conferenceServ: ConferenceService, private router: Router, private authServ: AuthService) {}
 
@@ -50,7 +50,7 @@ export class AdminComponent {
 
   onGetAllAdmins(){
     console.log("started...");
-    this.authServ.onGetUsers().subscribe({
+    this.authServ.onGetAdmins().subscribe({
       next: (res) => {
         if (res.isSuccess){
           this.admins = res.data;
@@ -62,7 +62,7 @@ export class AdminComponent {
       },
       error: (err) => {
         console.error(err)
-      }
+      } 
     })
   }
 
@@ -157,9 +157,9 @@ export class AdminComponent {
         if (res.isSuccess) {
           this.Conferences = res.data; // Load all conference data
           console.info("bruh has started");
-          console.table(this.Conferences.forEach(x => x.adminUserDtos));
+          console.table(this.Conferences.forEach(x => x.adminUserDtos));         
           // Set default to the first conference in the list
-
+          
         } else {
           console.error("Error: " + res.errorMessage);
         }
