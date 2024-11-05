@@ -1,0 +1,22 @@
+<div class="card flex justify-content-center">
+    <p-sidebar [(visible)]="visible" (onHide)="closeSidebar()">
+      <ng-template pTemplate="headless">
+        <div class="sidebar">
+          <div class="sidebar-header">
+            <h3 class="sidebar-header">Brigada Conferences</h3>
+          </div>
+          <p-divider></p-divider>
+          <div class="sidebar-buttons">
+            <p-button [routerLink]="['/admin-dashboard']" label="Dashboard" icon="pi pi-th-large"></p-button>
+          </div>
+          <div class="sidebar-buttons">
+            <p-button [routerLink]="['/layout']" label="Calendar" icon="pi pi-calendar"></p-button>
+          </div>
+          <div class="sidebar-buttons">
+            <p-button [routerLink]="['/testing']" label="Conference" icon="pi pi-cog"></p-button>
+          </div>
+        </div>
+      </ng-template>
+    </p-sidebar>
+  </div>
+  
