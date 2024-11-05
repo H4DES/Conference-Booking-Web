@@ -1,0 +1,27 @@
+.sidebar-header{
+    text-align: center;
+    padding-top: 15px;
+    margin-bottom: 0px;
+}
+
+::ng-deep .booking-info .p-button {
+    background-color: transparent;
+    color: #454545;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+
+::ng-deep .sidebar-buttons .p-button {
+    text-align: left;
+    width: 100%;
+    background-color: transparent;
+    color: #454545;
+    border-color: transparent;
+    outline: none; 
+    box-shadow: none; 
+    padding: 15px 50px;
+}
+::ng-deep .sidebar-buttons .p-button:hover{
+    background: #eee;
+}
