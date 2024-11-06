@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { Admin } from '../model/adminUsers';
+import { User } from '../model/user';
 import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
@@ -30,8 +30,8 @@ export class AdminComponent {
   isConferenceModalVisible: boolean = false;
   updateModal: boolean = false;
   deleteModal: boolean = false;
-  admins: Admin[] = [];
-  selectedAdmins: Admin[] = [];
+  admins: User[] = [];
+  selectedAdmins: User[] = [];
 
   constructor(private conferenceServ: ConferenceService, private router: Router, private authServ: AuthService) {}
 
