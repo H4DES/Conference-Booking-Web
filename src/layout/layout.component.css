@@ -368,7 +368,7 @@ html, body {
     color: black;
   }
   
-  ::ng-deep .dot-blinking-red {
+  ::ng-deep .dot-blinking-red, .ongoing{
     color: red;
     animation: blink 0.5s step-start infinite; /* Blinking animation */
   }
