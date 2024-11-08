@@ -295,6 +295,24 @@ export class LayoutComponent {
     }
 
 }
+ upcomingBooking: Booking[] = []
+  checkUpcomingBooking(TimeNow: string) {
+    this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
+                                                     && !(TimeNow > b.bookingEnd)
+                                                     && b.status === 'approved' || b.status === 'ongoing');
+    console.log("Checked the upcoming booked events");
+  }
+
+  subtractMinutes(time: string, minutes: number): string {
+    const [hours, mins, secs] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(mins);
+    date.setSeconds(secs || 0);
+    date.setMinutes(date.getMinutes() - minutes);
+    return date.toTimeString().split(' ')[0];
+  }
+
 
 // Moved rejectBooking logic here as a private method to keep functionality centralized
 rejectBooking(data: Booking) {

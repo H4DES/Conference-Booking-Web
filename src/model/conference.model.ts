@@ -1,5 +1,6 @@
 import { User } from './user'
 
+
 export interface ConferenceModel {
     conferenceId: number | null; // Nullable int
     conferenceName: string | null; // Nullable string
