@@ -1,6 +1,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-<header>    
+  
     <div class="booking-card">
         <div class="booking-info">
             <p-button (onClick)="toggleSidebar()" icon="pi pi-bars"></p-button>
@@ -15,11 +15,96 @@
         </div>
 
         <div class="booking-time">
-            <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
-            <p>{{ currentTime | date: 'MMMM d, y' }}</p>
+            <i *ngIf="upcomingBooking.length === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
+            <i *ngIf="upcomingBooking.length > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="upcomingBooking.length" (click)="notifVisible = true"></i>
+
+            <p-sidebar [(visible)]="notifVisible" position="right" [style]="{ width: '450px' }">
+                <ng-template pTemplate="headless">
+                    <div class="d-flex align-items-center">
+                        <i class="pi pi-times" style="font-size: 1rem; margin: 30px" (click)="notifVisible = false"></i>
+                        <span class="ml-2">Notifications</span>
+                    </div>
+                    <p-scrollPanel class="notif" [style]="{ width: '100%', height: '85vh' }">
+                        <p-dataView #dv [value]="upcomingBooking">
+                            <ng-template pTemplate="list" let-bookings>
+                                <div class="grid grid-nogutter">
+                                    <div class="col-12" *ngFor="let booking of bookings; let first = first">
+                                        <!-- Booking Box -->
+                                        <p-panel class="notif-panel" [style]="{ padding: '20px' }">
+                                            <!-- Custom Header -->
+                                            <ng-template pTemplate="header">
+                                                <div class="d-flex justify-content-between align-items-center" style="padding: 2px 0;">
+                                                    <div>
+                                                        <span class="font-medium text-lg text-900">
+                                                            {{ booking.purpose }}
+                                                            <span class="text-sm text-secondary">
+                                                                ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} - 
+                                                                {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
+                                                            </span>
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- Status with dynamic color and border -->
+                                                    <div *ngIf="booking.status" [ngStyle]="{
+                                                        'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
+                                                        'padding': '2px 5px',
+                                                        'margin': '0 10px',
+                                                        'border-radius': '10px',
+                                                        'color': 'white',
+                                                        'background-color': getStatusLabel(booking.status).split('|')[1],
+                                                        'font-weight': 'bold',
+                                                        'font-size': '0.65rem',
+                                                        'display': 'inline-block'
+                                                    }">
+                                                        {{ getStatusLabel(booking.status).split('|')[0] }}
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+
+                                            <!-- Panel Content -->
+                                            <ng-template pTemplate="body">
+                                                <div [style]="{ height: '25px', overflow: 'hidden' }">
+                                                    <p>Starting in less than 30 minutes</p>
+                                                </div>
+                                            </ng-template>
+
+                                            <!-- Footer with Divider -->
+                                            <ng-template pTemplate="footer">
+                                                <div class="d-flex align-items-center justify-content-between text-secondary" 
+                                                     [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+                                                    <span [style]="{ flexShrink: 0 }">Organizer:</span>
+                                                    <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
+                                                    <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }" layout="vertical"></p-divider>
+                                                    <span [style]="{ flexShrink: 0 }">Department:</span>
+                                                    <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
+                                                </div>
+                                            </ng-template>
+
+
+
+                                        </p-panel>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-dataView>                
+                    </p-scrollPanel>
+                </ng-template>
+            </p-sidebar>
+
+
+
+
+
+
+
+
+            <div class="date">
+                <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
+                <p>{{ currentTime | date: 'MMMM d, y' }}</p>                
+            </div>
         </div>
     </div>
-</header>
+
 
 <div class="calendar-container">
     <full-calendar [options]="calendarOptions"></full-calendar>
@@ -297,6 +382,9 @@
     </p-sidebar>
 </div> -->
 <app-sidebar [(visible)]="sidebarVisible"></app-sidebar>
+
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

@@ -32,6 +32,11 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
 import { User } from '../model/user';
 import { SidebarComponent } from '../app/sidebar/sidebar.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { DataViewModule } from 'primeng/dataview';
+import { PanelModule } from 'primeng/panel';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { BadgeModule } from 'primeng/badge';
 
 declare var bootstrap: any;
 
@@ -64,7 +69,12 @@ interface ConferenceRoom {
               StyleClassModule,
               DividerModule,
               TagModule,
-              SidebarComponent
+              SidebarComponent,
+              OverlayPanelModule,
+              DataViewModule,
+              PanelModule,
+              ScrollPanelModule,
+              BadgeModule
             ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -103,10 +113,41 @@ export class LayoutComponent {
   }
 
   sidebarVisible: boolean = false;
+  notifVisible: boolean = false;
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
   }
+  toggleNotif(){
+    this.notifVisible = !this.notifVisible;
+  }
+
+  getStatusLabel(status: string): string {
+        let statusText = '';
+        let statusColor = '';
+
+        switch (status.toLowerCase()) {
+            case 'approved':
+                statusText = 'approved';
+                statusColor = 'green';
+                break;
+            case 'ongoing':
+                statusText = 'ongoing';
+                statusColor = 'red';
+                break;
+            case 'done':
+                statusText = 'done';
+                statusColor = 'gray';
+                break;
+            default:
+                statusText = 'unknown';
+                statusColor = 'black';
+                break;
+        }
+
+        return `${statusText}|${statusColor}`;
+    }
+
 
   eventLegend: string = "";
 
@@ -272,6 +313,25 @@ export class LayoutComponent {
     });
   }
 
+  upcomingBooking: Booking[] = []
+  checkUpcomingBooking(TimeNow: string) {
+    this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
+                                                     && !(TimeNow > b.bookingEnd)
+                                                     && b.status === 'approved' || b.status === 'ongoing');
+    console.log("Checked the upcoming booked events");
+  }
+
+  subtractMinutes(time: string, minutes: number): string {
+    const [hours, mins, secs] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(mins);
+    date.setSeconds(secs || 0);
+    date.setMinutes(date.getMinutes() - minutes);
+    return date.toTimeString().split(' ')[0];
+  }
+
+
   AcceptBooking(data: Booking){
     data.bookingId = this.bookingById.bookingId;
     data.status = "approved";
@@ -342,6 +402,7 @@ export class LayoutComponent {
     this.timer2 = setInterval(() => {
       this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
       this.checkEventStarting(this.formattedTimeNow);
+      this.checkUpcomingBooking(this.formattedTimeNow);
     }, 10000);
   }
 
@@ -385,16 +446,9 @@ export class LayoutComponent {
 
   
   getBookingByDate(){
-    for (let booking of this.bookingData){
-    console.info(`formatted:${this.formattedDateNow}  bookedDate:${booking.bookedDate}`);
-      if (booking.bookedDate == this.formattedDateNow){
-        this.bookingByDate.push(booking);
-        console.log("shit appended");
-      }
-    }
-    this.bookingByDate.sort((a,b) => {
+    this.bookingByDate = this.bookingData.filter(b => b.bookedDate === this.formattedDateNow).sort((a,b) => {
       return a.bookingStart.localeCompare(b.bookingStart);
-    })
+    });
   }
 
 
@@ -666,6 +720,8 @@ export class LayoutComponent {
           console.table(this.bookingData);          
           this.updateEvent();
           this.getBookingByDate();
+          this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
+          this.checkUpcomingBooking(this.formattedTimeNow);
         }else {
           console.log(res.errorMessage);
         }

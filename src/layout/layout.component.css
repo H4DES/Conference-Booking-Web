@@ -38,9 +38,24 @@ body {
 
 .booking-time {
     display: flex;
-    flex-direction: column; /* Stack time and date vertically */
+    flex-direction: row; /* Stack time and date vertically */
     align-items: flex-end; /* Align to the right */
 }
+/*
+::ng-deep .p-panel{
+    margin: 10px;
+}*/
+
+
+.pi-bell {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.pi-bell:hover {
+    transform: scale(1.1); /* Slightly enlarge the bell on hover */
+}
+
 
 html, body {
     height: 100%;
