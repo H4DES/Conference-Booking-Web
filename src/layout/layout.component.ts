@@ -30,13 +30,8 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { User } from '../model/user';
+import { Admin } from '../model/adminUsers';
 import { SidebarComponent } from '../app/sidebar/sidebar.component';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { DataViewModule } from 'primeng/dataview';
-import { PanelModule } from 'primeng/panel';
-import { ScrollPanelModule } from 'primeng/scrollpanel';
-import { BadgeModule } from 'primeng/badge';
 
 declare var bootstrap: any;
 
@@ -69,12 +64,7 @@ interface ConferenceRoom {
               StyleClassModule,
               DividerModule,
               TagModule,
-              SidebarComponent,
-              OverlayPanelModule,
-              DataViewModule,
-              PanelModule,
-              ScrollPanelModule,
-              BadgeModule
+              SidebarComponent
             ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -102,7 +92,7 @@ export class LayoutComponent {
   bookingByDate: Booking[] = [];
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
-  admins: User[] = [];
+  admins: Admin[] = [];
   userConferenceId: number | null = null;
 
   //for side bar
@@ -113,41 +103,10 @@ export class LayoutComponent {
   }
 
   sidebarVisible: boolean = false;
-  notifVisible: boolean = false;
 
   toggleSidebar() {
     this.sidebarVisible = !this.sidebarVisible;
   }
-  toggleNotif(){
-    this.notifVisible = !this.notifVisible;
-  }
-
-  getStatusLabel(status: string): string {
-        let statusText = '';
-        let statusColor = '';
-
-        switch (status.toLowerCase()) {
-            case 'approved':
-                statusText = 'approved';
-                statusColor = 'green';
-                break;
-            case 'ongoing':
-                statusText = 'ongoing';
-                statusColor = 'red';
-                break;
-            case 'done':
-                statusText = 'done';
-                statusColor = 'gray';
-                break;
-            default:
-                statusText = 'unknown';
-                statusColor = 'black';
-                break;
-        }
-
-        return `${statusText}|${statusColor}`;
-    }
-
 
   eventLegend: string = "";
 
@@ -313,46 +272,88 @@ export class LayoutComponent {
     });
   }
 
-  upcomingBooking: Booking[] = []
-  checkUpcomingBooking(TimeNow: string) {
-    this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
-                                                     && !(TimeNow > b.bookingEnd)
-                                                     && b.status === 'approved' || b.status === 'ongoing');
-    console.log("Checked the upcoming booked events");
-  }
+  handleBooking(data: Booking, action: string) {
 
-  subtractMinutes(time: string, minutes: number): string {
-    const [hours, mins, secs] = time.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(mins);
-    date.setSeconds(secs || 0);
-    date.setMinutes(date.getMinutes() - minutes);
-    return date.toTimeString().split(' ')[0];
-  }
+    if (action === "approve") {
+        data.status = "approved";
+        console.log(data.status);
+        console.log(data);
+        this.executeBookingUpdate(data);
+      } else if (action === "reject") {
+        data.status = "rejected";
+        console.log(data);
+        this.rejectBooking(data); // Call reject flow with confirmation and remarks collection
+    }
 
+}
 
-  AcceptBooking(data: Booking){
-    data.bookingId = this.bookingById.bookingId;
-    data.status = "approved";
-    this.bookingServ.onUpdateBookingStatus(data).subscribe({
-      next: (res) => {
-        console.log(res);
-        if (res.isSuccess) {
-          alert("Booking Accepted!");
-          this.isBookingModalVisible = false
-        } else {
-          alert("Insert Failed!");
+// Moved rejectBooking logic here as a private method to keep functionality centralized
+rejectBooking(data: Booking) {
+    this.isAdminEventModalVisible = false;
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: `Do you want to reject ${this.bookingById.purpose}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, reject it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Remarks",
+                input: "textarea",
+                inputPlaceholder: "State reason for rejecting this booking",
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+                preConfirm: (remarks) => {
+                    // Validate if remarks are empty
+                    if (!remarks) {
+                        Swal.showValidationMessage("Remarks cannot be empty");
+                    }
+                    return remarks;
+                }
+            }).then((remarkResult) => {
+                if (remarkResult.isConfirmed) {
+                    const remarks = remarkResult.value;
+                    
+                    data.status = "rejected";
+                    data.description = remarks; // Store remarks in `data`
+                    console.log("Remarks set in data.description:", data.description);
+                    alert(remarks);
+                    // Execute the update with rejection status and remarks
+                    this.executeBookingUpdate(data);
+                }
+            });
         }
-      },
-      error: (err) => {
-        console.error('Error inserting:', err); // Log any errors
-      },
-      complete: () => {
-        this.onLoadConference();
-      }
     });
-  }
+}
+
+// Helper function to update booking and handle common response
+executeBookingUpdate(data: Booking) {
+    this.bookingServ.onAddOrUpdateBooking(data).subscribe({
+        next: (res) => {
+            console.log(res);
+            if (res.isSuccess) {
+                console.table(this.bookingData)
+                this.isBookingModalVisible = false;
+            } else {
+                alert("Operation Failed!");
+            }
+        },
+        error: (err) => {
+            console.error("Error updating:", err);
+        },
+        complete: () => {
+            this.onLoadConference();
+        }
+    });
+}
+
+
 
   // Helper function to format Date to 'YYYY-MM-DD'
   formatDateToSQLFormat(date: Date): string {
@@ -402,7 +403,6 @@ export class LayoutComponent {
     this.timer2 = setInterval(() => {
       this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
       this.checkEventStarting(this.formattedTimeNow);
-      this.checkUpcomingBooking(this.formattedTimeNow);
     }, 10000);
   }
 
@@ -446,9 +446,16 @@ export class LayoutComponent {
 
   
   getBookingByDate(){
-    this.bookingByDate = this.bookingData.filter(b => b.bookedDate === this.formattedDateNow).sort((a,b) => {
+    for (let booking of this.bookingData){
+    console.info(`formatted:${this.formattedDateNow}  bookedDate:${booking.bookedDate}`);
+      if (booking.bookedDate == this.formattedDateNow){
+        this.bookingByDate.push(booking);
+        console.log("shit appended");
+      }
+    }
+    this.bookingByDate.sort((a,b) => {
       return a.bookingStart.localeCompare(b.bookingStart);
-    });
+    })
   }
 
 
@@ -662,7 +669,7 @@ export class LayoutComponent {
     
     switch (status.toLowerCase()) {
       case 'approved':
-        return { color: 'green', backgroundColor: 'rgba(0, 128, 0, 0.1)' };
+        return { color: 'white', backgroundColor: 'green', padding: '3px' };
       case 'pending':
         return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '2px' };
       case 'ongoing':
@@ -720,8 +727,6 @@ export class LayoutComponent {
           console.table(this.bookingData);          
           this.updateEvent();
           this.getBookingByDate();
-          this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
-          this.checkUpcomingBooking(this.formattedTimeNow);
         }else {
           console.log(res.errorMessage);
         }
