@@ -12,5 +12,6 @@ export interface BookingModel {
     purpose: string; // Required string
     description: string | null; // Nullable string
     status: string | null; // Nullable string
+    recurringType: string | null;
     conferenceId: number; // Required int
 }

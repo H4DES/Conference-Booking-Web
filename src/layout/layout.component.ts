@@ -201,7 +201,24 @@ export class LayoutComponent {
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
-    
+    const isBooked = this.bookingByDate.some(x => {
+      if (data.bookingStart >= x.bookingStart && data.bookingStart <= x.bookingEnd) {
+        return true;
+      }
+      if (data.bookingEnd >= x.bookingStart && data.bookingEnd <= x.bookingEnd) {
+        return true;
+      }
+      if (data.bookingStart <= x.bookingStart && data.bookingEnd >= x.bookingEnd) {
+        return true;
+      }
+      return false;
+    });
+
+
+    if (isBooked){
+
+      return;
+    }
     // Convert the time to the correct format (HH:mm:ss) before sending to the backend
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
     const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
@@ -819,6 +836,7 @@ executeBookingUpdate(data: Booking) {
 
 
   upcomingBooking: Booking[] = []
+
   checkUpcomingBooking(TimeNow: string) {
     this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)

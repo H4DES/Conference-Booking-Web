@@ -29,7 +29,9 @@ export const routes: Routes = [
     },
     {
         path: 'layout',
-        component: LayoutComponent,    
+        component: LayoutComponent,
+        canActivate: [authGuard],
+        data: { roles: ['UserRole'] },    
     },
     {
         path: 'testing',

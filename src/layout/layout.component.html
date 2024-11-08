@@ -33,7 +33,7 @@
                                         <p-panel class="notif-panel" [style]="{ padding: '20px' }">
                                             <!-- Custom Header -->
                                             <ng-template pTemplate="header">
-                                                <div class="d-flex justify-content-between align-items-center" style="padding: 2px 0;">
+                                                <div class="d-flex justify-content-between align-items-center">
                                                     <div>
                                                         <span class="font-medium text-lg text-900">
                                                             {{ booking.purpose }}
@@ -55,7 +55,7 @@
                                                         'font-weight': 'bold',
                                                         'font-size': '0.65rem',
                                                         'display': 'inline-block'
-                                                    }">
+                                                    }" [class]="booking.status">
                                                         {{ getStatusLabel(booking.status).split('|')[0] }}
                                                     </div>
                                                 </div>
