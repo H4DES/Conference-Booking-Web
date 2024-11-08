@@ -33,6 +33,7 @@ export class BookingService {
   // Post calls
   public onAddOrUpdateBooking(data: Booking): Observable<IApiResponse<Booking>> {
     return this.http.post<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/AddOrUpdateBooking', data);
+    console.log(this.http.post<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/AddOrUpdateBooking', data));
   }
 
   public onUpdateBookingStatus(data: Booking): Observable<IApiResponse<Booking>> {
