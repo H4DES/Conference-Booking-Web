@@ -8,6 +8,7 @@ import { RegisterComponent } from '../register/register.component';
 import { authGuard } from '../guard/auth.guard';
 import { AdminComponent } from '../admin/admin.component';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
+import { ConferenceManagementComponent } from '../conference-management/conference-management.component';
 
 export const routes: Routes = [
     {
@@ -54,8 +55,8 @@ export const routes: Routes = [
         component: AdminDashboardComponent
     },
     {
-        path: 'admin',
-        component: AdminComponent,
+        path: 'conference-management',
+        component: ConferenceManagementComponent,
         canActivate: [authGuard],
         data: { roles: ['AdminRole'] } 
     }

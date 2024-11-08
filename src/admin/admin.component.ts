@@ -13,13 +13,25 @@ import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { CheckboxModule } from 'primeng/checkbox';
 import { User } from '../model/user';
 import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [TableModule, CommonModule, TagModule, ButtonModule, InputTextModule, FormsModule, DialogModule, FloatLabelModule, RadioButtonModule, MultiSelectModule],
+  imports: [TableModule, 
+            CommonModule, 
+            TagModule, 
+            ButtonModule, 
+            InputTextModule, 
+            FormsModule, 
+            DialogModule, 
+            FloatLabelModule, 
+            RadioButtonModule, 
+            MultiSelectModule,
+            CheckboxModule
+            ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
@@ -86,7 +98,7 @@ export class AdminComponent {
       this.deleteModal = false;
       this.updateModal = true;
       this.conferenceData = { ...conference };
-      // console.table(this.conferenceData.adminUserDtos)
+      console.table(this.conferenceData.userDtos)
     }
       this.isConferenceModalVisible = true;
   }
@@ -157,7 +169,7 @@ export class AdminComponent {
         if (res.isSuccess) {
           this.Conferences = res.data; // Load all conference data
           console.info("bruh has started");
-          console.table(this.Conferences.forEach(x => x.adminUserDtos));         
+          console.table(this.Conferences.forEach(x => x.userDtos));         
           // Set default to the first conference in the list
           
         } else {

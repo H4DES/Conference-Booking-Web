@@ -13,7 +13,7 @@
               'background-color': '#f9f9f9',
               'box-shadow': '0 4px 8px rgba(0,0,0,0.1)',
               'border-radius': '8px',
-              'padding': '10px'
+              'padding': '10px',
             }">
             <ng-template pTemplate="header">
                 <tr>
@@ -21,7 +21,7 @@
                     <th>Name</th>
                     <th>Capacity</th>
                     <th>Active</th>
-                    <th>Action</th>
+                    <th style="text-align: center;">Action</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-conference>
@@ -32,13 +32,11 @@
                     <td>
                         <p-tag [value]="conference.isActive ? 'ACTIVE' : 'INACTIVE'" [severity]="getActiveStatus(conference.isActive)" />
                     </td>
-                    <td>
-                        <div class="input-group">
-                            <p-button icon="pi pi-pen-to-square" severity="contrast" (onClick)="showConferenceModal(conference)"/>
-                            <p-button icon="pi pi-trash" severity="danger" (onClick)="showConferenceModal(conference, true)"/>
-                            
+                    <td style="text-align: center; vertical-align: middle;">
+                        <div class="input-group" style="display: flex; justify-content: center; align-items: center;">
+                            <p-button icon="pi pi-pen-to-square" severity="contrast" (onClick)="showConferenceModal(conference)"></p-button>
+                            <p-button icon="pi pi-trash" severity="danger" (onClick)="showConferenceModal(conference, true)"></p-button>
                         </div>
-
                     </td>
                 </tr>
             </ng-template>
@@ -86,11 +84,10 @@
                         <p-multiSelect 
                             inputId="multiselect"
                             [options]="admins" 
-                            [(ngModel)]="conferenceData.adminUserDtos" 
+                            [(ngModel)]="conferenceData.userDtos" 
                             optionLabel="userName"
                             [filter]="false"
-                            appendTo="body" 
-                            placeholder="Select Admins"/>
+                            appendTo="body"/>
                         <label for="multiselectc">Select Admins</label>
                     </p-floatLabel>
                     
@@ -98,23 +95,15 @@
             </div>
             <div class="input-group" *ngIf="updateModal">
                 <div class="textbox">
-                    <p-radioButton 
-                    name="Status" 
-                    [value]="true" 
-                    [(ngModel)]="conferenceData.isActive" 
-                    inputId="active" />
-                    <label for="active" class="ml-2">Active</label>
-                </div>
-                <div class="textbox">
-                    <p-radioButton 
-                    name="Status" 
-                    [value]="false" 
-                    [(ngModel)]="conferenceData.isActive" 
-                    inputId="inactive" />
-                    <label for="inactive" class="ml-2">Inactive</label>
-                </div>
-                
+                    <p-checkbox 
+                    name="Status"
+                    [binary]="true"
+                    [(ngModel)]="conferenceData.isActive"
+                    label="Active" 
+                    inputId="active"
+                    [style]="{ marginLeft: '10px' }" />
                     
+                </div>                    
             </div>
         </div>
         <div *ngIf="deleteModal" class="user-input">
@@ -129,4 +118,3 @@
     </ng-template>
 
   </div>
-  

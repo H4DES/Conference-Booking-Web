@@ -10,15 +10,26 @@ import { Sidebar } from 'primeng/sidebar';
 import { DividerModule } from 'primeng/divider';
 import { CardModule } from 'primeng/card';
 import { SidebarComponent } from '../app/sidebar/sidebar.component';
-
+import { ConferenceManagementComponent } from "../conference-management/conference-management.component";
+import { ScrollPanelModule } from 'primeng/scrollpanel';
 
 
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, SidebarModule, ButtonModule, RippleModule, 
-            AvatarModule, StyleClassModule, DividerModule, CardModule, SidebarComponent],
+  imports: [CommonModule, 
+            RouterLink, 
+            SidebarModule, 
+            ButtonModule, 
+            RippleModule,
+            AvatarModule, 
+            StyleClassModule, 
+            DividerModule, 
+            CardModule, 
+            SidebarComponent, 
+            ConferenceManagementComponent,
+            ScrollPanelModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
