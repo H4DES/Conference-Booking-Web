@@ -1,5 +1,5 @@
-import { User } from "./user";
 import { ConferenceModel } from "./conference.model";
+import { User } from "./user";
 
 export class Conference implements ConferenceModel {
   conferenceId: number | null; // Nullable int
