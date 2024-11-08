@@ -267,9 +267,10 @@
 
             <!-- Okay Button -->
             <div class="col-12 text-center approval-btn">
-                <p-button (onClick)="AcceptBooking(data)" label="Approve" type="submit"></p-button>
-                <p-button styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
+                <p-button (onClick)="handleBooking(bookingById, 'approve')" label="Approve" type="submit"></p-button>
+                <p-button (onClick)="handleBooking(bookingById, 'reject')" styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
             </div>
+            
         </div>
 
     </p-dialog>

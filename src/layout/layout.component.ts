@@ -272,27 +272,88 @@ export class LayoutComponent {
     });
   }
 
-  AcceptBooking(data: Booking){
-    data.bookingId = this.bookingById.bookingId;
-    data.status = "approved";
-    this.bookingServ.onUpdateBookingStatus(data).subscribe({
-      next: (res) => {
-        console.log(res);
-        if (res.isSuccess) {
-          alert("Booking Accepted!");
-          this.isBookingModalVisible = false
-        } else {
-          alert("Insert Failed!");
+  handleBooking(data: Booking, action: string) {
+
+    if (action === "approve") {
+        data.status = "approved";
+        console.log(data.status);
+        console.log(data);
+        this.executeBookingUpdate(data);
+      } else if (action === "reject") {
+        data.status = "rejected";
+        console.log(data);
+        this.rejectBooking(data); // Call reject flow with confirmation and remarks collection
+    }
+
+}
+
+// Moved rejectBooking logic here as a private method to keep functionality centralized
+rejectBooking(data: Booking) {
+    this.isAdminEventModalVisible = false;
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: `Do you want to reject ${this.bookingById.purpose}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, reject it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Remarks",
+                input: "textarea",
+                inputPlaceholder: "State reason for rejecting this booking",
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+                preConfirm: (remarks) => {
+                    // Validate if remarks are empty
+                    if (!remarks) {
+                        Swal.showValidationMessage("Remarks cannot be empty");
+                    }
+                    return remarks;
+                }
+            }).then((remarkResult) => {
+                if (remarkResult.isConfirmed) {
+                    const remarks = remarkResult.value;
+                    
+                    data.status = "rejected";
+                    data.description = remarks; // Store remarks in `data`
+                    console.log("Remarks set in data.description:", data.description);
+                    alert(remarks);
+                    // Execute the update with rejection status and remarks
+                    this.executeBookingUpdate(data);
+                }
+            });
         }
-      },
-      error: (err) => {
-        console.error('Error inserting:', err); // Log any errors
-      },
-      complete: () => {
-        this.onLoadConference();
-      }
     });
-  }
+}
+
+// Helper function to update booking and handle common response
+executeBookingUpdate(data: Booking) {
+    this.bookingServ.onAddOrUpdateBooking(data).subscribe({
+        next: (res) => {
+            console.log(res);
+            if (res.isSuccess) {
+                console.table(this.bookingData)
+                this.isBookingModalVisible = false;
+            } else {
+                alert("Operation Failed!");
+            }
+        },
+        error: (err) => {
+            console.error("Error updating:", err);
+        },
+        complete: () => {
+            this.onLoadConference();
+        }
+    });
+}
+
+
 
   // Helper function to format Date to 'YYYY-MM-DD'
   formatDateToSQLFormat(date: Date): string {
@@ -608,7 +669,7 @@ export class LayoutComponent {
     
     switch (status.toLowerCase()) {
       case 'approved':
-        return { color: 'green', backgroundColor: 'rgba(0, 128, 0, 0.1)' };
+        return { color: 'white', backgroundColor: 'green', padding: '3px' };
       case 'pending':
         return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '2px' };
       case 'ongoing':
