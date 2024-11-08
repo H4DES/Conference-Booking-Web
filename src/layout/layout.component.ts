@@ -412,6 +412,7 @@ executeBookingUpdate(data: Booking) {
     this.timer2 = setInterval(() => {
       this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
       this.checkEventStarting(this.formattedTimeNow);
+      this.checkUpcomingBooking(this.formattedTimeNow);
     }, 10000);
   }
 
@@ -729,6 +730,8 @@ executeBookingUpdate(data: Booking) {
           console.table(this.bookingData);          
           this.updateEvent();
           this.getBookingByDate();
+          this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
+          this.checkUpcomingBooking(this.formattedTimeNow);
         }else {
           console.log(res.errorMessage);
         }
