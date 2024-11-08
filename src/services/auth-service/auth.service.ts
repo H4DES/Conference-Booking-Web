@@ -5,9 +5,9 @@ import { Observable } from 'rxjs';
 import { IApiResponse } from '../../model/api-response';
 import { jwtDecode } from 'jwt-decode';
 import { Register } from '../../model/register';
-import { User } from '../../model/user';
 import { AppComponent } from '../../app/app.component';
 import { AppConfigService } from '../../app/AppConfigService';
+import { User } from '../../model/user';
 
 @Injectable({
   providedIn: 'root'

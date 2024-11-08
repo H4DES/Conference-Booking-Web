@@ -30,8 +30,13 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { Admin } from '../model/adminUsers';
+
 import { SidebarComponent } from '../app/sidebar/sidebar.component';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { DataViewModule } from 'primeng/dataview';
+import { PanelModule } from 'primeng/panel';
+import { User } from '../model/user';
+import { BadgeModule } from 'primeng/badge';
 
 declare var bootstrap: any;
 
@@ -64,7 +69,11 @@ interface ConferenceRoom {
               StyleClassModule,
               DividerModule,
               TagModule,
-              SidebarComponent
+              SidebarComponent,
+              ScrollPanelModule,
+              PanelModule,
+              DataViewModule,
+              BadgeModule
             ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -92,7 +101,7 @@ export class LayoutComponent {
   bookingByDate: Booking[] = [];
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
-  admins: Admin[] = [];
+  admins: User[] = [];
   userConferenceId: number | null = null;
 
   //for side bar
@@ -446,16 +455,9 @@ executeBookingUpdate(data: Booking) {
 
   
   getBookingByDate(){
-    for (let booking of this.bookingData){
-    console.info(`formatted:${this.formattedDateNow}  bookedDate:${booking.bookedDate}`);
-      if (booking.bookedDate == this.formattedDateNow){
-        this.bookingByDate.push(booking);
-        console.log("shit appended");
-      }
-    }
-    this.bookingByDate.sort((a,b) => {
+    this.bookingByDate = this.bookingData.filter(b => b.bookedDate === this.formattedDateNow).sort((a, b) => {
       return a.bookingStart.localeCompare(b.bookingStart);
-    })
+    });
   }
 
 
@@ -781,7 +783,55 @@ executeBookingUpdate(data: Booking) {
       // alert(this.currentID);
     }
   }
+  notifVisible: boolean = false;
+  toggleNotif(){
+    this.notifVisible = !this.notifVisible;
+  }
 
-  
+  getStatusLabel(status: string): string {
+        let statusText = '';
+        let statusColor = '';
+
+        switch (status.toLowerCase()) {
+            case 'approved':
+                statusText = 'approved';
+                statusColor = 'green';
+                break;
+            case 'ongoing':
+                statusText = 'ongoing';
+                statusColor = 'red';
+                break;
+            case 'done':
+                statusText = 'done';
+                statusColor = 'gray';
+                break;
+            default:
+                statusText = 'unknown';
+                statusColor = 'black';
+                break;
+        }
+
+        return `${statusText}|${statusColor}`;
+    }
+
+
+  upcomingBooking: Booking[] = []
+  checkUpcomingBooking(TimeNow: string) {
+    this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
+                                                     && !(TimeNow > b.bookingEnd)
+                                                     && b.status === 'approved' || b.status === 'ongoing');
+    console.log("Checked the upcoming booked events");
+  }
+
+  subtractMinutes(time: string, minutes: number): string {
+    const [hours, mins, secs] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(mins);
+    date.setSeconds(secs || 0);
+    date.setMinutes(date.getMinutes() - minutes);
+    return date.toTimeString().split(' ')[0];
+  }
+
 
 }
