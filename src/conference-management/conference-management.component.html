@@ -1,10 +1,18 @@
 <div class="outer-container">
-    <div class="actions">
-        <p-button label="Add conference" icon="pi pi-plus" iconPos="right" (onClick)="showConferenceModal()"></p-button>
-    </div>
+    
     <div class="card">
+
+        <div class="actions">
+            <p-button label="Add conference" icon="pi pi-plus" iconPos="right" (onClick)="showConferenceModal()"></p-button>
+        </div>
+
         <p-table 
+            #dtConference
             [value]="Conferences"
+            dataKey="conferenceId"
+            [paginator]="true"
+            [rows]="5"
+            [globalFilterFields]="['conferenceName', 'conferenceId', 'capacity']"
             styleClass="p-datatable-striped" 
             [tableStyle]="{ 
               'width': '100%',
@@ -15,6 +23,20 @@
               'border-radius': '8px',
               'padding': '10px',
             }">
+            <!-- <ng-template pTemplate="caption">
+                <div class="flex">
+                    <p-iconField iconPosition="left" class="ml-auto">
+                        <p-inputIcon>
+                            <i class="pi pi-search"></i>
+                        </p-inputIcon>
+                        <input 
+                            pInputText 
+                            type="text" 
+                            (input)="dtConference.filterGlobal($event.target.value, 'contains')" 
+                            placeholder="Search keyword" />
+                    </p-iconField>
+                </div>
+            </ng-template> -->
             <ng-template pTemplate="header">
                 <tr>
                     <th>Conference ID</th>
