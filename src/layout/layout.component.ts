@@ -202,30 +202,50 @@ export class LayoutComponent {
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
-    const isBooked = this.bookingByDate.some(x => {
-      if (data.bookingStart >= x.bookingStart && data.bookingStart <= x.bookingEnd) {
+
+// -- Validation handling for inputs -- //
+    if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
+      this.isBookingModalVisible = false;
+      Swal.fire({
+        title: "Error!",
+        text: "All fields must be filled out before booking.",
+        icon: "error",
+      }).then(() => {
+        this.isBookingModalVisible = true;
+      });
+      return;
+    }
+
+    // -- Validation handling for time slot conflict checking -- //
+    const isBooked = this.bookingData.some(x => {
+      if (data.bookingStart >= x.bookingStart && data.bookingStart <= x.bookingEnd && x.bookedDate === data.bookedDate) {
         return true;
       }
-      if (data.bookingEnd >= x.bookingStart && data.bookingEnd <= x.bookingEnd) {
+      if (data.bookingEnd >= x.bookingStart && data.bookingEnd <= x.bookingEnd && x.bookedDate === data.bookedDate) {
         return true;
       }
-      if (data.bookingStart <= x.bookingStart && data.bookingEnd >= x.bookingEnd) {
+      if (data.bookingStart <= x.bookingStart && data.bookingEnd >= x.bookingEnd && x.bookedDate === data.bookedDate) {
         return true;
       }
       return false;
-    });
-
-
+    })
     if (isBooked){
-
+      this.isBookingModalVisible = false;
+      Swal.fire({
+        title: "Error!",
+        text: "Time slot already booked. Please choose a different time.",
+        icon: "error",
+      }).then(() => {
+        this.isBookingModalVisible = true;
+      });
       return;
     }
+
     // Convert the time to the correct format (HH:mm:ss) before sending to the backend
     const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
     const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
 
-    alert(data.bookingStart + " " + data.bookingEnd);
-
+    // -- Validation handling for booking available time range -- //
     if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
       this.isBookingModalVisible = false;
       Swal.fire({
@@ -249,6 +269,7 @@ export class LayoutComponent {
        return;
     }
   
+    // -- Validation handling for start-end time -- //
     if(data.bookingStart > data.bookingEnd) {
       this.isBookingModalVisible = false;
       Swal.fire({
@@ -284,27 +305,45 @@ export class LayoutComponent {
       next: (res) => {
         console.log(res);
         if (res.isSuccess) {
-          alert("Booked Success");
-          this.isBookingModalVisible = false
+          this.isBookingModalVisible = false;
+          Swal.fire({
+            title: "Success!",
+            text: "Booking successfully completed.",
+            icon: "success",
+          });
         } else {
-          alert("Insert Failed!");
+          Swal.fire({
+            title: "Error!",
+            text: "Booking failed. Please try again.",
+            icon: "error",
+          });
         }
       },
       error: (err) => {
         console.error('Error inserting:', err); // Log any errors
+        Swal.fire({
+          title: "Error!",
+          text: "An unexpected error occurred. Please try again later.",
+          icon: "error",
+        });
       },
       complete: () => {
         this.onLoadConference();
       }
     });
+    
   }
 
   handleBooking(data: Booking, action: string) {
-
+    
     if (action === "approve") {
         data.status = "approved";
-        console.log(data.status);
-        console.log(data);
+        this.isAdminEventModalVisible = false;
+      Swal.fire({
+        title: "Success!",
+        text: `Booking ${this.bookingById.purpose} accepted successfully!`,
+        icon: "success",
+      });
         this.executeBookingUpdate(data);
       } else if (action === "reject") {
         data.status = "rejected";
@@ -314,7 +353,6 @@ export class LayoutComponent {
 
 }
 
-// Moved rejectBooking logic here as a private method to keep functionality centralized
 rejectBooking(data: Booking) {
     this.isAdminEventModalVisible = false;
 
@@ -350,8 +388,11 @@ rejectBooking(data: Booking) {
                     data.status = "rejected";
                     data.description = remarks; // Store remarks in `data`
                     console.log("Remarks set in data.description:", data.description);
-                    alert(remarks);
-                    // Execute the update with rejection status and remarks
+                    Swal.fire({
+                      title: "Success!",
+                      text: `Booking ${this.bookingById.purpose} Rejected Successfully!`,
+                      icon: "success",
+                    });
                     this.executeBookingUpdate(data);
                 }
             });
@@ -444,13 +485,13 @@ executeBookingUpdate(data: Booking) {
             continue; // Skip to the next booking
         }
 
-        if (booking.status == "done"){
+        if (booking.status == "ended"){
           continue;
         }
         // Check if timeNow is greater than or equal to bookingEnd
         if (timeNow >= booking.bookingEnd && booking.status == "ongoing") {
             this.updateBookingData.bookingId = booking.bookingId;      
-            this.updateBookingData.status = "done";
+            this.updateBookingData.status = "ended";
             this.onUpdateStatus(this.updateBookingData);
             console.log("status DONE");
             continue; // Skip to the next booking
@@ -488,7 +529,7 @@ executeBookingUpdate(data: Booking) {
 
   resetModal() {
     this.currentStep = 1;
-    this.data = new Booking();
+    // this.data = new Booking();
     this.checked = false; 
   }
 
@@ -564,11 +605,14 @@ executeBookingUpdate(data: Booking) {
         case 'pending':
           dotClass = 'dot-orange';
           break;
-        case 'done':
+        case 'ended':
           dotClass = 'dot-gray';
           break;
         case 'ongoing':
           dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
+          break;
+        case 'rejected':
+          dotClass = 'dot-rejected'; // Use a blinking class for 'ongoing'
           break;
         default:
           dotClass = 'dot-black'; // Fallback class
@@ -691,10 +735,19 @@ executeBookingUpdate(data: Booking) {
     switch (status.toLowerCase()) {
       case 'approved':
         return { color: 'white', backgroundColor: 'green', padding: '3px' };
+
       case 'pending':
-        return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '2px' };
+        return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '3px' };
+
       case 'ongoing':
         return { color: 'rgb(254, 44, 46)', backgroundColor: 'white', padding: '2px', borderColor: 'white' };
+
+      case 'rejected':
+        return { color: 'white', backgroundColor: '#ffa200', padding: '4px', borderColor: 'white' };
+
+      case 'ended':
+        return { color: 'white', backgroundColor: 'rgb(136, 136, 136)', padding: '4px',};
+
       default:
         return { color: 'red', backgroundColor: 'rgba(255, 0, 0, 0.1)' };
     }
@@ -705,7 +758,7 @@ executeBookingUpdate(data: Booking) {
 
   this.bookingData.forEach((booking: Booking) => {
     // Update status based on current time and existing conditions
-    if (this.formattedTimeNow >= booking.bookingStart && booking.status !== "done") {
+    if (this.formattedTimeNow >= booking.bookingStart && booking.status !== "ended") {
       booking.status = "ongoing";
     }
 
@@ -717,7 +770,6 @@ executeBookingUpdate(data: Booking) {
   updateEvent(){
    this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
       const events = this.bookingData.map((booking: Booking) => {
-        // alert("TEST" + booking.bookingId);
 
         if (this.formattedTimeNow >= booking.bookingStart && booking.status === "approved" && this.formattedDateNow === booking.bookedDate){
           booking.status = "ongoing";
@@ -764,7 +816,7 @@ executeBookingUpdate(data: Booking) {
     this.conferenceServ.onGetAllConference().subscribe({
       next: (res) => {
         if (res.isSuccess) {
-          this.ConferenceRoom = res.data; // Load all conference data
+          this.ConferenceRoom = res.data.filter(x => x.isActive)
           console.log("Conference Rooms: ", this.ConferenceRoom);
           
           // Set default to the first conference in the list
@@ -822,8 +874,8 @@ executeBookingUpdate(data: Booking) {
                 statusText = 'ongoing';
                 statusColor = 'red';
                 break;
-            case 'done':
-                statusText = 'done';
+            case 'ended':
+                statusText = 'ended';
                 statusColor = 'gray';
                 break;
             default:
