@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -50,7 +50,6 @@ interface ConferenceRoom {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  providers: [DatePipe],
   imports: [
               CommonModule,
               RouterOutlet,
@@ -79,7 +78,7 @@ interface ConferenceRoom {
               BadgeModule,
               ToastModule,
             ],
-  providers: [MessageService],
+  providers: [MessageService, DatePipe],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   // encapsulation: ViewEncapsulation.None
