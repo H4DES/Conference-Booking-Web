@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -78,7 +78,7 @@ interface ConferenceRoom {
               BadgeModule,
               ToastModule,
             ],
-  providers: [MessageService],
+  providers: [MessageService, DatePipe],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   // encapsulation: ViewEncapsulation.None
@@ -132,7 +132,7 @@ export class LayoutComponent {
               private bookingServ: BookingService, 
               private router: Router, 
               private AuthServ: AuthService,
-              private messageServ: MessageService) {}
+              private messageServ: MessageService, private datePipe: DatePipe) {}
 
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
@@ -207,6 +207,33 @@ export class LayoutComponent {
     })
   }
 
+  get formattedEndTime(): string {
+    // Check if bookingById.bookingEnd is available and not empty
+    if (this.bookingById && this.bookingById.bookingEnd) {
+      return (
+        this.datePipe.transform(
+          `1970-01-01T${this.bookingById.bookingEnd}`,
+          'h:mm a'
+        ) || ''
+      );
+    }
+    return '';
+  }
+  
+  get formattedStartTime(): string {
+    // Check if bookingById.bookingStart is available and not empty
+    if (this.bookingById && this.bookingById.bookingStart) {
+      return (
+        this.datePipe.transform(
+          `1970-01-01T${this.bookingById.bookingStart}`,
+          'h:mm a'
+        ) || ''
+      );
+    }
+    return '';
+  }
+  
+ 
   BookConference(data: Booking) {
     data.bookingId = null;
     data.conferenceId = this.currentID;
@@ -355,9 +382,7 @@ export class LayoutComponent {
       });
         this.executeBookingUpdate(data);
       } else if (action === "reject") {
-        data.status = "rejected";
-        console.log(data);
-        this.rejectBooking(data); // Call reject flow with confirmation and remarks collection
+        this.rejectBooking(data);
     }
 
 }
@@ -605,6 +630,8 @@ executeBookingUpdate(data: Booking) {
       const status = arg.event.extendedProps['status']; // Get the status
       
       let dotClass = 'dot-black'; // Default class
+      let iconClass = 'pi pi-circle-fill';
+      let iconSize = '0.55rem';
     
       // Assign classes based on the status
       switch (status) {
@@ -621,7 +648,9 @@ executeBookingUpdate(data: Booking) {
           dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
           break;
         case 'rejected':
-          dotClass = 'dot-rejected'; // Use a blinking class for 'ongoing'
+          dotClass = 'dot-rejected';
+          iconClass = 'pi pi-times-circle';
+          iconSize = '0.70rem';
           break;
         default:
           dotClass = 'dot-black'; // Fallback class
@@ -631,8 +660,9 @@ executeBookingUpdate(data: Booking) {
         return { html: `<div><strong>Time not available</strong></div>` };
       }
     
-      const timeDisplay = `<span class="pi pi-circle-fill ${dotClass}" style="font-size: 0.55rem;"></span> 
+      const timeDisplay = `<span class="${iconClass} ${dotClass}" style="font-size: ${iconSize};"></span> 
         ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+
       const title = arg.event.title || 'No Title';
     
       return {
@@ -752,7 +782,7 @@ executeBookingUpdate(data: Booking) {
         return { color: 'rgb(254, 44, 46)', backgroundColor: 'white', padding: '2px', borderColor: 'white' };
 
       case 'rejected':
-        return { color: 'white', backgroundColor: '#ffa200', padding: '4px', borderColor: 'white' };
+        return { color: 'white', backgroundColor: '#f5182d', padding: '4px', border: 'white solid 1px' };
 
       case 'ended':
         return { color: 'white', backgroundColor: 'rgb(136, 136, 136)', padding: '4px',};

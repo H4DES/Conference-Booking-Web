@@ -326,11 +326,11 @@
             <!-- Start Time and End Time -->
             <div class="col-6">
                 <label for="startTime" class="form-label">Start Time</label>
-                <input type="text" id="startTime" class="form-control" [(ngModel)]="bookingById.bookingStart" disabled>
+                <input type="text" id="startTime" class="form-control" [value]="formattedStartTime" disabled>
             </div>
             <div class="col-6">
                 <label for="endTime" class="form-label">End Time</label>
-                <input type="text" id="endTime" class="form-control" [(ngModel)]="bookingById.bookingEnd" disabled>
+                <input type="text" id="endTime" class="form-control" [value]="formattedEndTime" disabled>
             </div>
             <!-- Department -->
             <div class="col-12">
