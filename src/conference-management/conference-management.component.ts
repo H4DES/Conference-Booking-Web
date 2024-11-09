@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { Conference } from '../model/conference';
 import { ConferenceService } from '../services/conference-service/conference.service';
@@ -16,6 +16,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { CheckboxModule } from 'primeng/checkbox';
 import { User } from '../model/user';
 import { AuthService } from '../services/auth-service/auth.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-conference-management',
@@ -30,12 +32,16 @@ import { AuthService } from '../services/auth-service/auth.service';
             FloatLabelModule, 
             RadioButtonModule, 
             MultiSelectModule,
-            CheckboxModule
+            CheckboxModule,            
+            IconFieldModule,
+            InputIconModule
             ],
   templateUrl: './conference-management.component.html',
   styleUrl: './conference-management.component.css'
 })
 export class ConferenceManagementComponent {
+
+  @Output() conferenceCountChange = new EventEmitter<number>();
 
   Conferences!: Conference[];
   conferenceData: Conference = new Conference;
@@ -168,6 +174,7 @@ export class ConferenceManagementComponent {
       next: (res) => {
         if (res.isSuccess) {
           this.Conferences = res.data; // Load all conference data
+          this.conferenceCountChange.emit(this.Conferences.length);
           console.info("bruh has started");
           console.table(this.Conferences.forEach(x => x.userDtos));         
           // Set default to the first conference in the list

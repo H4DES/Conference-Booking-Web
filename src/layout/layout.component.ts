@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -30,13 +30,14 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-import { DatePipe } from '@angular/common';
 import { SidebarComponent } from '../app/sidebar/sidebar.component';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DataViewModule } from 'primeng/dataview';
 import { PanelModule } from 'primeng/panel';
 import { User } from '../model/user';
 import { BadgeModule } from 'primeng/badge';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 
 declare var bootstrap: any;
@@ -75,8 +76,10 @@ interface ConferenceRoom {
               ScrollPanelModule,
               PanelModule,
               DataViewModule,
-              BadgeModule
+              BadgeModule,
+              ToastModule,
             ],
+  providers: [MessageService],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   // encapsulation: ViewEncapsulation.None
@@ -126,7 +129,11 @@ export class LayoutComponent {
   ConferenceData: Conference = new Conference;
   selectedRoom: ConferenceRoom | undefined;
 
-  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router, private AuthServ: AuthService, private datePipe: DatePipe) {}
+  constructor(private conferenceServ: ConferenceService,
+              private bookingServ: BookingService, 
+              private router: Router, 
+              private AuthServ: AuthService,
+              private messageServ: MessageService, private datePipe: DatePipe) {}
 
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
@@ -136,6 +143,8 @@ export class LayoutComponent {
     this.onLoadConference();
     this.startEventOngoingChecker();
     this.GetUserConferenceId(String(this.AuthServ.getNameIdentifier()));
+    this.notifiedBookings = new Set<number | null>();
+
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -356,7 +365,7 @@ export class LayoutComponent {
         });
       },
       complete: () => {
-        this.onLoadConference();
+        this.onLoadConference(data.conferenceId);
       }
     });
     
@@ -442,7 +451,7 @@ executeBookingUpdate(data: Booking) {
             console.error("Error updating:", err);
         },
         complete: () => {
-            this.onLoadConference();
+            this.onLoadConference(data.conferenceId);
         }
     });
 }
@@ -843,7 +852,7 @@ executeBookingUpdate(data: Booking) {
     })    
   }
 
-  onLoadConference() {
+  onLoadConference(id: number = 0) {
     this.conferenceServ.onGetAllConference().subscribe({
       next: (res) => {
         if (res.isSuccess) {
@@ -852,7 +861,7 @@ executeBookingUpdate(data: Booking) {
           
           // Set default to the first conference in the list
           if (this.ConferenceRoom.length > 0) {
-            this.ConferenceData = this.ConferenceRoom[0]; 
+            this.ConferenceData = id != 0 ? this.ConferenceRoom.find(x => x.conferenceId === id)! : this.ConferenceRoom[0]; 
             
             // Call onConferenceChange here to load calendar events and alert the ID
             this.onConferenceChange();
@@ -884,6 +893,7 @@ executeBookingUpdate(data: Booking) {
       console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
       this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       console.log(this.currentID);
+      this.checkEventStarting(this.formattedTimeNow);
       // alert(this.currentID);
     }
   }
@@ -921,11 +931,23 @@ executeBookingUpdate(data: Booking) {
 
   upcomingBooking: Booking[] = [];
   
+  notifSound = new Audio('../assets/notifSound.wav');
+  notifiedBookings = new Set<number | null>();
 
   checkUpcomingBooking(TimeNow: string) {
     this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)
                                                      && b.status === 'approved' || b.status === 'ongoing');
+    this.upcomingBooking.forEach(x => {
+      if (!this.notifiedBookings.has(x.bookingId)) {
+        this.notifiedBookings.add(x.bookingId);
+        this.messageServ.add({ severity: 'secondary', summary: `${x.purpose}`, detail: `${this.calculateTimeUntilStart(x.bookingStart)}` });
+        this.notifSound.play().catch(err => console.error('Error playing notification sound', err));
+      }
+      
+    });
+      
+    
     console.log("Checked the upcoming booked events");
   }
 
@@ -948,10 +970,12 @@ executeBookingUpdate(data: Booking) {
     if (diff <= 0) return 'Meeting ongoing';
   
     const minutes = Math.floor(diff / (1000 * 60));
-    return minutes < 60
+    return minutes < 59
       ? `Starting in less than ${minutes} minutes`
       : `Starting soon`;
   }
+   
+
   
   
 }
