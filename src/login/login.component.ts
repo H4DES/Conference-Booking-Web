@@ -9,6 +9,9 @@ import { PasswordModule } from 'primeng/password';
 import { Login } from '../model/login';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth-service/auth.service';
+import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-login',
@@ -28,7 +31,7 @@ import { AuthService } from '../services/auth-service/auth.service';
 export class LoginComponent {
 
  loginData: Login = new Login;
- constructor(private authServ: AuthService, private router: Router){};
+ constructor(private authServ: AuthService, private router: Router, private toastr: ToastrService){};
 
   onLogin(){
     const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
@@ -36,7 +39,7 @@ export class LoginComponent {
       next: (res) => {
         if (res.isSuccess){
           localStorage.setItem('authToken', res.data.token);
-          alert("login successful");
+          this.toastr.success('Successfully login!', 'Success');
           if (redirectUrl) {
             sessionStorage.removeItem('redirectAfterLogin'); // Clear the stored URL
             this.router.navigateByUrl(redirectUrl); // Redirect to the original destination
@@ -45,7 +48,7 @@ export class LoginComponent {
           }
         }
         else {
-          alert(res.errorMessage);
+          this.toastr.error(res.errorMessage, 'Error');
         }
 
       },
