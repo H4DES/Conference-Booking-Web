@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -862,6 +862,7 @@ executeBookingUpdate(data: Booking) {
       console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
       this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       console.log(this.currentID);
+      this.checkEventStarting(this.formattedTimeNow);
       // alert(this.currentID);
     }
   }
