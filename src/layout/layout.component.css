@@ -380,3 +380,6 @@ html, body {
     }
   }
   
+  ::ng-deep .p-dropdown-items{
+    padding-left: 0;
+  }

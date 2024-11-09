@@ -64,7 +64,7 @@
                                             <!-- Panel Content -->
                                             <ng-template pTemplate="body">
                                                 <div [style]="{ height: '25px', overflow: 'hidden' }">
-                                                    <p>Starting in less than 30 minutes</p>
+                                                    <p>{{ calculateTimeUntilStart(booking.bookingStart) }}</p>
                                                 </div>
                                             </ng-template>
 
