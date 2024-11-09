@@ -18,7 +18,7 @@ import { User } from '../model/user';
 import { AuthService } from '../services/auth-service/auth.service';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'app-conference-management',
   standalone: true,
   imports: [TableModule, 
             CommonModule, 
@@ -32,10 +32,10 @@ import { AuthService } from '../services/auth-service/auth.service';
             MultiSelectModule,
             CheckboxModule
             ],
-  templateUrl: './admin.component.html',
-  styleUrl: './admin.component.css'
+  templateUrl: './conference-management.component.html',
+  styleUrl: './conference-management.component.css'
 })
-export class AdminComponent {
+export class ConferenceManagementComponent {
 
   Conferences!: Conference[];
   conferenceData: Conference = new Conference;

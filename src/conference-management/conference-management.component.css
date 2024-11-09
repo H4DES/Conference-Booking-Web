@@ -16,8 +16,9 @@
 .actions {
     display: flex;              /* Use flexbox for alignment */
     justify-content: flex-end;  /* Align the button to the right */
+    margin-top: 1rem;
     margin-bottom: 1rem;        /* Space between actions and card */
-    width: 79%;                /* Ensure the actions div takes full width */
+    width: 86%;                /* Ensure the actions div takes full width */
 }
 
 
@@ -64,4 +65,9 @@
 }
 ::ng-deep .p-multiselect-items {
     padding-left: 0; /* Adjust this value to reduce whitespace */
+}
+
+::ng-deep .p-datatable th, 
+::ng-deep .p-datatable td {
+  height: 10px; /* Set a fixed height for both header and data cells */
 }

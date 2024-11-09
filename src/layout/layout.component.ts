@@ -38,6 +38,7 @@ import { PanelModule } from 'primeng/panel';
 import { User } from '../model/user';
 import { BadgeModule } from 'primeng/badge';
 
+
 declare var bootstrap: any;
 
 interface ConferenceRoom {
@@ -887,7 +888,8 @@ executeBookingUpdate(data: Booking) {
     }
 
 
-  upcomingBooking: Booking[] = []
+  upcomingBooking: Booking[] = [];
+  
 
   checkUpcomingBooking(TimeNow: string) {
     this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
@@ -907,4 +909,18 @@ executeBookingUpdate(data: Booking) {
   }
 
 
+  calculateTimeUntilStart(bookingStart: string): string {
+    const start = new Date(`1970-01-01T${bookingStart}`);
+    const now = new Date(`1970-01-01T${this.formattedTimeNow}`);
+    const diff = start.getTime() - now.getTime();
+  
+    if (diff <= 0) return 'Meeting ongoing';
+  
+    const minutes = Math.floor(diff / (1000 * 60));
+    return minutes < 60
+      ? `Starting in less than ${minutes} minutes`
+      : `Starting soon`;
+  }
+  
+  
 }

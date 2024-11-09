@@ -117,5 +117,10 @@
   transform: translateY(-5px);
 }
 
-
+.conference{
+  margin-top: 15px;
+  border: 1px solid lightslategray;
+  border-radius: 8px;
+  width: 93%;
+}
 

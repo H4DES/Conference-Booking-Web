@@ -6,14 +6,14 @@ export class Conference implements ConferenceModel {
   conferenceName: string | null; // Nullable string
   capacity: number | null; // Nullable int
   isActive: boolean | null; // Nullable boolean
-  adminUserDtos: User[];
+  userDtos: User[];
 
   constructor() {
     this.conferenceId = 0,
     this.conferenceName = '',
     this.capacity = 0,
     this.isActive = null;
-    this.adminUserDtos = [];
+    this.userDtos = [];
    }
 
 }
