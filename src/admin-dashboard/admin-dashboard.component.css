@@ -118,9 +118,6 @@
 }
 
 .conference{
-  margin-top: 15px;
-  border: 1px solid lightslategray;
-  border-radius: 8px;
-  width: 93%;
+  margin: 15px 90px;
 }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { Conference } from '../model/conference';
 import { ConferenceService } from '../services/conference-service/conference.service';
@@ -40,6 +40,8 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrl: './conference-management.component.css'
 })
 export class ConferenceManagementComponent {
+
+  @Output() conferenceCountChange = new EventEmitter<number>();
 
   Conferences!: Conference[];
   conferenceData: Conference = new Conference;
@@ -172,6 +174,7 @@ export class ConferenceManagementComponent {
       next: (res) => {
         if (res.isSuccess) {
           this.Conferences = res.data; // Load all conference data
+          this.conferenceCountChange.emit(this.Conferences.length);
           console.info("bruh has started");
           console.table(this.Conferences.forEach(x => x.userDtos));         
           // Set default to the first conference in the list

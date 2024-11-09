@@ -8,12 +8,13 @@
 }
 
 .card {
-    width: 75rem;            /* Fixed width for the card */
+    width: 100%;            /* Fixed width for the card */
     display: flex;
     justify-content: center;  /* Centers content inside the card */
 }
 
 .actions {
+    width: 100%;
     display: flex;              /* Use flexbox for alignment */
     justify-content: flex-end;  /* Align the button to the right */
     margin: 1rem 0;      /* Ensure the actions div takes full width */
@@ -67,5 +68,5 @@
 
 ::ng-deep .p-datatable th, 
 ::ng-deep .p-datatable td {
-  height: 10px; /* Set a fixed height for both header and data cells */
+  padding: 10px 35px;
 }

@@ -9,6 +9,7 @@ import { authGuard } from '../guard/auth.guard';
 import { AdminComponent } from '../admin/admin.component';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 import { ConferenceManagementComponent } from '../conference-management/conference-management.component';
+import { ConferenceComponent } from '../conference/conference.component';
 
 export const routes: Routes = [
     {
@@ -57,6 +58,12 @@ export const routes: Routes = [
     {
         path: 'conference-management',
         component: ConferenceManagementComponent,
+        canActivate: [authGuard],
+        data: { roles: ['AdminRole'] } 
+    },
+    {
+        path: 'conference',
+        component: ConferenceComponent,
         canActivate: [authGuard],
         data: { roles: ['AdminRole'] } 
     }
