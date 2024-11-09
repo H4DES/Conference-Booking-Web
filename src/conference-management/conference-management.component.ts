@@ -56,7 +56,7 @@ export class ConferenceManagementComponent {
 
   ngOnInit() {
     this.onLoadConference();
-    this.onGetAllAdmins();
+    this.onGetUsers();
   }
 
   get dialogTitle(): string {
@@ -66,9 +66,9 @@ export class ConferenceManagementComponent {
 
   }
 
-  onGetAllAdmins(){
+  onGetUsers(){
     console.log("started...");
-    this.authServ.onGetAdmins().subscribe({
+    this.authServ.onGetUsers().subscribe({
       next: (res) => {
         if (res.isSuccess){
           this.admins = res.data;

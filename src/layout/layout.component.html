@@ -3,7 +3,7 @@
   
     <div class="booking-card">
         <div class="booking-info">
-            <p-button (onClick)="toggleSidebar()" icon="pi pi-bars"></p-button>
+            <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
           
             <p-dropdown 
                 [options]="ConferenceRoom" 
@@ -390,6 +390,13 @@
 
 </p-toast>
 
+
+<div class="persistent-button-container" >
+    
+    <p-button *ngIf="!tokenRole" [routerLink]="['/login']" [style]="{ backgroundColor: 'royalblue', border: 'none' }" label="Login" icon="pi pi-sign-in"></p-button>
+    <p-button *ngIf="tokenRole" (onClick)="onLogout()" [style]="{ backgroundColor: 'royalblue', border: 'none' }" label="Logout" icon="pi pi-sign-out"></p-button>
+</div>
+  
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

@@ -14,7 +14,7 @@ import { ConferenceComponent } from '../conference/conference.component';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: '',
+        redirectTo: '/calendar',
         pathMatch: 'full',
     },
     {
@@ -30,10 +30,8 @@ export const routes: Routes = [
         ]
     },
     {
-        path: 'layout',
-        component: LayoutComponent,
-        canActivate: [authGuard],
-        data: { roles: ['UserRole'] },    
+        path: 'calendar',
+        component: LayoutComponent
     },
     {
         path: 'testing',

@@ -137,7 +137,9 @@ export class LayoutComponent {
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
 
-  ngOnInit(): void {
+  ngOnInit(): void {    
+    this.tokenRole = this.AuthServ.getUserRole();
+    this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
     this.startClock();
     this.onLoadConference();
     this.startEventOngoingChecker();
@@ -975,6 +977,8 @@ executeBookingUpdate(data: Booking) {
   }
    
 
-  
+  onLogout(){
+    this.AuthServ.onLogout();
+  }
   
 }

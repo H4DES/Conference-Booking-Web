@@ -44,7 +44,7 @@ export class LoginComponent {
             sessionStorage.removeItem('redirectAfterLogin'); // Clear the stored URL
             this.router.navigateByUrl(redirectUrl); // Redirect to the original destination
           } else {
-            this.router.navigateByUrl('/'); // Or redirect to a default home page
+            this.router.navigateByUrl('/layout'); // Or redirect to a default home page
           }
         }
         else {
