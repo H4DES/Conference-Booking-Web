@@ -400,7 +400,7 @@ html, body {
     width: 50px;
     height: 50px;
     transition: transform 0.3s ease;
-    z-index: 9000;
+    z-index: 1;
   }
   
   .persistent-button-container:hover {

@@ -49,10 +49,7 @@ export class AuthService {
     return null;
   }
 
-  onLogout(){
-    localStorage.removeItem('authToken');
-    this.router.navigateByUrl('/login');
-  }
+  
 
 
   public onLogin(data: Login): Observable<IApiResponse<Login>> {

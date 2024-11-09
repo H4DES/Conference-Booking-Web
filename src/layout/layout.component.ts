@@ -978,7 +978,8 @@ executeBookingUpdate(data: Booking) {
    
 
   onLogout(){
-    this.AuthServ.onLogout();
+    localStorage.removeItem('authToken');
+    this.router.navigateByUrl('/login');
   }
   
 }
