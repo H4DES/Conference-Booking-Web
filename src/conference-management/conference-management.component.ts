@@ -16,6 +16,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { CheckboxModule } from 'primeng/checkbox';
 import { User } from '../model/user';
 import { AuthService } from '../services/auth-service/auth.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-conference-management',
@@ -30,7 +32,9 @@ import { AuthService } from '../services/auth-service/auth.service';
             FloatLabelModule, 
             RadioButtonModule, 
             MultiSelectModule,
-            CheckboxModule
+            CheckboxModule,            
+            IconFieldModule,
+            InputIconModule
             ],
   templateUrl: './conference-management.component.html',
   styleUrl: './conference-management.component.css'

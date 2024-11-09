@@ -16,9 +16,7 @@
 .actions {
     display: flex;              /* Use flexbox for alignment */
     justify-content: flex-end;  /* Align the button to the right */
-    margin-top: 1rem;
-    margin-bottom: 1rem;        /* Space between actions and card */
-    width: 86%;                /* Ensure the actions div takes full width */
+    margin: 1rem 0;      /* Ensure the actions div takes full width */
 }
 
 
