@@ -106,7 +106,15 @@ export class LayoutComponent {
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
   admins: User[] = [];
+  recurringEndDate!: Date | null;
   userConferenceId: number | null = null;
+  recurringOptions: { name: string, type: string }[] = [
+    { name: 'Daily', type: 'daily' },
+    { name: 'Weekly', type: 'weekly' },
+    { name: 'Monthly', type: 'monthly' }
+];
+
+
 
   //for side bar
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
@@ -240,6 +248,7 @@ export class LayoutComponent {
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
+    
 
 // -- Validation handling for inputs -- //
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
@@ -337,7 +346,8 @@ export class LayoutComponent {
       return;
     }
 
-
+    data.recurringEndDate = this.recurringEndDate!.toISOString().split('T')[0];
+    console.log(data.recurringEndDate);
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
       next: (res) => {
@@ -366,6 +376,7 @@ export class LayoutComponent {
         });
       },
       complete: () => {
+        this.recurringEndDate = null;
         this.onLoadConference(data.conferenceId);
       }
     });
@@ -981,5 +992,7 @@ executeBookingUpdate(data: Booking) {
     localStorage.removeItem('authToken');
     this.router.navigateByUrl('/login');
   }
+
+
   
 }

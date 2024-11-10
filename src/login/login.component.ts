@@ -7,7 +7,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { Login } from '../model/login';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '../services/auth-service/auth.service';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
@@ -23,7 +23,8 @@ import { ToastrService } from 'ngx-toastr';
             DialogModule,
             InputTextModule,
             PasswordModule,
-            ButtonModule
+            ButtonModule,
+            RouterModule
           ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
