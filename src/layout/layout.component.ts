@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -30,13 +30,15 @@ import { DividerModule } from 'primeng/divider';
 import { TagModule } from 'primeng/tag';
 import { jwtDecode } from 'jwt-decode';
 import { AuthService } from '../services/auth-service/auth.service';
-
 import { SidebarComponent } from '../app/sidebar/sidebar.component';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DataViewModule } from 'primeng/dataview';
 import { PanelModule } from 'primeng/panel';
 import { User } from '../model/user';
 import { BadgeModule } from 'primeng/badge';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+
 
 declare var bootstrap: any;
 
@@ -73,8 +75,10 @@ interface ConferenceRoom {
               ScrollPanelModule,
               PanelModule,
               DataViewModule,
-              BadgeModule
+              BadgeModule,
+              ToastModule,
             ],
+  providers: [MessageService, DatePipe],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   // encapsulation: ViewEncapsulation.None
@@ -102,7 +106,15 @@ export class LayoutComponent {
   updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
   admins: User[] = [];
+  recurringEndDate!: Date | null;
   userConferenceId: number | null = null;
+  recurringOptions: { name: string, type: string }[] = [
+    { name: 'Daily', type: 'daily' },
+    { name: 'Weekly', type: 'weekly' },
+    { name: 'Monthly', type: 'monthly' }
+];
+
+
 
   //for side bar
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
@@ -124,16 +136,24 @@ export class LayoutComponent {
   ConferenceData: Conference = new Conference;
   selectedRoom: ConferenceRoom | undefined;
 
-  constructor(private conferenceServ: ConferenceService ,private bookingServ: BookingService, private router: Router, private AuthServ: AuthService) {}
+  constructor(private conferenceServ: ConferenceService,
+              private bookingServ: BookingService, 
+              private router: Router, 
+              private AuthServ: AuthService,
+              private messageServ: MessageService, private datePipe: DatePipe) {}
 
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
 
-  ngOnInit(): void {
+  ngOnInit(): void {    
+    this.tokenRole = this.AuthServ.getUserRole();
+    this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
     this.startClock();
     this.onLoadConference();
     this.startEventOngoingChecker();
     this.GetUserConferenceId(String(this.AuthServ.getNameIdentifier()));
+    this.notifiedBookings = new Set<number | null>();
+
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -197,10 +217,38 @@ export class LayoutComponent {
     })
   }
 
+  get formattedEndTime(): string {
+    // Check if bookingById.bookingEnd is available and not empty
+    if (this.bookingById && this.bookingById.bookingEnd) {
+      return (
+        this.datePipe.transform(
+          `1970-01-01T${this.bookingById.bookingEnd}`,
+          'h:mm a'
+        ) || ''
+      );
+    }
+    return '';
+  }
+  
+  get formattedStartTime(): string {
+    // Check if bookingById.bookingStart is available and not empty
+    if (this.bookingById && this.bookingById.bookingStart) {
+      return (
+        this.datePipe.transform(
+          `1970-01-01T${this.bookingById.bookingStart}`,
+          'h:mm a'
+        ) || ''
+      );
+    }
+    return '';
+  }
+  
+ 
   BookConference(data: Booking) {
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
+    
 
 // -- Validation handling for inputs -- //
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
@@ -298,7 +346,8 @@ export class LayoutComponent {
       return;
     }
 
-
+    data.recurringEndDate = this.recurringEndDate!.toISOString().split('T')[0];
+    console.log(data.recurringEndDate);
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
       next: (res) => {
@@ -327,7 +376,8 @@ export class LayoutComponent {
         });
       },
       complete: () => {
-        this.onLoadConference();
+        this.recurringEndDate = null;
+        this.onLoadConference(data.conferenceId);
       }
     });
     
@@ -345,9 +395,7 @@ export class LayoutComponent {
       });
         this.executeBookingUpdate(data);
       } else if (action === "reject") {
-        data.status = "rejected";
-        console.log(data);
-        this.rejectBooking(data); // Call reject flow with confirmation and remarks collection
+        this.rejectBooking(data);
     }
 
 }
@@ -415,7 +463,7 @@ executeBookingUpdate(data: Booking) {
             console.error("Error updating:", err);
         },
         complete: () => {
-            this.onLoadConference();
+            this.onLoadConference(data.conferenceId);
         }
     });
 }
@@ -595,6 +643,8 @@ executeBookingUpdate(data: Booking) {
       const status = arg.event.extendedProps['status']; // Get the status
       
       let dotClass = 'dot-black'; // Default class
+      let iconClass = 'pi pi-circle-fill';
+      let iconSize = '0.55rem';
     
       // Assign classes based on the status
       switch (status) {
@@ -611,7 +661,9 @@ executeBookingUpdate(data: Booking) {
           dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
           break;
         case 'rejected':
-          dotClass = 'dot-rejected'; // Use a blinking class for 'ongoing'
+          dotClass = 'dot-rejected';
+          iconClass = 'pi pi-times-circle';
+          iconSize = '0.70rem';
           break;
         default:
           dotClass = 'dot-black'; // Fallback class
@@ -621,8 +673,9 @@ executeBookingUpdate(data: Booking) {
         return { html: `<div><strong>Time not available</strong></div>` };
       }
     
-      const timeDisplay = `<span class="pi pi-circle-fill ${dotClass}" style="font-size: 0.55rem;"></span> 
+      const timeDisplay = `<span class="${iconClass} ${dotClass}" style="font-size: ${iconSize};"></span> 
         ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+
       const title = arg.event.title || 'No Title';
     
       return {
@@ -742,7 +795,7 @@ executeBookingUpdate(data: Booking) {
         return { color: 'rgb(254, 44, 46)', backgroundColor: 'white', padding: '2px', borderColor: 'white' };
 
       case 'rejected':
-        return { color: 'white', backgroundColor: '#ffa200', padding: '4px', borderColor: 'white' };
+        return { color: 'white', backgroundColor: '#f5182d', padding: '4px', border: 'white solid 1px' };
 
       case 'ended':
         return { color: 'white', backgroundColor: 'rgb(136, 136, 136)', padding: '4px',};
@@ -811,7 +864,7 @@ executeBookingUpdate(data: Booking) {
     })    
   }
 
-  onLoadConference() {
+  onLoadConference(id: number = 0) {
     this.conferenceServ.onGetAllConference().subscribe({
       next: (res) => {
         if (res.isSuccess) {
@@ -820,7 +873,7 @@ executeBookingUpdate(data: Booking) {
           
           // Set default to the first conference in the list
           if (this.ConferenceRoom.length > 0) {
-            this.ConferenceData = this.ConferenceRoom[0]; 
+            this.ConferenceData = id != 0 ? this.ConferenceRoom.find(x => x.conferenceId === id)! : this.ConferenceRoom[0]; 
             
             // Call onConferenceChange here to load calendar events and alert the ID
             this.onConferenceChange();
@@ -852,6 +905,7 @@ executeBookingUpdate(data: Booking) {
       console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
       this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       console.log(this.currentID);
+      this.checkEventStarting(this.formattedTimeNow);
       // alert(this.currentID);
     }
   }
@@ -887,12 +941,25 @@ executeBookingUpdate(data: Booking) {
     }
 
 
-  upcomingBooking: Booking[] = []
+  upcomingBooking: Booking[] = [];
+  
+  notifSound = new Audio('../assets/notifSound.wav');
+  notifiedBookings = new Set<number | null>();
 
   checkUpcomingBooking(TimeNow: string) {
     this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)
                                                      && b.status === 'approved' || b.status === 'ongoing');
+    this.upcomingBooking.forEach(x => {
+      if (!this.notifiedBookings.has(x.bookingId)) {
+        this.notifiedBookings.add(x.bookingId);
+        this.messageServ.add({ severity: 'secondary', summary: `${x.purpose}`, detail: `${this.calculateTimeUntilStart(x.bookingStart)}` });
+        this.notifSound.play().catch(err => console.error('Error playing notification sound', err));
+      }
+      
+    });
+      
+    
     console.log("Checked the upcoming booked events");
   }
 
@@ -907,4 +974,25 @@ executeBookingUpdate(data: Booking) {
   }
 
 
+  calculateTimeUntilStart(bookingStart: string): string {
+    const start = new Date(`1970-01-01T${bookingStart}`);
+    const now = new Date(`1970-01-01T${this.formattedTimeNow}`);
+    const diff = start.getTime() - now.getTime();
+  
+    if (diff <= 0) return 'Meeting ongoing';
+  
+    const minutes = Math.floor(diff / (1000 * 60));
+    return minutes < 59
+      ? `Starting in less than ${minutes} minutes`
+      : `Starting soon`;
+  }
+   
+
+  onLogout(){
+    localStorage.removeItem('authToken');
+    this.router.navigateByUrl('/login');
+  }
+
+
+  
 }

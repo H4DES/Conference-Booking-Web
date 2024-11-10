@@ -10,6 +10,7 @@ import { Login } from '../model/login';
 import { Router } from '@angular/router';
 import { Register } from '../model/register';
 import { AuthService } from '../services/auth-service/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -28,18 +29,19 @@ import { AuthService } from '../services/auth-service/auth.service';
 })
 export class RegisterComponent {
  
- registerData: Register = new Register;
+ registrationData: Register = new Register;
 
- constructor(private authServ: AuthService, private router: Router){}
+ constructor(private authServ: AuthService, private router: Router, private toastr: ToastrService){}
 
  onRegisterUser(){
-  this.authServ.onRegisterUser(this.registerData).subscribe({
+  this.authServ.onRegisterUser(this.registrationData).subscribe({
     next: (res) => {
       if (res.isSuccess){
-        alert(res.data);
+        this.toastr.success(`${res.data}`, 'Success');
+        this.router.navigateByUrl('/login');
       }
       else{
-        alert(res.data);
+        this.toastr.error(`${res.data}`, 'Error');
       }
     },
     error: (err) => {
@@ -48,6 +50,26 @@ export class RegisterComponent {
     complete: () => {
 
     }
-  })
+  });
+ }
+
+ onRegisterAdmin(){
+  this.authServ.onRegisterAdmin(this.registrationData).subscribe({
+    next: (res) => {
+      if (res.isSuccess){
+        this.toastr.success(`${res.data}`, 'Success');
+        this.router.navigateByUrl('/login');
+      }
+      else{
+        this.toastr.error(`${res.data}`, 'Error');
+      }
+    },
+    error: (err) => {
+      console.error(err);
+    },
+    complete: () => {
+
+    }
+  });
  }
 }

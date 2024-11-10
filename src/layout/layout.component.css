@@ -168,7 +168,8 @@ html, body {
 
 .d-flex.time-inputs {
     display: flex;
-    margin-bottom: 30px;
+    margin-top: -10px;
+    margin-bottom: 40px;
     gap: 20px; /* Space between Start and End Time fields */
 }
 
@@ -253,7 +254,7 @@ html, body {
 .d-flex.time-inputs {
     display: flex;
     gap: 20px; /* Gap between Start and End time inputs */
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 /* Okay Button Styling */
@@ -357,7 +358,7 @@ html, body {
   }
   
   ::ng-deep .dot-orange {
-    color: rgb(251, 255, 0);
+    color: orange;
     /* color: orange; */
   }
   
@@ -366,7 +367,7 @@ html, body {
   }
 
   ::ng-deep .dot-rejected {
-    color: rgb(243, 104, 12);
+    color: rgb(243, 27, 12);
   }
   
   ::ng-deep .dot-black {
@@ -385,3 +386,65 @@ html, body {
     }
   }
   
+  ::ng-deep .p-dropdown-items{
+    padding-left: 0;
+  }
+
+  .persistent-button-container {
+    position: fixed;
+    bottom: 20px;
+    right: -35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    transition: transform 0.3s ease;
+    z-index: 1;
+  }
+  
+  .persistent-button-container:hover {
+    right: 30px;
+  }
+  
+  ::ng-deep .persistent-button-container .p-button {
+    background-color: royalblue;
+    border: none;
+    height: 40px;
+    width: 120px;
+    margin-left: 20px;
+  }
+
+  ::ng-deep .persistent-button-container .login-btn .p-button-icon{
+    margin-left: -10px;
+    margin-right: 10px;
+  }
+  ::ng-deep .persistent-button-container .logout-btn .p-button-icon{
+    margin-left: -5px;
+    margin-right: 15px;
+  }
+
+  ::ng-deep .recurring .p-panel-header {
+    height: 45px;
+}
+
+::ng-deep .full-width {
+    width: 100%;
+}
+
+::ng-deep .fixed-width {
+    max-width: 200px; /* Adjust this to your desired width */
+}
+
+.side-by-side {
+    margin-top: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+::ng-deep .side-by-side .p-dropdown{
+    width: 100%;
+}
+
+
+

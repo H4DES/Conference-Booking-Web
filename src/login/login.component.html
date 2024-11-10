@@ -1,17 +1,24 @@
-<div class="container">
-	<div class="form">
-		<h1>LOGIN</h1>
-		<div class="input" style="position: relative;">
-		    <i class="pi pi-user" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); z-index: 1;"></i>
-		    <input pInputText type="text" name="userName" [(ngModel)]="loginData.userName" style="padding-left: 35px;" placeholder="Username" />
-		</div>
-		<div class="input" style="position: relative;">
-		    <i class="pi pi-lock" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); z-index: 1;"></i>
-		    <input pInputText type="password" name="password" [(ngModel)]="loginData.password" style="padding-left: 35px;" placeholder="Password" />
-		</div>
-		<div class="input">
-			<p-button type="submit" label="Login" (onClick)="onLogin()"/>
-		</div>
 
-	</div>
+
+
+	<form class="login">
+		<input type="text" name="userName" [(ngModel)]="loginData.userName" placeholder="Username">
+		<input type="password" name="password" [(ngModel)]="loginData.password" placeholder="Password">
+		<p-button type="submit" label="Login" (onClick)="onLogin()"/>
+	</form>
+
+<div class="persistent-button-container">
+	<p-button 
+			[routerLink]="['/calendar']" 
+			[style]="{ 
+					backgroundColor: 'royalblue', 
+					border: 'none', 
+					width: '100%', 
+			}" 
+			label="Book" 
+			icon="pi pi-calendar">
+	</p-button>
 </div>
+
+	
+

@@ -3,7 +3,7 @@
   
     <div class="booking-card">
         <div class="booking-info">
-            <p-button (onClick)="toggleSidebar()" icon="pi pi-bars"></p-button>
+            <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
           
             <p-dropdown 
                 [options]="ConferenceRoom" 
@@ -64,7 +64,7 @@
                                             <!-- Panel Content -->
                                             <ng-template pTemplate="body">
                                                 <div [style]="{ height: '25px', overflow: 'hidden' }">
-                                                    <p>Starting in less than 30 minutes</p>
+                                                    <p>{{ calculateTimeUntilStart(booking.bookingStart) }}</p>
                                                 </div>
                                             </ng-template>
 
@@ -190,7 +190,7 @@
         </div>
     
         <!-- Expected number of Attendees -->
-        <div class="textbox">
+        <div class="textbox" style="margin-top: 5px">
             <p-floatLabel>
                 <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.expectedAttendees">
                 <label for="floatingInput" class="font-bold block mb-2"> Expected number of Attendees </label>
@@ -204,26 +204,57 @@
                 Recurring Meeting
             </label>
         </div> -->
+        
+        <div class="recurring">
 
-        <div class="accordion" id="accordionExample">
-            <div class="textbox">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <!-- Remove accordion-button class and add custom styling -->
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input ms-1 me-2 mb-2" type="checkbox" id="recurringMeeting" [(ngModel)]="checked" (change)="toggleAccordion('collapseOne')">
-                            <label class="form-check-label" for="recurringMeeting">
-                                Recurring Meeting
-                            </label>
-                        </div>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default until the collapse plugin adds the appropriate classes that we use to style each element.
-                        </div>
+            <p-panel [toggleable]="true" [collapsed]="true" [style]="{ marginTop: '-10px' }">
+    
+                <ng-template pTemplate="header">
+                    <div class="d-flex align-items-center justify-content-between text-secondary" [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+                        <span class="font-medium text-lg text-900">
+                            Recurring meeting options
+                            <span class="text-sm text-secondary">
+                                (Optional)
+                            </span>
+                        </span>
                     </div>
-                </div>
-            </div>
+                </ng-template>
+                <ng-template pTemplate="body">
+                    <div class="side-by-side">
+                        <p-floatLabel class="full-width">
+                            <p-dropdown 
+                                inputId="recurringType"
+                                [options]="recurringOptions" 
+                                [(ngModel)]="data.recurringType"
+                                optionLabel="name"
+                                optionValue="type"
+                                [showClear]="true"
+                                class="full-width"
+                            ></p-dropdown>
+                            <label for="recurringType">Select recurring type</label>
+                        </p-floatLabel>
+                        
+                        
+                        <p-floatLabel class="full-width">
+                            <p-calendar 
+                                inputId="endDate"
+                                [(ngModel)]="recurringEndDate" 
+                                dateFormat="yy-mm-dd"
+                                appendTo="body"
+                                class="full-width"
+                                [style]="{ marginLeft: '10px' }"
+                            ></p-calendar>
+                            <label for="endDate" style="padding-left: 10px;">Recurring end date</label>
+                        </p-floatLabel>
+                    </div>
+                </ng-template>
+                
+                
+                
+    
+                
+                
+            </p-panel>
         </div>
         
     </div>
@@ -326,11 +357,11 @@
             <!-- Start Time and End Time -->
             <div class="col-6">
                 <label for="startTime" class="form-label">Start Time</label>
-                <input type="text" id="startTime" class="form-control" [(ngModel)]="bookingById.bookingStart" disabled>
+                <input type="text" id="startTime" class="form-control" [value]="formattedStartTime" disabled>
             </div>
             <div class="col-6">
                 <label for="endTime" class="form-label">End Time</label>
-                <input type="text" id="endTime" class="form-control" [(ngModel)]="bookingById.bookingEnd" disabled>
+                <input type="text" id="endTime" class="form-control" [value]="formattedEndTime" disabled>
             </div>
             <!-- Department -->
             <div class="col-12">
@@ -384,8 +415,19 @@
 </div> -->
 <app-sidebar [(visible)]="sidebarVisible"></app-sidebar>
 
+<p-toast
+    position="bottom-right"
+    [baseZIndex]="5000">
+
+</p-toast>
 
 
+<div class="persistent-button-container" >
+    
+    <p-button class="login-btn" *ngIf="!tokenRole" [routerLink]="['/login']" label="Login" icon="pi pi-sign-in"></p-button>
+    <p-button class="logout-btn" *ngIf="tokenRole" (onClick)="onLogout()" [style]="{ marginLeft: '15px' }" label="Logout" icon="pi pi-sign-out"></p-button>
+</div>
+  
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

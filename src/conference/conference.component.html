@@ -1,0 +1,21 @@
+
+
+<div class="booking-card">
+  <div class="booking-info">
+    <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" [style]="{ borderColor: 'transparent', backgroundColor: 'transparent', color: '#454545', boxShadow: 'none' }"></p-button>
+
+    <h1>Total Conference Room: {{ conferenceCount }}</h1>
+  </div>
+
+  <div class="booking-time">
+      <div class="date">
+          <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
+          <p>{{ currentTime | date: 'MMMM d, y' }}</p>                
+      </div>
+  </div> 
+</div>
+<div class="confManagement">
+  <app-conference-management (conferenceCountChange)="conferenceCount = $event"></app-conference-management>
+</div>
+<app-sidebar [(visible)]="sidebarVisible" *ngIf="sidebarVisible"></app-sidebar>
+

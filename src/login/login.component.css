@@ -1,3 +1,107 @@
-.input{
-	margin: 15px 0;
+/* Colors */
+:root {
+  --greenSeaweed: #028090;
+  --blueQueen: #456990;
+  --redFire: #f45b69;
+}
+
+/* Fonts */
+::ng-deep body {
+  background-color: whitesmoke;
+  font-family: 'Asap', sans-serif;
+}
+
+.login {
+  overflow: hidden;
+  background-color: aliceblue;
+  padding: 40px 30px 30px 30px;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  transform: translate(-50%, -50%);
+  transition: transform 300ms, box-shadow 300ms;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); /* Adds a deeper shadow */
+}
+
+/* Optional hover effect for more emphasis */
+.login:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7); /* Shadow becomes larger on hover */
+}
+
+.login::before,
+.login::after {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-top-left-radius: 40%;
+  border-top-right-radius: 45%;
+  border-bottom-left-radius: 35%;
+  border-bottom-right-radius: 40%;
+  z-index: -1;
+}
+
+.login::before {
+  left: 40%;
+  bottom: -130%;
+  background-color: rgba(69, 105, 144, 0.15);
+  animation: wawes 6s infinite linear;
+}
+
+.login::after {
+  left: 35%;
+  bottom: -125%;
+  background-color: rgba(2, 128, 144, 0.2);
+  animation: wawes 7s infinite;
+}
+
+.login > input {
+  font-family: 'Asap', sans-serif;
+  display: block;
+  border-radius: 5px;
+  font-size: 16px;
+  background: white;
+  width: 100%;
+  border: none;
+  padding: 10px;
+  margin: 15px 0;
+}
+
+::ng-deep .p-button {
+  display: flex;
+  border-radius: 5px;
+  width: 50%;
+  height: 2.5rem;
+  left: 25%;
+  background-color: #028090;
+  color: white;
+}
+
+@keyframes wawes {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.persistent-button-container {
+  position: fixed;
+  bottom: 20px;
+  right: -35px;
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.persistent-button-container:hover {
+  right: 20px;
+}
+
+::ng-deep .persistent-button-container .p-button-icon {
+  margin-left: -5px;
+  margin-right: 10px;
 }

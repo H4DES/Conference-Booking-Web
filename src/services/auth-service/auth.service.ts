@@ -8,6 +8,7 @@ import { Register } from '../../model/register';
 import { AppComponent } from '../../app/app.component';
 import { AppConfigService } from '../../app/AppConfigService';
 import { User } from '../../model/user';
+import { Route, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class AuthService {
   
   // private apiUrl = "https://100.90.130.38:2401/api/";
   // private apiUrl = "https://100.100.252.81:2501/api/";
-  constructor(private http: HttpClient, private config: AppConfigService) { }
+  constructor(private http: HttpClient, private config: AppConfigService, private router: Router) { }
 
   token!: string | null;
 
@@ -48,6 +49,7 @@ export class AuthService {
     return null;
   }
 
+  
 
 
   public onLogin(data: Login): Observable<IApiResponse<Login>> {
@@ -58,9 +60,18 @@ export class AuthService {
     return this.http.post<IApiResponse<Register>>(this.config.apiUrl + 'UserAuth/RegisterUser', data);
   }
 
+  public onRegisterAdmin(data: Register): Observable<IApiResponse<Register>> {
+    return this.http.post<IApiResponse<Register>>(this.config.apiUrl + 'UserAuth/RegisterAdmin', data);
+  }
+
   public onGetAdmins(): Observable<IApiResponse<User[]>> {
     return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetAdmins');
   }
+
+  public onGetUsers(): Observable<IApiResponse<User[]>> {
+    return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetUsers');
+  }
+
 
   public onGetUserConferenceId(id: string): Observable<IApiResponse<number>> {
     return this.http.get<IApiResponse<number>>(this.config.apiUrl + 'UserAuth/GetUserConferenceId?userId=' + id);
