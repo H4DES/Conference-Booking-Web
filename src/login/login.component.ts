@@ -7,7 +7,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { Login } from '../model/login';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../services/auth-service/auth.service';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
@@ -43,9 +43,9 @@ export class LoginComponent {
           if (redirectUrl) {
             sessionStorage.removeItem('redirectAfterLogin'); // Clear the stored URL
             this.router.navigateByUrl(redirectUrl); // Redirect to the original destination
-          } else {
-            this.router.navigateByUrl('/layout'); // Or redirect to a default home page
           }
+          this.router.navigateByUrl('/calendar'); // Or redirect to a default home page
+          
         }
         else {
           this.toastr.error(res.errorMessage, 'Error');
