@@ -345,8 +345,13 @@ export class LayoutComponent {
       });
       return;
     }
+    if(data.recurringType){
+      data.recurringEndDate = this.recurringEndDate!.toISOString().split('T')[0];
 
-    data.recurringEndDate = this.recurringEndDate!.toISOString().split('T')[0];
+    }else{
+      data.recurringType = null;
+      data.recurringEndDate = null;
+    }
     console.log(data.recurringEndDate);
     console.table(data);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
@@ -359,6 +364,7 @@ export class LayoutComponent {
             text: "Booking successfully completed.",
             icon: "success",
           });
+          this.data = new Booking();
         } else {
           Swal.fire({
             title: "Error!",
@@ -519,7 +525,7 @@ executeBookingUpdate(data: Booking) {
       this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
       this.checkEventStarting(this.formattedTimeNow);
       this.checkUpcomingBooking(this.formattedTimeNow);
-    }, 10000);
+    }, 1000);
   }
 
   checkEventStarting(timeNow: string) {
@@ -586,7 +592,6 @@ executeBookingUpdate(data: Booking) {
   }
 
   showRoleEventDialog(){
-    debugger;
     this.tokenRole = this.AuthServ.getUserRole();
       if (this.tokenRole == 'SuperAdmin' ){
         this.isAdminEventModalVisible = true;
@@ -625,8 +630,8 @@ executeBookingUpdate(data: Booking) {
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     headerToolbar: {
-    left: '',
-    center: 'title',
+    left: 'title',
+    center: '',
     right: 'prev,next today'
   },
     plugins: [dayGridPlugin, interactionPlugin],
@@ -649,6 +654,7 @@ executeBookingUpdate(data: Booking) {
       let dotClass = 'dot-black'; // Default class
       let iconClass = 'pi pi-circle-fill';
       let iconSize = '0.55rem';
+      let titleStyle = '';
     
       // Assign classes based on the status
       switch (status) {
@@ -657,6 +663,7 @@ executeBookingUpdate(data: Booking) {
           break;
         case 'pending':
           dotClass = 'dot-orange';
+          iconSize = '0.60rem';
           break;
         case 'ended':
           dotClass = 'dot-gray';
@@ -666,8 +673,9 @@ executeBookingUpdate(data: Booking) {
           break;
         case 'rejected':
           dotClass = 'dot-rejected';
-          iconClass = 'pi pi-times-circle';
-          iconSize = '0.70rem';
+          iconClass = 'ri-close-circle-fill';
+          iconSize = '0.75rem';
+          titleStyle = 'text-decoration: line-through; color: rgb(236, 53, 20);';
           break;
         default:
           dotClass = 'dot-black'; // Fallback class
@@ -681,9 +689,10 @@ executeBookingUpdate(data: Booking) {
         ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
 
       const title = arg.event.title || 'No Title';
+      const titleDisplay = `<span style="${titleStyle}"><b>${title}</b></span>`;
     
       return {
-        html: `<div>${timeDisplay} <b>${title}</b></div>`,
+        html: `<div>${timeDisplay} ${titleDisplay}</div>`,
       };
     },
     
@@ -703,7 +712,7 @@ executeBookingUpdate(data: Booking) {
 
 
       info.el.addEventListener('mouseenter', () => {
-        info.el.style.backgroundColor = 'lightslategray'; // Change to a darker color
+        info.el.style.backgroundColor = '#92A0AD'; // Change to a darker color
         info.el.style.color = '#ffffff';
       });
       info.el.addEventListener('mouseleave', () => {
