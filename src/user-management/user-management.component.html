@@ -1,0 +1,134 @@
+<div class="outer-container">
+    
+    <div class="actions">
+        <p-button label="Add User" icon="pi pi-plus" iconPos="right" (onClick)="showUserModal()"></p-button>
+    </div>
+
+
+    <div class="card">
+
+        
+        <p-table 
+            #dtConference
+            [value]="users"
+            dataKey="userId"
+            [paginator]="true"
+            [rows]="5"
+            styleClass="p-datatable-striped" 
+            [tableStyle]="{ 
+              'width': '100%',
+              'overflow': 'auto',
+              'border': '1px solid #ccc',
+              'background-color': '#f9f9f9',
+              'box-shadow': '0 4px 8px rgba(0,0,0,0.1)',
+              'border-radius': '8px',
+              'padding': '10px',
+            }">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>User ID</th>
+                    <th>User Name</th>
+                    <th>Conference Admin</th>
+                    <th>Role</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr>
+                    <td>{{ user.userId }}</td>
+                    <td>{{ user.userName }}</td>
+                    <td>
+                    	{{ user.userRole.toString() === 'AdminRole' ? '*' : onGetConferenceName(user.conferenceId) }}
+                    </td>
+                    <td>
+                        {{ user.userRole }}
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <div class="input-group" style="display: flex; justify-content: center; align-items: center;">
+
+                            <p-button [style]="{ width: '2.3rem', height: '2.3rem', fontSize: '1rem' }" icon="pi pi-trash" severity="danger" (onClick)="showUserModal(user)"></p-button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+        
+    </div>
+    <div class="card flex justify-content-center">
+        <p-dialog [header]="dialogTitle" 
+                  [draggable]="false" [modal]="true" 
+                  [(visible)]="isUserModalVisible" 
+                  [style]="{ width: '35rem' }">
+
+            <ng-container *ngTemplateOutlet="ConferenceModal"></ng-container>
+    
+            <div class="d-flex justify-content-end gap-2" style="padding-right: 10px;">
+                <p-button label="Cancel" severity="secondary" (onClick)="isUserModalVisible = false"></p-button>
+                <p-button *ngIf="registerModal" label="Save" type="submit" (onClick)="onRegisterUser()"></p-button>
+                <p-button *ngIf="deleteModal" label="Delete" type="submit" severity="danger" (onClick)="onUserDelete(userById.userId!)"></p-button>
+
+            </div>    
+        </p-dialog>
+    </div>
+
+        <!-- Step 1 Template -->
+    <ng-template #ConferenceModal>
+
+    	<div *ngIf="registerModal" class="user-input">
+    		
+
+			<div class="input-group">
+                <div class="textbox">
+                    <p-floatLabel>
+                        <input pInputText type="text" id="userName" class="form-control small-input" name="userName" [(ngModel)]="userData.userName">
+                        <label for="userName" class="font-bold block mb-2"> User Name </label>
+                    </p-floatLabel>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class="textbox">
+                    <p-floatLabel>
+                        <input pInputText type="text" class="form-control small-input" name="email" id="floatingInput" [(ngModel)]="userData.email">
+                        <label for="floatingInput" class="font-bold block mb-2"> Email </label>
+                    </p-floatLabel>
+                </div>
+        	</div>
+        	<div class="input-group">
+        		<div class="textbox">
+                    <p-floatLabel>
+                        <p-dropdown 
+                                inputId="roles"
+                                [options]="userRoleOptions" 
+                                [(ngModel)]="selectedRole"
+                                optionLabel="name"
+                                optionValue="type"
+                                [showClear]="true"
+                                [style]="{ width: '100%' }"
+                                appendTo="body"
+                            ></p-dropdown>
+                        <label for="roles">Select Role</label>
+                    </p-floatLabel>
+            	</div>
+        	</div>
+        	<div class="input-group">
+                <div class="textbox">
+                    <p-floatLabel>
+                        <input pInputText type="password" class="form-control small-input" name="password" id="floatingInput" [(ngModel)]="userData.password">
+                        <label for="floatingInput" class="font-bold block mb-2"> Password </label>
+                    </p-floatLabel>
+                </div>
+        	</div>
+    	</div>
+
+        <div *ngIf="deleteModal" class="user-input">
+            <div class="input-group">
+    
+                <div class="textbox">
+                    <input pInputText type="text" [disabled]="true" class="form-control small-input" name="userName" id="floatingInput" [(ngModel)]="userById.userName">
+                    <label style="text-align: center;width: 100%;margin-top: 20px;font-size: 20px;"> This action's cannot be undone! </label>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+  </div>

@@ -15,6 +15,9 @@
           <div class="sidebar-buttons">
             <p-button [routerLink]="['/conference']" label="Conference" icon="pi pi-cog"></p-button>
           </div>
+          <div class="sidebar-buttons" *ngIf="tokenRole === 'SuperAdmin'">
+            <p-button [routerLink]="['/user']" label="Users" icon="pi pi-users"></p-button>
+          </div>
         </div>
       </ng-template>
     </p-sidebar>

@@ -68,11 +68,11 @@ export class ConferenceManagementComponent {
 
   onGetUsers(){
     console.log("started...");
-    this.authServ.onGetUsers().subscribe({
+    this.authServ.onGetUsers("user").subscribe({
       next: (res) => {
         if (res.isSuccess){
           this.admins = res.data;
-          console.table(this.admins);
+          console.table('onGetUsers'+this.admins);
         }
         else{
           console.error(res.errorMessage)
@@ -188,5 +188,4 @@ export class ConferenceManagementComponent {
       }
     });
   }
-
 }

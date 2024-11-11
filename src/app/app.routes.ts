@@ -10,6 +10,7 @@ import { AdminComponent } from '../admin/admin.component';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 import { ConferenceManagementComponent } from '../conference-management/conference-management.component';
 import { ConferenceComponent } from '../conference/conference.component';
+import { UserComponent } from '../user/user.component';
 
 export const routes: Routes = [
     {
@@ -64,5 +65,11 @@ export const routes: Routes = [
         component: ConferenceComponent,
         canActivate: [authGuard],
         data: { roles: ['AdminRole'] } 
+    },
+    {
+        path: 'user',
+        component: UserComponent,
+        canActivate: [authGuard],
+        data: { roles: ['SuperAdmin'] } 
     }
 ];
