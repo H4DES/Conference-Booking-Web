@@ -586,13 +586,13 @@ executeBookingUpdate(data: Booking) {
   }
 
   showRoleEventDialog(){
+    debugger;
     this.tokenRole = this.AuthServ.getUserRole();
-      if (this.tokenRole == 'SuperAdmin' || this.userConferenceId === this.ConferenceData.conferenceId ){
+      if (this.tokenRole == 'SuperAdmin' ){
         this.isAdminEventModalVisible = true;
       }
-      else if(this.tokenRole == 'AdminRole' || this.userConferenceId === this.ConferenceData.conferenceId){
+      else if(this.userConferenceId === this.ConferenceData.conferenceId){
         this.isAdminEventModalVisible = true;
-
       }
       else {
         this.isEventModalVisible = true;
