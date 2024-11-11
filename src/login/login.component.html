@@ -7,7 +7,18 @@
 		<p-button type="submit" label="Login" (onClick)="onLogin()"/>
 	</form>
 
-<div class="persistent-button-container" >
-  <p-button  [style]="{ backgroundColor: 'royalblue', border: 'none' }" label="Login" icon="pi pi-sign-in"></p-button>
+<div class="persistent-button-container">
+	<p-button 
+			[routerLink]="['/calendar']" 
+			[style]="{ 
+					backgroundColor: 'royalblue', 
+					border: 'none', 
+					width: '100%', 
+			}" 
+			label="Book" 
+			icon="pi pi-calendar">
+	</p-button>
 </div>
+
+	
 

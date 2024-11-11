@@ -92,17 +92,16 @@
 .persistent-button-container {
   position: fixed;
   bottom: 20px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  right: -40px;
   transition: transform 0.3s ease;
   z-index: 1;
 }
 
 .persistent-button-container:hover {
-  transform: scale(1.1);
+  right: 20px;
+}
+
+::ng-deep .persistent-button-container .p-button-icon {
+  margin-left: -5px;
+  margin-right: 10px;
 }
