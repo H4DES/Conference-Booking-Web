@@ -910,6 +910,7 @@ executeBookingUpdate(data: Booking) {
       this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       console.log(this.currentID);
       this.checkEventStarting(this.formattedTimeNow);
+      this.notifiedBookings = new Set<number | null>();
       // alert(this.currentID);
     }
   }

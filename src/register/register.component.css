@@ -5,13 +5,13 @@
 }
 
 ::ng-deep body {
-  background-color: #f45b69;
+  background-color: whitesmoke;
   font-family: 'Asap', sans-serif;
 }
 
 .registration {
   overflow: hidden;
-  background-color: silver;
+  background-color: aliceblue;
   padding: 40px 30px 30px 30px;
   border-radius: 10px;
   position: absolute;
@@ -20,7 +20,11 @@
   width: 400px;
   transform: translate(-50%, -50%);
   transition: transform 300ms, box-shadow 300ms;
-  box-shadow: 5px 10px 10px rgba(2, 128, 144, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); /* Adds a deeper shadow */
+}
+
+.registration:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7); /* Shadow becomes larger on hover */
 }
 
 .registration::before,
@@ -65,9 +69,8 @@
 ::ng-deep .p-button {
   display: flex;
   border-radius: 5px;
-  width: 50%;
+  width: 100%;
   height: 2.5rem;
-  left: 25%;
   background-color: #028090;
 }
 
