@@ -317,7 +317,7 @@
 
             <!-- Okay Button -->
             <div class="col-12 text-center">
-                <button type="button" class="btn btn-danger">Okay</button>
+                <button type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Okay</button>
             </div>
         </div>
 
@@ -384,8 +384,9 @@
 
             <!-- Okay Button -->
             <div class="col-12 text-center approval-btn">
-                <p-button (onClick)="handleBooking(bookingById, 'approve')" label="Approve" type="submit"></p-button>
-                <p-button (onClick)="handleBooking(bookingById, 'reject')" styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'approve')" label="Approve" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'reject')" styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
+                <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved' || this.bookingById.status === 'ongoing'" type="button" (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
             </div>
             
         </div>
