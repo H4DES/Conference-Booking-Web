@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: #f4f4f4;
     display: flex;
     justify-content: center;
@@ -367,7 +367,9 @@ html, body {
   }
 
   ::ng-deep .dot-rejected {
-    color: rgb(243, 27, 12);
+    /* color: rgb(243, 27, 12); */
+    color: rgb(236, 53, 20);
+
   }
   
   ::ng-deep .dot-black {
