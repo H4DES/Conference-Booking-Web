@@ -590,6 +590,10 @@ executeBookingUpdate(data: Booking) {
       if (this.tokenRole == 'SuperAdmin' || this.userConferenceId === this.ConferenceData.conferenceId ){
         this.isAdminEventModalVisible = true;
       }
+      else if(this.tokenRole == 'AdminRole' || this.userConferenceId === this.ConferenceData.conferenceId){
+        this.isAdminEventModalVisible = true;
+
+      }
       else {
         this.isEventModalVisible = true;
       }
