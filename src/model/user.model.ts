@@ -1,5 +1,6 @@
 export interface UserModel {
-	userId: number | null;
+	userId: string | null;
 	userName: string;
 	conferenceId: number | null;
+	userRole: string[];
 }

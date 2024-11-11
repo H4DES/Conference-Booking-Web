@@ -68,8 +68,14 @@ export class AuthService {
     return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetAdmins');
   }
 
-  public onGetUsers(): Observable<IApiResponse<User[]>> {
-    return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetUsers');
+  public onGetUsers(role: string | null = null): Observable<IApiResponse<User[]>> {
+    if (role){
+      return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetUsers?role=' + role);
+    }
+    return this.http.get<IApiResponse<User[]>>(this.config.apiUrl + 'UserAuth/GetUsers?role=');
+  }
+  public onRemoveUser(userId: string): Observable<IApiResponse<string>> {
+    return this.http.get<IApiResponse<string>>(this.config.apiUrl + 'UserAuth/RemoveUser/' + userId);
   }
 
 
