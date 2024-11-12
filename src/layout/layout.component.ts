@@ -254,9 +254,9 @@ export class LayoutComponent {
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
       this.isBookingModalVisible = false;
       Swal.fire({
-        title: "Error!",
+        title: "Required Fields Missing",
         text: "All fields must be filled out before booking.",
-        icon: "error",
+        icon: "warning",
       }).then(() => {
         this.isBookingModalVisible = true;
       });
@@ -279,9 +279,9 @@ export class LayoutComponent {
     if (isBooked){
       this.isBookingModalVisible = false;
       Swal.fire({
-        title: "Error!",
+        title: "Booking Conflict",
         text: "Time slot already booked. Please choose a different time.",
-        icon: "error",
+        icon: "warning",
       }).then(() => {
         this.isBookingModalVisible = true;
       });
@@ -296,33 +296,46 @@ export class LayoutComponent {
     if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
       this.isBookingModalVisible = false;
       Swal.fire({
-        title: "Error!",
-        text: "Start: Please select booking time from 8:00AM to 5:00PM",
-        icon: "error",
+        title: "Invalid Booking Time",
+        text: "Please select a booking time starting from 8:00 AM or later.",
+        icon: "warning",
       }).then(() => {
         this.isBookingModalVisible = true;
       });
       return;
     } 
-    else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '23:59:00'){
-      this.isBookingModalVisible = false;
-      Swal.fire({
-        title: "Error!",
-        text: "Please select booking time from 8:00AM to 5:00PM",
-        icon: "error",
-      }).then(() => {
-        this.isBookingModalVisible = true;
-      });
-       return;
-    }
+    // else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '23:59:00'){
+    //   this.isBookingModalVisible = false;
+    //   Swal.fire({
+    //     title: "Error!",
+    //     text: "Please select booking time from 8:00AM to 5:00PM",
+    //     icon: "error",
+    //   }).then(() => {
+    //     this.isBookingModalVisible = true;
+    //   });
+    //    return;
+    // }
   
     // -- Validation handling for start-end time -- //
     if(data.bookingStart > data.bookingEnd) {
       this.isBookingModalVisible = false;
       Swal.fire({
-        title: "Error!",
+        title: "Invalid Time Range",
         text: "Booking end time can't be earlier than booking start time!",
-        icon: "error",
+        icon: "warning",
+      }).then(() => {
+        this.isBookingModalVisible = true;
+      });
+      return;
+    }
+
+    // -- Validation if start and end is equal -- //
+    if(data.bookingStart == data.bookingEnd){
+      this.isBookingModalVisible = false;
+      Swal.fire({
+        title: "Invalid Time Range",
+        text: "Booking start time can't be equal to booking end time!",
+        icon: "warning",
       }).then(() => {
         this.isBookingModalVisible = true;
       });
