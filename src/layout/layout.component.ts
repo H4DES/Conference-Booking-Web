@@ -698,7 +698,6 @@ executeBookingUpdate(data: Booking) {
     
     eventDidMount: (info) => {
       info.el.style.backgroundColor = 'lightblue';
-      info.el.style.borderRadius = '6px';
       info.el.style.color = '#505050';
       info.el.style.padding = "4px 6px";
       info.el.style.margin = "1px";
@@ -723,12 +722,12 @@ executeBookingUpdate(data: Booking) {
     aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
       if (info.date.getDay() === 0) {
-        
         info.el.style.pointerEvents = 'none';
         info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-        info.el.style.color = 'rgb(255, 255, 255)';
+
       }
     },
+    hiddenDays: [0],
     eventClick: this.handleEventClick.bind(this)
   };
 
@@ -992,14 +991,20 @@ executeBookingUpdate(data: Booking) {
     const start = new Date(`1970-01-01T${bookingStart}`);
     const now = new Date(`1970-01-01T${this.formattedTimeNow}`);
     const diff = start.getTime() - now.getTime();
-  
+
     if (diff <= 0) return 'Meeting ongoing';
-  
+
     const minutes = Math.floor(diff / (1000 * 60));
-    return minutes < 59
+    
+    if (minutes === 0) {
+      return 'Starting soon';
+    }
+  
+    return minutes < 30
       ? `Starting in less than ${minutes} minutes`
       : `Starting soon`;
-  }
+}
+
    
 
   onLogout(){
