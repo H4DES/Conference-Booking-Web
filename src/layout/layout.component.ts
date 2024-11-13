@@ -296,6 +296,7 @@ export class LayoutComponent {
 // -- Validation handling for inputs -- //
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
       this.isBookingModalVisible = false;
+      console.log(this.formattedDateNow);
       this.showSweetAlert('All fields must be filled out before booking.', 'warning', 'Required Fields Missing', true);
       return;
     }
@@ -428,12 +429,19 @@ export class LayoutComponent {
                       data.status = "approved";
                       data.description = remarks; // Store remarks in `data`
                       this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
+                      this.checkEndedBookings(data);
                       this.executeBookingUpdate(data);
                   }else{
                     this.isAdminEventModalVisible = true;
                   }
               });
-          }
+          }else {
+            data.status = "approved";
+            data.description = "";
+            this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
+            this.checkEndedBookings(data);
+            this.executeBookingUpdate(data);
+        }
       });
       } else if (action === "reject") {
         this.rejectBooking(data);
@@ -487,6 +495,16 @@ rejectBooking(data: Booking) {
         }
     });
 }
+
+checkEndedBookings(data: Booking) {
+  const currentDateTime = new Date(`${this.formattedDateNow}T${this.formattedTimeNow}`);
+  const bookingEndDateTime = new Date(`${data.bookedDate}T${data.bookingEnd}`);
+
+  if (currentDateTime >= bookingEndDateTime) {
+    data.status = "ended";
+  }
+}
+
 
 // Helper function to update booking and handle common response
 executeBookingUpdate(data: Booking) {
@@ -576,7 +594,9 @@ executeBookingUpdate(data: Booking) {
         if (booking.status == "ended"){
           continue;
         }
-        // Check if timeNow is greater than or equal to bookingEnd
+
+        //SECTION A
+        // Check if timeNow is greater than or equal to bookingEnd 
         if (timeNow >= booking.bookingEnd && booking.status == "ongoing") {
             this.updateBookingData.bookingId = booking.bookingId;      
             this.updateBookingData.status = "ended";
@@ -584,7 +604,7 @@ executeBookingUpdate(data: Booking) {
             console.log("status DONE");
             continue; // Skip to the next booking
         }
-
+      
         if (booking.status == "ongoing"){
           continue;
         }
