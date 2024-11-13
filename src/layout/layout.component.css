@@ -426,6 +426,10 @@ html, body {
     margin-right: 15px;
   }
 
+  ::ng-deep .recurring{
+    margin: 2.1rem 0;
+  }
+
   ::ng-deep .recurring .p-panel-header {
     height: 45px;
 }
@@ -447,6 +451,3 @@ html, body {
 ::ng-deep .side-by-side .p-dropdown{
     width: 100%;
 }
-
-
-
