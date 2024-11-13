@@ -42,6 +42,7 @@ import { MessageService } from 'primeng/api';
 import { ChangeDetectorRef } from '@angular/core';
 import { SweetAlertComponent } from '../app/sweet-alert/sweet-alert.component';
 import { TabViewModule } from 'primeng/tabview';
+import { Status } from '../model/status';
 
 declare var bootstrap: any;
 
@@ -117,7 +118,12 @@ export class LayoutComponent {
     { name: 'Daily', type: 'daily' },
     { name: 'Weekly', type: 'weekly' },
     { name: 'Monthly', type: 'monthly' }
-];
+  ];
+  notifBookings: { updates: Booking[], notice: Booking[], status: Booking[] } = {
+    updates: [],
+    notice: [],
+    status: []
+  };
 
 
 
@@ -426,7 +432,7 @@ export class LayoutComponent {
               }).then((remarkResult) => {
                   if (remarkResult.isConfirmed) {
                       const remarks = remarkResult.value;
-                      data.status = "approved";
+                      data.status = Status.approve;
                       data.description = remarks; // Store remarks in `data`
                       this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
                       this.checkEndedBookings(data);
@@ -436,7 +442,7 @@ export class LayoutComponent {
                   }
               });
           }else {
-            data.status = "approved";
+            data.status = Status.approve;
             data.description = "";
             this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
             this.checkEndedBookings(data);
@@ -481,7 +487,7 @@ rejectBooking(data: Booking) {
                 if (remarkResult.isConfirmed) {
                     const remarks = remarkResult.value;
                     
-                    data.status = "rejected";
+                    data.status = Status.reject;
                     data.description = remarks; // Store remarks in `data`
                     console.log("Remarks set in data.description:", data.description);
                     Swal.fire({
@@ -501,7 +507,7 @@ checkEndedBookings(data: Booking) {
   const bookingEndDateTime = new Date(`${data.bookedDate}T${data.bookingEnd}`);
 
   if (currentDateTime >= bookingEndDateTime) {
-    data.status = "ended";
+    data.status = Status.end;
   }
 }
 
@@ -591,21 +597,21 @@ executeBookingUpdate(data: Booking) {
             continue; // Skip to the next booking
         }
 
-        if (booking.status == "ended"){
+        if (booking.status == Status.end){
           continue;
         }
 
         //SECTION A
         // Check if timeNow is greater than or equal to bookingEnd 
-        if (timeNow >= booking.bookingEnd && booking.status == "ongoing") {
+        if (timeNow >= booking.bookingEnd && booking.status == Status.ongoing) {
             this.updateBookingData.bookingId = booking.bookingId;      
-            this.updateBookingData.status = "ended";
+            this.updateBookingData.status = Status.end;
             this.onUpdateStatus(this.updateBookingData);
             console.log("status DONE");
             continue; // Skip to the next booking
         }
       
-        if (booking.status == "ongoing"){
+        if (booking.status == Status.ongoing){
           continue;
         }
         // Check if timeNow is greater than or equal to bookingStart
@@ -879,8 +885,8 @@ executeBookingUpdate(data: Booking) {
 
   this.bookingData.forEach((booking: Booking) => {
     // Update status based on current time and existing conditions
-    if (this.formattedTimeNow >= booking.bookingStart && booking.status !== "ended") {
-      booking.status = "ongoing";
+    if (this.formattedTimeNow >= booking.bookingStart && booking.status !== Status.end) {
+      booking.status = Status.ongoing;
     }
 
     // Update the status in the calendar if the event exists
@@ -892,8 +898,8 @@ executeBookingUpdate(data: Booking) {
    this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
       const events = this.bookingData.map((booking: Booking) => {
 
-        if (this.formattedTimeNow >= booking.bookingStart && booking.status === "approved" && this.formattedDateNow === booking.bookedDate){
-          booking.status = "ongoing";
+        if (this.formattedTimeNow >= booking.bookingStart && booking.status === Status.approve && this.formattedDateNow === booking.bookedDate){
+          booking.status = Status.ongoing;
         }
         const event: {} = {
           id: booking.bookingId,
@@ -1001,6 +1007,10 @@ executeBookingUpdate(data: Booking) {
                 statusText = 'ended';
                 statusColor = 'gray';
                 break;
+            case 'rejected':
+                statusText = 'rejected';
+                statusColor = 'black';
+                break;
             default:
                 statusText = 'unknown';
                 statusColor = 'black';
@@ -1011,23 +1021,23 @@ executeBookingUpdate(data: Booking) {
     }
 
 
-  upcomingBooking: Booking[] = [];
-  ongoingBooking: Booking[] = [];
-  rejectedBooking: Booking[] = [];
+  
   
   notifSound = new Audio('../assets/notifSound.wav');
   notifiedBookings = new Set<number | null>();
-
+  notifCount: number = 0;
   checkUpcomingBooking(TimeNow: string) {
-    this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
+    this.notifBookings.updates = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)
-                                                     && b.status === 'approved');
+                                                     && b.status === Status.approve || b.status === Status.ongoing);
     
-    this.ongoingBooking = this.bookingByDate.filter(b => b.status === 'ongoing');
-    this.rejectedBooking = this.bookingData.filter(b => b.status === 'rejected');
+    this.notifBookings.status = this.bookingByDate.filter(b => b.status === Status.approve || b.status === Status.cancel);
+    this.notifBookings.notice = this.bookingByDate.filter(b => b.status === Status.reject || b.status === Status.extend);
 
 
-    this.upcomingBooking.forEach(x => {
+    this.notifCount = Object.values(this.notifBookings).reduce((sum, array) => sum + array.length, 0);
+
+    this.notifBookings.updates.forEach(x => {
       if (!this.notifiedBookings.has(x.bookingId)) {
         this.notifiedBookings.add(x.bookingId);
         this.messageServ.add({ severity: 'secondary', summary: `${x.purpose}`, detail: `${this.calculateTimeUntilStart(x.bookingStart)}` });
@@ -1039,6 +1049,16 @@ executeBookingUpdate(data: Booking) {
       
     
     console.log("Checked the upcoming booked events");
+  }
+
+  notifStatusDescription(booking: Booking): string | null{
+    if (booking.status === Status.cancel){
+      return 'Meeting cancelled';
+    }
+    if (booking.status === Status.approve){
+      return booking.description === '' ? 'Meeting approved!' : `Meeting approved\nRemarks: ${booking.description}`
+    }
+    return null;
   }
 
   subtractMinutes(time: string, minutes: number): string {
@@ -1078,7 +1098,7 @@ executeBookingUpdate(data: Booking) {
   }
 
   extendMeeting(data: Booking){
-    data.status = 'extended';
+    data.status = Status.extend;
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
       next: (res) => {
         if (res.isSuccess){
