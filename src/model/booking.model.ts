@@ -11,7 +11,7 @@ export interface BookingModel {
     expectedAttendees: number | null; // Nullable int
     purpose: string; // Required string
     description: string | null; // Nullable string
-    status: string | null; // Nullable string
+    status: number | null; // Nullable string
     recurringType: string | null;
     recurringEndDate: string | null;
     conferenceId: number; // Required int

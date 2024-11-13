@@ -38,7 +38,7 @@ import { User } from '../model/user';
 import { BadgeModule } from 'primeng/badge';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
+import { TabViewModule } from 'primeng/tabview';
 
 declare var bootstrap: any;
 
@@ -77,6 +77,7 @@ interface ConferenceRoom {
               DataViewModule,
               BadgeModule,
               ToastModule,
+              TabViewModule
             ],
   providers: [MessageService, DatePipe],
   templateUrl: './layout.component.html',
@@ -551,7 +552,7 @@ executeBookingUpdate(data: Booking) {
             continue; // Skip to the next booking
         }
 
-        if (booking.status == "ended"){
+        if (booking.statusCode == "ended"){
           continue;
         }
         // Check if timeNow is greater than or equal to bookingEnd
@@ -710,7 +711,7 @@ executeBookingUpdate(data: Booking) {
     },
     
     eventDidMount: (info) => {
-      info.el.style.backgroundColor = 'lightblue';
+      info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)';
       info.el.style.color = '#505050';
       info.el.style.padding = "4px 6px";
       info.el.style.margin = "1px";
@@ -724,11 +725,11 @@ executeBookingUpdate(data: Booking) {
 
 
       info.el.addEventListener('mouseenter', () => {
-        info.el.style.backgroundColor = '#92A0AD'; // Change to a darker color
+        info.el.style.backgroundColor = 'rgba(255, 0 ,0 , 0.5)'; // Change to a darker color
         info.el.style.color = '#ffffff';
       });
       info.el.addEventListener('mouseleave', () => {
-        info.el.style.backgroundColor = 'lightblue'; // Revert to original color
+        info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)'; // Revert to original color
         info.el.style.color = '#505050';
     });
     },
@@ -968,6 +969,8 @@ executeBookingUpdate(data: Booking) {
 
 
   upcomingBooking: Booking[] = [];
+  ongoingBooking: Booking[] = [];
+  rejectedBooking: Booking[] = [];
   
   notifSound = new Audio('../assets/notifSound.wav');
   notifiedBookings = new Set<number | null>();
@@ -975,7 +978,12 @@ executeBookingUpdate(data: Booking) {
   checkUpcomingBooking(TimeNow: string) {
     this.upcomingBooking = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)
-                                                     && b.status === 'approved' || b.status === 'ongoing');
+                                                     && b.status === 'approved');
+    
+    this.ongoingBooking = this.bookingByDate.filter(b => b.status === 'ongoing');
+    this.rejectedBooking = this.bookingData.filter(b => b.status === 'rejected');
+
+
     this.upcomingBooking.forEach(x => {
       if (!this.notifiedBookings.has(x.bookingId)) {
         this.notifiedBookings.add(x.bookingId);
@@ -984,6 +992,7 @@ executeBookingUpdate(data: Booking) {
       }
       
     });
+
       
     
     console.log("Checked the upcoming booked events");
@@ -1025,6 +1034,21 @@ executeBookingUpdate(data: Booking) {
     this.router.navigateByUrl('/login');
   }
 
+  extendMeeting(data: Booking){
+    data.status = 'extended';
+    this.bookingServ.onAddOrUpdateBooking(data).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
 
+        }
+        else {
+
+        }
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
   
 }
