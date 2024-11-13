@@ -296,7 +296,7 @@
                 <label for="floatingInput" class="font-bold block mb-2"> Expected number of Attendees </label>
             </p-floatLabel>
         </div>
-    
+        
         <!-- Recurring Meeting Checkbox -->
         <!-- <div class="form-check mt-4">
             <input class="form-check-input" type="checkbox" id="recurringMeeting" [(ngModel)]="checked">
@@ -408,6 +408,11 @@
             <div class="col-12">
                 <label for="attendees" class="form-label">Number of Attendees</label>
                 <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
+            </div>
+
+            <div class="col-12" *ngIf="this.bookingById.description != ''">
+                <label for="attendees" class="form-label">Remarks</label>
+                <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
             </div>
 
             <!-- Okay Button -->
