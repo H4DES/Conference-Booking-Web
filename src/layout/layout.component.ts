@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Booking } from '../model/booking';
@@ -18,7 +19,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ConferenceService } from '../services/conference-service/conference.service';
 import { BookingService } from '../services/booking-service/booking.service';
 import { Conference } from '../model/conference';
-import { retry } from 'rxjs';
+import { retry, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SidebarModule } from 'primeng/sidebar';
@@ -38,6 +39,8 @@ import { User } from '../model/user';
 import { BadgeModule } from 'primeng/badge';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { ChangeDetectorRef } from '@angular/core';
+import { SweetAlertComponent } from '../app/sweet-alert/sweet-alert.component';
 import { TabViewModule } from 'primeng/tabview';
 
 declare var bootstrap: any;
@@ -77,7 +80,8 @@ interface ConferenceRoom {
               DataViewModule,
               BadgeModule,
               ToastModule,
-              TabViewModule
+              TabViewModule,
+              SweetAlertComponent
             ],
   providers: [MessageService, DatePipe],
   templateUrl: './layout.component.html',
@@ -119,6 +123,8 @@ export class LayoutComponent {
 
   //for side bar
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
+  @ViewChild('customAlert') customAlert!: SweetAlertComponent;
+  private alertClosedSubscription?: Subscription;
 
   closeCallback(e: Event): void {
       this.sidebarRef.close(e);
@@ -141,7 +147,38 @@ export class LayoutComponent {
               private bookingServ: BookingService, 
               private router: Router, 
               private AuthServ: AuthService,
-              private messageServ: MessageService, private datePipe: DatePipe) {}
+              private messageServ: MessageService, private datePipe: DatePipe,
+              private cdr: ChangeDetectorRef) {}
+
+              showSweetAlert(
+                message: string, 
+                status: 'success' | 'error' | 'warning' | 'info', 
+                title: string = 'Alert',
+                isWarning: boolean = false
+              ): void {
+                if (this.customAlert) {
+                  this.customAlert.title = title;
+                  this.customAlert.message = message;
+                  this.customAlert.status = status;
+                  this.customAlert.showAlert();
+            
+                  // Unsubscribe any previous subscription to avoid multiple triggers
+                  // this.alertClosedSubscription?.unsubscribe();
+                  // if (isWarning) {
+                  //   this.alertClosedSubscription = this.customAlert.alertClosed.subscribe(() => {
+                  //     this.onAlertClosed();
+                  //     this.alertClosedSubscription?.unsubscribe(); // Unsubscribe after triggering once
+                  //   });
+                  // }
+                }
+              }
+              
+
+              onAlertClosed(): void {
+                if (this.customAlert.status === 'warning') this.isBookingModalVisible = true;
+              }
+
+              
 
   @ViewChild('step1', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
@@ -164,6 +201,12 @@ export class LayoutComponent {
   //     { name: 'Paris', code: 'PRS' }
   // ];
   }
+
+  autoResize(textarea: HTMLTextAreaElement) {
+    textarea.style.height = 'auto'; // Reset height to recalculate
+    textarea.style.height = `${textarea.scrollHeight}px`; // Adjust height to fit content
+  }
+
   DisplayBookingByID(id: number) {
     console.log(`Searching for booking with ID: ${id}`);
     const booking = this.bookingData.find(b => b.bookingId === id);
@@ -249,18 +292,11 @@ export class LayoutComponent {
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
-    
 
 // -- Validation handling for inputs -- //
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
       this.isBookingModalVisible = false;
-      Swal.fire({
-        title: "Required Fields Missing",
-        text: "All fields must be filled out before booking.",
-        icon: "warning",
-      }).then(() => {
-        this.isBookingModalVisible = true;
-      });
+      this.showSweetAlert('All fields must be filled out before booking.', 'warning', 'Required Fields Missing', true);
       return;
     }
 
@@ -279,13 +315,7 @@ export class LayoutComponent {
     })
     if (isBooked){
       this.isBookingModalVisible = false;
-      Swal.fire({
-        title: "Booking Conflict",
-        text: "Time slot already booked. Please choose a different time.",
-        icon: "warning",
-      }).then(() => {
-        this.isBookingModalVisible = true;
-      });
+      this.showSweetAlert('Time slot already booked. Please choose a different time.', 'warning', 'Booking Conflict', true);
       return;
     }
 
@@ -296,13 +326,7 @@ export class LayoutComponent {
     // -- Validation handling for booking available time range -- //
     if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
       this.isBookingModalVisible = false;
-      Swal.fire({
-        title: "Invalid Booking Time",
-        text: "Please select a booking time starting from 8:00 AM or later.",
-        icon: "warning",
-      }).then(() => {
-        this.isBookingModalVisible = true;
-      });
+      this.showSweetAlert('Please select a booking time starting from 8:00 AM or later.', 'warning', 'Invalid Booking Time', true);
       return;
     } 
     // else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '23:59:00'){
@@ -320,26 +344,14 @@ export class LayoutComponent {
     // -- Validation handling for start-end time -- //
     if(data.bookingStart > data.bookingEnd) {
       this.isBookingModalVisible = false;
-      Swal.fire({
-        title: "Invalid Time Range",
-        text: "Booking end time can't be earlier than booking start time!",
-        icon: "warning",
-      }).then(() => {
-        this.isBookingModalVisible = true;
-      });
+      this.showSweetAlert("Booking end time can't be earlier than booking start time!", 'warning', 'Invalid Time Range', true);
       return;
     }
 
     // -- Validation if start and end is equal -- //
     if(data.bookingStart == data.bookingEnd){
       this.isBookingModalVisible = false;
-      Swal.fire({
-        title: "Invalid Time Range",
-        text: "Booking start time can't be equal to booking end time!",
-        icon: "warning",
-      }).then(() => {
-        this.isBookingModalVisible = true;
-      });
+      this.showSweetAlert("Booking start time can't be equal to booking end time!", 'warning', 'Invalid Time Range');
       return;
     }
 
@@ -349,14 +361,7 @@ export class LayoutComponent {
     }
     if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
       this.isBookingModalVisible = false;
-
-      Swal.fire({
-        title: "Error!",
-        text: `The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity} `,
-        icon: "error",
-      }).then(() => {
-        this.isBookingModalVisible = true;  // Re-enable/show your custom modal
-      });
+      this.showSweetAlert(`The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity}`, 'warning', 'Exceeded Conference Capacity', true);
       return;
     }
     if(data.recurringType){
@@ -373,27 +378,17 @@ export class LayoutComponent {
         console.log(res);
         if (res.isSuccess) {
           this.isBookingModalVisible = false;
-          Swal.fire({
-            title: "Success!",
-            text: "Booking successfully completed.",
-            icon: "success",
-          });
+          this.showSweetAlert("Booking successfully completed!", 'success', 'Success!', false);
           this.data = new Booking();
         } else {
-          Swal.fire({
-            title: "Error!",
-            text: "Booking failed. Please try again.",
-            icon: "error",
-          });
+          this.isBookingModalVisible = false;
+          this.showSweetAlert("Booking failed. Please try again.", 'error', 'Error!');
         }
       },
       error: (err) => {
         console.error('Error inserting:', err); // Log any errors
-        Swal.fire({
-          title: "Error!",
-          text: "An unexpected error occurred. Please try again later.",
-          icon: "error",
-        });
+        this.isBookingModalVisible = false;
+        this.showSweetAlert("An unexpected error occurred. Please try again later.", 'error', 'Error!');     
       },
       complete: () => {
         this.recurringEndDate = null;
@@ -406,14 +401,39 @@ export class LayoutComponent {
   handleBooking(data: Booking, action: string) {
     
     if (action === "approve") {
-        data.status = "approved";
         this.isAdminEventModalVisible = false;
-      Swal.fire({
-        title: "Success!",
-        text: `Booking ${this.bookingById.purpose} accepted successfully!`,
-        icon: "success",
+
+        Swal.fire({
+          title: "Booking Remarks (Optional)",
+          text: "Would you like to add any remarks for this booking? This is optional.",
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, add remarks"
+      }).then((result) => {
+          if (result.isConfirmed) {
+              Swal.fire({
+                  title: "Add Your Remarks",
+                  input: "textarea",
+                  inputPlaceholder: "Enter remarks for this booking",
+                  icon: "info",
+                  showCancelButton: true,
+                  confirmButtonText: "Submit",
+                  cancelButtonText: "Cancel",
+              }).then((remarkResult) => {
+                  if (remarkResult.isConfirmed) {
+                      const remarks = remarkResult.value;
+                      data.status = "approved";
+                      data.description = remarks; // Store remarks in `data`
+                      this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
+                      this.executeBookingUpdate(data);
+                  }else{
+                    this.isAdminEventModalVisible = true;
+                  }
+              });
+          }
       });
-        this.executeBookingUpdate(data);
       } else if (action === "reject") {
         this.rejectBooking(data);
     }
@@ -589,6 +609,8 @@ executeBookingUpdate(data: Booking) {
 
 
   ngOnDestroy(): void {
+    this.alertClosedSubscription?.unsubscribe();
+
     if (this.timer) {
       clearInterval(this.timer);
     }
@@ -607,7 +629,7 @@ executeBookingUpdate(data: Booking) {
 
   showRoleEventDialog(){
     this.tokenRole = this.AuthServ.getUserRole();
-      if (this.tokenRole == 'SuperAdmin' ){
+      if (this.tokenRole === 'SuperAdmin'|| this.tokenRole === 'AdminRole' ){
         this.isAdminEventModalVisible = true;
       }
       else if(this.userConferenceId === this.ConferenceData.conferenceId){
@@ -1052,3 +1074,5 @@ executeBookingUpdate(data: Booking) {
   }
   
 }
+
+
