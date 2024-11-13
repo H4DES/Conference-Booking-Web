@@ -490,3 +490,6 @@ html, body {
 ::ng-deep .notif .notif-notice .p-panel-header-icon:hover {
     background-color: darkred;
 }
+::ng-deep .notif .p-tabview-panels{
+    padding: 0;
+}
