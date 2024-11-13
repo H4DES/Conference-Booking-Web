@@ -409,8 +409,9 @@ export class LayoutComponent {
           icon: "info",
           showCancelButton: true,
           confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, add remarks"
+          cancelButtonColor: "#33d92e",
+          confirmButtonText: "Add Remarks",
+          cancelButtonText: "Accept Booking"
       }).then((result) => {
           if (result.isConfirmed) {
               Swal.fire({
@@ -572,7 +573,7 @@ executeBookingUpdate(data: Booking) {
             continue; // Skip to the next booking
         }
 
-        if (booking.statusCode == "ended"){
+        if (booking.status == "ended"){
           continue;
         }
         // Check if timeNow is greater than or equal to bookingEnd
