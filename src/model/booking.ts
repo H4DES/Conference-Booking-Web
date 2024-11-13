@@ -13,7 +13,7 @@ export class Booking implements BookingModel{
   expectedAttendees: number | null; // Nullable int
   purpose: string; // Required string
   description: string | null; // Nullable string
-  statusCode: number | null; // Nullable string
+  status: string | null; // Nullable string
   recurringType: string | null;
   recurringEndDate: string | null;
   conferenceId: number; // Required int
@@ -31,7 +31,7 @@ export class Booking implements BookingModel{
     this.expectedAttendees = null;//
     this.purpose = '';//
     this.description = '';
-    this.statusCode = null;//Default to pending when inserting
+    this.status = null;//Default to pending when inserting
     this.recurringType = null;
     this.recurringEndDate = null;
     this.conferenceId = 0;
