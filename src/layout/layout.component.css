@@ -430,8 +430,14 @@ html, body {
     margin: 2.1rem 0;
   }
 
+::ng-deep .recurring .p-panel-expanded .p-panel-header {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
   ::ng-deep .recurring .p-panel-header {
     height: 45px;
+    border-radius: 8px;
 }
 
 ::ng-deep .full-width {
@@ -450,4 +456,32 @@ html, body {
 
 ::ng-deep .side-by-side .p-dropdown{
     width: 100%;
+}
+
+::ng-deep .p-tabview-nav-content a{
+    text-decoration: none;
+    color: #6b7280;
+}
+::ng-deep .p-tabview-nav-content .p-highlight a{
+    text-decoration: none;
+    color: #3B82F6;
+    
+}
+
+::ng-deep .notif .notif-notice .p-panel-expanded .p-panel-header {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+}
+::ng-deep .notif .notif-notice .p-panel-header {
+    background-color: rgb(247, 24, 24);
+    border: none;
+    border-radius: 10px;
+}
+::ng-deep .notif .notif-notice .p-panel-header-icon {
+    color: white;
+    border-radius: 25px;
+}
+::ng-deep .notif .notif-notice .p-panel-header-icon:hover {
+    background-color: darkred;
 }
