@@ -19,8 +19,8 @@
         </div>
 
         <div class="booking-time">
-            <i *ngIf="upcomingBooking.length === 0 && ongoingBooking.length === 0 && rejectedBooking.length === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
-            <i *ngIf="upcomingBooking.length > 0 || ongoingBooking.length > 0 || rejectedBooking.length > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="upcomingBooking.length + ongoingBooking.length + rejectedBooking.length" (click)="notifVisible = true"></i>
+            <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
+            <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount" (click)="notifVisible = true"></i>
 
             <p-sidebar [(visible)]="notifVisible" position="right" [style]="{ width: '450px' }">
                 <ng-template pTemplate="headless">
@@ -35,12 +35,12 @@
                                 <span>Updates</span>
                             </ng-template>
                             <p-scrollPanel class="notif-updates" [style]="{ width: '100%', height: '85vh' }">
-                                <p-dataView #dv [value]="upcomingBooking">
+                                <p-dataView #dv [value]="notifBookings.updates">
                                     <ng-template pTemplate="list" let-bookings>
                                         <div class="grid grid-nogutter">
                                             <div class="col-12" *ngFor="let booking of bookings; let first = first">
                                                 <!-- Booking Box -->
-                                                <p-panel class="notif-panel" [style]="{ padding: '20px' }" [toggleable]="true">
+                                                <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
                                                     <!-- Custom Header -->
                                                     <ng-template pTemplate="header">
                                                         <div class="d-flex justify-content-between align-items-center">
@@ -106,10 +106,77 @@
                         <p-tabPanel >
                             <ng-template pTemplate="header" >
                                 <div>
-                                    <span>Status</span>
+                                    <span>Status<sup [style.color]="'blue'">{{ notifBookings.status.length }}</sup></span>
                                     
                                 </div>
-                            </ng-template>                 
+                            </ng-template>         
+                            <p-scrollPanel class="notif-status" [style]="{ width: '100%', height: '85vh' }">
+                                <p-dataView #dv [value]="notifBookings.status">
+                                    <ng-template pTemplate="list" let-bookings>
+                                        <div class="grid grid-nogutter">
+                                            <div class="col-12" *ngFor="let booking of bookings; let first = first">
+                                                <!-- Booking Box -->
+                                                <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
+                                                    <!-- Custom Header -->
+                                                    <ng-template pTemplate="header">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <span class="font-medium text-lg text-900">
+                                                                    {{ booking.purpose }}
+                                                                    <span class="text-sm text-secondary">
+                                                                        ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} - 
+                                                                        {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+
+                                                            <!-- Status with dynamic color and border -->
+                                                            <div *ngIf="booking.status" [ngStyle]="{
+                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
+                                                                'padding': '2px 5px',
+                                                                'margin': '0 10px',
+                                                                'border-radius': '10px',
+                                                                'color': 'white',
+                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
+                                                                'font-weight': 'bold',
+                                                                'font-size': '0.65rem',
+                                                                'display': 'inline-block'
+                                                            }" [class]="booking.status">
+                                                                {{ getStatusLabel(booking.status).split('|')[0] }}
+                                                            </div>
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <!-- Panel Content -->
+                                                    <ng-template pTemplate="body">
+                                                        <div [style]="{ height: '25px', overflow: 'hidden' }">
+                                                            <p>{{ notifStatusDescription(booking) }}</p>
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <!-- Footer with Divider -->
+                                                    <ng-template pTemplate="footer">
+                                                        <div class="d-flex align-items-center justify-content-between text-secondary" 
+                                                             [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+                                                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
+                                                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
+                                                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }" layout="vertical"></p-divider>
+                                                            <span [style]="{ flexShrink: 0 }">Department:</span>
+                                                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
+                                                        </div>
+                                                    </ng-template>
+                                                </p-panel>
+                                                        
+
+
+
+
+                                                
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dataView>              
+                            </p-scrollPanel>        
                                       
                         </p-tabPanel>
 
@@ -119,12 +186,12 @@
 
                             </ng-template>
                             <p-scrollPanel class="notif-notice" [style]="{ width: '100%', height: '85vh' }">
-                                <p-dataView #dv [value]="rejectedBooking">
+                                <p-dataView #dv [value]="notifBookings.notice">
                                     <ng-template pTemplate="list" let-bookings>
                                         <div class="grid grid-nogutter">
                                             <div class="col-12" *ngFor="let booking of bookings; let first = first">
                                                 <!-- Booking Box -->
-                                                <p-panel class="notif-panel" [style]="{ padding: '20px' }" [toggleable]="true">
+                                                <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
                                                     <!-- Custom Header -->
                                                     <ng-template pTemplate="header">
                                                         <div class="d-flex justify-content-between align-items-center" [style.color]="'white'">
