@@ -37,8 +37,11 @@
                 <tr>
                     <td>{{ user.userId }}</td>
                     <td>{{ user.userName }}</td>
+                    <!-- <td>
+                    	{{ user.userRole === 'admin' ? '*' : onGetConferenceName(user.conferenceId) }}
+                    </td> -->
                     <td>
-                    	{{ user.userRole.toString() === 'AdminRole' ? '*' : onGetConferenceName(user.conferenceId) }}
+                        {{ user.conferenceId }}
                     </td>
                     <td>
                         {{ user.userRole }}
