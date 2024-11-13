@@ -7,6 +7,6 @@ import { Injectable } from '@angular/core';
 export class AppConfigService {
   // public readonly apiUrl = "https://100.90.130.38:2401/api/";
   // public readonly apiUrl = "https://100.100.252.81:2501/api/";
-  public readonly apiUrl = "https://localhost:2502/api/";
+  public readonly apiUrl = "https://10.50.69.255:2502/api/";
 
 }
