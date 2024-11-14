@@ -109,7 +109,6 @@ export class LayoutComponent {
   private timer2: any;
   formattedTimeNow: string = ""
   bookingByDate: Booking[] = [];
-  updateBookingData: Booking = new Booking();
   formattedDateNow: string = new Date().toISOString().slice(0, 10);
   admins: User[] = [];
   recurringEndDate!: Date | null;
@@ -429,6 +428,28 @@ export class LayoutComponent {
                   showCancelButton: true,
                   confirmButtonText: "Submit",
                   cancelButtonText: "Cancel",
+                  inputAttributes: {
+                    maxlength: "79" // Limit input to 79 characters
+                },
+                html: `
+                <div id="charCount">79 characters remaining</div>
+            `,
+             didOpen: () => {
+        const remarksInput = Swal.getInput() as HTMLTextAreaElement | null; // Access Swal's default input
+        const charCount = Swal.getPopup()?.querySelector('#charCount') as HTMLDivElement | null;
+        
+        // Check if elements are found and add event listener
+        if (remarksInput && charCount) {
+            remarksInput.addEventListener('input', () => {
+                const remaining = 79 - remarksInput.value.length;
+                charCount.textContent = `${remaining} characters remaining`;
+            });
+        }
+    },
+    preConfirm: () => {
+        const remarksInput = Swal.getInput() as HTMLTextAreaElement | null;
+        return remarksInput ? remarksInput.value : "";
+    }
               }).then((remarkResult) => {
                   if (remarkResult.isConfirmed) {
                       const remarks = remarkResult.value;
@@ -511,8 +532,31 @@ checkEndedBookings(data: Booking) {
   }
 }
 
+forceEndBooking(data: Booking){
+  data.status = Status.end;
+  this.executeBookingUpdate(data);
+  Swal.fire({
+    title: "End this booking?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, end it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Booking Ended!",
+        text: "Meeting has been ended.",
+        icon: "success"
+      });
+      data.status = Status.end;
+      data.bookingEnd = this.formattedTimeNow;
+      this.executeBookingUpdate(data);
+    }
+  });
+}
 
-// Helper function to update booking and handle common response
 executeBookingUpdate(data: Booking) {
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
@@ -590,7 +634,6 @@ executeBookingUpdate(data: Booking) {
   checkEventStarting(timeNow: string) {
     // console.info(`${this.formattedTimeNow}`);
     // console.log(this.bookingByDate.map(x => x.bookingStart <= timeNow));
-
     for (let booking of this.bookingByDate) {
         // Check if timeNow is less than bookingStart
         if (timeNow < booking.bookingStart) {
@@ -604,9 +647,8 @@ executeBookingUpdate(data: Booking) {
         //SECTION A
         // Check if timeNow is greater than or equal to bookingEnd 
         if (timeNow >= booking.bookingEnd && booking.status == Status.ongoing) {
-            this.updateBookingData.bookingId = booking.bookingId;      
-            this.updateBookingData.status = Status.end;
-            this.onUpdateStatus(this.updateBookingData);
+            booking.status = Status.end;
+            this.executeBookingUpdate(booking);
             console.log("status DONE");
             continue; // Skip to the next booking
         }

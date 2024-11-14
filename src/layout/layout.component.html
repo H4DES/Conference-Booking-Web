@@ -549,12 +549,19 @@
                 <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
             </div>
 
+            <div class="col-12" *ngIf="this.bookingById.description != ''">
+                <label for="attendees" class="form-label">Remarks</label>
+                <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
+            </div>
+
             <!-- Okay Button -->
             <div class="col-12 text-center approval-btn">
                 <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'approve')" label="Approve" type="submit"></p-button>
                 <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'reject')" styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
-                <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved' || this.bookingById.status === 'ongoing' || this.bookingById.status === 'rejected'" type="button" (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
+                <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved' || this.bookingById.status === 'rejected'" type="button" (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
 
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="forceEndBooking(bookingById)" label="End Meeting" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isAdminEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
             </div>
             
         </div>
