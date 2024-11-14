@@ -3,7 +3,7 @@ import { UserModel } from "./user.model";
 export class Admin implements UserModel{
 	userId: string | null;
 	userName: string;
-	conferenceId: number | null;
+	conferenceId: string | null;
 	userRole: string[];
 	constructor(){
 		this.userId = null;
@@ -16,7 +16,7 @@ export class Admin implements UserModel{
 export class User implements UserModel{
 	userId: string | null;
 	userName: string;
-	conferenceId: number | null;
+	conferenceId: string | null;
 	userRole: string[];
 	constructor(){
 		this.userId = null;

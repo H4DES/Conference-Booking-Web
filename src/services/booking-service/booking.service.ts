@@ -18,11 +18,11 @@ export class BookingService {
 
 
   // Get calls
-  public onGetBookingByConferenceId(ID: number): Observable<IApiResponse<Booking[]>> {
+  public onGetBookingByConferenceId(ID: string): Observable<IApiResponse<Booking[]>> {
     return this.http.get<IApiResponse<Booking[]>>(this.config.apiUrl +  'Booking/GetBookingByConferenceID/' + ID)
   }
 
-  public onGetBookingByBookingId(ID: number): Observable<IApiResponse<Booking>> {
+  public onGetBookingByBookingId(ID: string): Observable<IApiResponse<Booking>> {
     return this.http.get<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/GetBookingByBookingID/' + ID)
   }
 
@@ -41,7 +41,7 @@ export class BookingService {
   }
 
   // Delete calls
-  public onBookingDelete(ID: number): Observable<IApiResponse<Booking>> {
+  public onBookingDelete(ID: string): Observable<IApiResponse<Booking>> {
     return this.http.delete<IApiResponse<Booking>>(this.config.apiUrl + 'Booking/DeleteBooking/' + ID)
   }
 

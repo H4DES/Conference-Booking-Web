@@ -187,7 +187,7 @@ export class UserManagementComponent {
   }
 
   
-  onGetConferenceName(conferenceId: number) : string{
+  onGetConferenceName(conferenceId: string) : string{
     return this.Conferences.find(x => x.conferenceId === conferenceId)?.conferenceName!;
   }
 

@@ -26,7 +26,7 @@ export class ConferenceService {
   }
 
   // Delete calls
-  public onConferenceDelete(ID: number): Observable<IApiResponse<Conference>> {
+  public onConferenceDelete(ID: string): Observable<IApiResponse<Conference>> {
     return this.http.delete<IApiResponse<Conference>>(this.config.apiUrl + 'Conference/DeleteConference/' + ID)
   }
 }
