@@ -251,6 +251,10 @@ html, body {
     height: calc(2.5rem + 2px);
 }
 
+::ng-deep #username-help{
+    font-size: 0.60rem;
+}
+
 ::ng-deep #remarks{
     font-size: 0.90rem;
 }

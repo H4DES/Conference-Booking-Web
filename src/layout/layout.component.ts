@@ -43,6 +43,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { SweetAlertComponent } from '../app/sweet-alert/sweet-alert.component';
 import { TabViewModule } from 'primeng/tabview';
 import { Status } from '../model/status';
+import { TooltipModule } from 'primeng/tooltip';
 
 declare var bootstrap: any;
 
@@ -82,7 +83,8 @@ interface ConferenceRoom {
               BadgeModule,
               ToastModule,
               TabViewModule,
-              SweetAlertComponent
+              SweetAlertComponent,
+              TooltipModule
             ],
   providers: [MessageService, DatePipe],
   templateUrl: './layout.component.html',
@@ -463,6 +465,7 @@ export class LayoutComponent {
                   }
               });
           }else {
+            // debugger;
             data.status = Status.approve;
             data.description = "";
             this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
@@ -532,9 +535,25 @@ checkEndedBookings(data: Booking) {
   }
 }
 
+ExtraEndTime(endTime: string, minutesToAdd: number): string {
+  let [hours, minutes] = endTime.split(":").map(Number);
+
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes + minutesToAdd);
+
+  let newHours = date.getHours().toString().padStart(2, "0");
+  let newMinutes = date.getMinutes().toString().padStart(2, "0");
+
+  return `${newHours}:${newMinutes}:00`;
+}
+
+extendMeeting(){
+  
+}
+
 forceEndBooking(data: Booking){
-  data.status = Status.end;
-  this.executeBookingUpdate(data);
+  this.isAdminEventModalVisible = false;
   Swal.fire({
     title: "End this booking?",
     text: "You won't be able to revert this!",
@@ -553,14 +572,17 @@ forceEndBooking(data: Booking){
       data.status = Status.end;
       data.bookingEnd = this.formattedTimeNow;
       this.executeBookingUpdate(data);
+    }else{
+      this.isAdminEventModalVisible = true;
     }
   });
 }
 
 executeBookingUpdate(data: Booking) {
+  data.bookingEnd = this.ExtraEndTime(data.bookingEnd, 5);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
-            console.log(res);
+            console.log("STATUS CHANGE!!!" + res + data);
             if (res.isSuccess) {
                 console.table(this.bookingData)
                 this.isBookingModalVisible = false;
@@ -1139,22 +1161,22 @@ executeBookingUpdate(data: Booking) {
     this.router.navigateByUrl('/login');
   }
 
-  extendMeeting(data: Booking){
-    data.status = Status.extend;
-    this.bookingServ.onAddOrUpdateBooking(data).subscribe({
-      next: (res) => {
-        if (res.isSuccess){
+  // extendMeeting(data: Booking){
+  //   data.status = Status.extend;
+  //   this.bookingServ.onAddOrUpdateBooking(data).subscribe({
+  //     next: (res) => {
+  //       if (res.isSuccess){
 
-        }
-        else {
+  //       }
+  //       else {
 
-        }
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
-  }
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error(err);
+  //     }
+  //   });
+  // }
   
 }
 
