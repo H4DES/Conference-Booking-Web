@@ -14,5 +14,5 @@ import { PrimeNGConfig } from 'primeng/api';
 })
 export class AppComponent {
   title = 'Conference-Booking';
-  public apiUrl = "https://100.100.252.81:2501/api/";
+  // public apiUrl = "https://100.100.252.81:2501/api/";
 }

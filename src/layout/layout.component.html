@@ -351,8 +351,12 @@
             </div>
     
             <div class="form-floating flex-grow-1">
-                <input type="time" class="form-control" id="endTime" placeholder="End Time" [(ngModel)]="data.bookingEnd">
+                <input pInputText pTooltip="Note: 5 extra minutes added to wrap up meeting." 
+                tooltipPosition="bottom"
+                tooltipEvent="focus"  
+                placeholder="Bottom" type="time" class="form-control" id="endTime" [(ngModel)]="data.bookingEnd">
                 <label for="endTime">End Time</label>
+                
             </div>
         </div>
     
@@ -463,7 +467,7 @@
             </div>
             <div class="col-6">
                 <label for="endTime" class="form-label">End Time</label>
-                <input type="text" id="endTime" class="form-control" [(ngModel)]="formattedEndTime" disabled>
+                <input type="text" id="endTime" class="form-control" [(ngModel)]="formattedEndTime"  disabled>
             </div>
             <!-- Department -->
             <div class="col-12">
@@ -484,8 +488,12 @@
 
             <!-- Okay Button -->
             <div class="col-12 text-center">
-                <button type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
+                <button *ngIf="this.bookingById.status != 'ongoing' " type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="forceEndBooking(bookingById)" label="Request Extend Meeting" type="submit"></p-button>
+            <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
             </div>
+
+            
         </div>
 
     </p-dialog>
@@ -531,11 +539,7 @@
                 <label for="endTime" class="form-label">End Time</label>
                 <input type="text" id="endTime" class="form-control" [value]="formattedEndTime" disabled>
             </div>
-            <!-- Department -->
-            <div class="col-12">
-                <label for="department" class="form-label">Department</label>
-                <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
-            </div>
+            
 
             <!-- Contact IP -->
             <div class="col-12">
@@ -543,18 +547,32 @@
                 <input type="text" id="contact" class="form-control" [(ngModel)]="bookingById.contactNumber" disabled>
             </div>
 
-            <!-- Number of Attendees -->
-            <div class="col-12">
+            <!-- Department -->
+            <div class="col-6">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
+            </div>
+
+             <!-- Number of Attendees -->
+             <div class="col-6">
                 <label for="attendees" class="form-label">Number of Attendees</label>
                 <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
+            </div>
+           
+
+            <div class="col-12" *ngIf="this.bookingById.description != ''">
+                <label for="attendees" class="form-label">Remarks</label>
+                <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
             </div>
 
             <!-- Okay Button -->
             <div class="col-12 text-center approval-btn">
                 <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'approve')" label="Approve" type="submit"></p-button>
                 <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'reject')" styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
-                <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved' || this.bookingById.status === 'ongoing' || this.bookingById.status === 'rejected'" type="button" (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
+                <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved' || this.bookingById.status === 'rejected'" type="button" (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
 
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="forceEndBooking(bookingById)" label="End Meeting" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isAdminEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
             </div>
             
         </div>
