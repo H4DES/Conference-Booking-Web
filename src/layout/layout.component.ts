@@ -977,7 +977,7 @@ executeBookingUpdate(data: Booking) {
           extendedProps: {
           status: booking.status
         }
-      };            
+      };
       return event;
     });
     this.calendarOptions.events = events;
@@ -1188,7 +1188,7 @@ executeBookingUpdate(data: Booking) {
         if (res.isSuccess){
           this.holidays = res.data;
           console.info(res.data);
-          this.initHolidays()
+          this.initHolidays(this.holidays.map(x => x.holidayDate!));
         }
         else {
           console.log(res.errorMessage);
@@ -1197,17 +1197,19 @@ executeBookingUpdate(data: Booking) {
       error: (err) => {
         console.error(err);
       },
-      complete: () => {
-        this.initHolidays()
-      }
     })
   }
-  initHolidays(){
-    this.calendarOptions.dayCellDidMount = (info) => {
-      const formattedEventDate = info.date.toISOString().split('T')[0];
-      if (this.holidays.some((holiday) => holiday.holidayDate === formattedEventDate)) {
-        info.el.style.pointerEvents = 'none';
-        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
+  initHolidays(holidayDate: string[]){
+    console.info("get here");
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      dayCellDidMount: (info) => {
+        console.info(holidayDate.length)
+        const formattedEventDate = info.date.toISOString().split('T')[0];
+        if (holidayDate.some(date => date === formattedEventDate)) {
+          info.el.style.pointerEvents = 'none';
+          info.el.style.backgroundColor = 'rgb(169, 169, 169)';
+        }
       }
     };
   }
