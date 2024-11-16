@@ -559,15 +559,22 @@ toogleExtendMeetingModal(){
   this.isExtendModalVisible = true;
 }
 
-extendMeeting(data: Booking) {
-  debugger;
-  if (this.selectedEndTime) {
-    // Store the selected time in the actual data object
-    const time = this.selectedEndTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-    data.bookingEnd = `${time}:00`;
-    this.executeBookingUpdate(data);
-  } else {
-    alert("No time selected.");
+extendMeeting(data: Booking, extended: boolean) {
+  data.extended = extended;
+  if(data.extended){
+    if (this.selectedEndTime) {
+        // Store the selected time in the actual data object
+        const time = this.selectedEndTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        data.bookingEnd = `${time}:00`;
+        this.executeBookingUpdate(data);
+      } else {
+        alert("No time selected.");
+      }
+  }
+  else{
+    this.isExtendModalVisible = false;
+    this.showSweetAlert("Your request to extend the meeting has been submitted successfully.", 'success', 'Meeting Extension Requested');
+
   }
 }
 
