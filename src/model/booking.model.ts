@@ -15,5 +15,6 @@ export interface BookingModel {
     recurringType: string | null;
     recurringEndDate: string | null;
     conferenceId: string | null; // Required int
+    extended: boolean | null;
     
 }
