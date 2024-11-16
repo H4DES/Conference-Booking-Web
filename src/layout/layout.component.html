@@ -489,7 +489,7 @@
             <!-- Okay Button -->
             <div class="col-12 text-center">
                 <button *ngIf="this.bookingById.status != 'ongoing' " type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
-                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="forceEndBooking(bookingById)" label="Request Extend Meeting" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="toogleExtendMeetingModal()" label="Request Extend Meeting" type="submit"></p-button>
             <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
             </div>
 
@@ -579,6 +579,68 @@
 
     </p-dialog>
 </div>
+
+<!-- REQUEST EXTEND MEETING EVENT MODAL -->
+<div class="card flex justify-content-center">
+    <p-dialog 
+              [(visible)]="isExtendModalVisible" 
+              [modal]="true" 
+              [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
+              [style]="{ width: '40vw', height: '38vh'}" 
+              [draggable]="false" 
+              [resizable]="false">
+
+              <ng-template pTemplate="header">
+                <div class="d-flex align-items-center">
+                    <h5 class="m-0"><strong>Request Extend Meeting</strong></h5> <!-- Header Text -->
+                </div>
+            </ng-template>
+
+        <!-- Modal Content -->
+        <div class="d-flex flex-column">
+            <!-- Organizer Name -->            
+            <div class="extend-meeting-input">
+                <div class="text-center p-2">
+                    <label for="calendar-timeonly" class="">Select extend time</label>
+                </div>
+                <div class="extend-meeting-input text-center p-2">
+                    <p-calendar
+                inputId="calendar-timeonly" 
+                [(ngModel)]="selectedEndTime" 
+                [timeOnly]="true"
+                [hourFormat]='"12"'
+                class="center-text-input"/>
+                </div>
+            </div>
+
+            <!-- <div class="col-12 form-label-header">
+                <label for="organizerName" class="form-label">Remarks</label>
+                <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.description">
+            </div> -->
+
+            <!-- Start Time and End Time -->
+            <!-- <div class="col-6">
+                <label for="startTime" class="form-label">Start Time</label>
+                <input type="text" id="startTime" class="form-control" [(ngModel)]="formattedStartTime" disabled>
+            </div>
+            <div class="col-6">
+                <label for="endTime" class="form-label">End Time</label>
+                <input type="text" id="endTime" class="form-control" [(ngModel)]="formattedEndTime"  disabled>
+            </div> -->
+
+            <!-- Okay Button -->
+            <div class="col-12 text-center pt-4">
+                <button *ngIf="this.bookingById.status != 'ongoing' " type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="extendMeeting(bookingById)" label="Request Extend Meeting" type="submit"></p-button>
+            <!-- <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
+            </div>
+
+            
+        </div>
+
+    </p-dialog>
+</div>
+
 
 <!-- <div class="card flex justify-content-center">
     <p-sidebar [(visible)]="sidebarVisible">
