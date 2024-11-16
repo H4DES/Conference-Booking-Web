@@ -1203,13 +1203,7 @@ executeBookingUpdate(data: Booking) {
     })
   }
   initHolidays(){
-    this.calendarOptions.dayCellDidMount = (info) => {
-      const formattedEventDate = info.date.toISOString().split('T')[0];
-      if (this.holidays.some((holiday) => holiday.holidayDate === formattedEventDate)) {
-        info.el.style.pointerEvents = 'none';
-        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-      }
-    };
+   
   }
 
 }
