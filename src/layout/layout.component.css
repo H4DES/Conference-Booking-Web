@@ -258,6 +258,15 @@ html, body {
     border-radius: 6px;
 }
 
+/*Sweet Alert Custom Pending Icon*/
+::ng-deep .swal-pending .swal2-icon.swal2-info {
+    color: #fbc02d; /* Yellow color */
+    border-color: #fbc02d; /* Yellow border */
+  }
+  ::ng-deep .swal-pending .swal2-icon.swal2-info::before {
+    color: #fbc02d; /* Icon color */
+  }
+  
 
 /* Form Inputs Styling */
 ::ng-deep .form-control {

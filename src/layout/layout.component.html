@@ -631,7 +631,7 @@
             <!-- Okay Button -->
             <div class="col-12 text-center pt-4">
                 <button *ngIf="this.bookingById.status != 'ongoing' " type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
-                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="extendMeeting(bookingById)" label="Request Extend Meeting" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' " (onClick)="extendMeeting(bookingById, false)" label="Request Extend Meeting" type="submit"></p-button>
             <!-- <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
             </div>
 
