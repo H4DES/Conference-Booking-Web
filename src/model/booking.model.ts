@@ -1,5 +1,5 @@
 export interface BookingModel {
-    bookingId: number | null; // Nullable int
+    bookingId: string | null; // Nullable int
     approvedBy: string; // Required string
     bookedDate: string;
     bookingStart: string | null; // Nullable Date
@@ -14,6 +14,6 @@ export interface BookingModel {
     status: string | null; // Nullable string
     recurringType: string | null;
     recurringEndDate: string | null;
-    conferenceId: number; // Required int
+    conferenceId: string | null; // Required int
     
 }

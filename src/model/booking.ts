@@ -1,7 +1,7 @@
 import { BookingModel } from "./booking.model";
 
 export class Booking implements BookingModel{
-  bookingId: number | null; // Nullable int
+  bookingId: string | null; // Nullable int
   approvedBy: string; // Required string
   bookedDate: string;
   bookingStart: string;
@@ -16,10 +16,10 @@ export class Booking implements BookingModel{
   status: string | null; // Nullable string
   recurringType: string | null;
   recurringEndDate: string | null;
-  conferenceId: number; // Required int
+  conferenceId: string | null; // Required int
 
   constructor() { 
-    this.bookingId = 0;//
+    this.bookingId = null;//
     this.approvedBy = '';
     this.bookedDate = '';
     this.bookingStart = '';//
@@ -34,7 +34,7 @@ export class Booking implements BookingModel{
     this.status = null;//Default to pending when inserting
     this.recurringType = null;
     this.recurringEndDate = null;
-    this.conferenceId = 0;
+    this.conferenceId = null;
   }
 
 

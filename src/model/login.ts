@@ -4,7 +4,7 @@ export class Login implements LoginModel{
 	userName: string;
 	password: string;
 	token: string;
-	conferenceId: number | null;
+	conferenceId: string | null;
 
 	constructor(){
 		this.userName = '';

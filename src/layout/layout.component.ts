@@ -44,6 +44,8 @@ import { SweetAlertComponent } from '../app/sweet-alert/sweet-alert.component';
 import { TabViewModule } from 'primeng/tabview';
 import { Status } from '../model/status';
 import { TooltipModule } from 'primeng/tooltip';
+import { Holiday } from '../model/holiday';
+import { HolidayService } from '../services/holiday-service/holiday.service';
 
 declare var bootstrap: any;
 
@@ -102,7 +104,7 @@ export class LayoutComponent {
   currentStep: number = 1;
   checked: boolean = false;
   currentTitle: string = "Organizer Information";
-  currentID: number = 0;
+  currentID: string = '';
   data: Booking = new Booking();
   bookingById: Booking = new Booking;
   tokenRole!: string | null;
@@ -125,6 +127,7 @@ export class LayoutComponent {
     notice: [],
     status: []
   };
+  holidays: Holiday[] = [];
 
 
 
@@ -155,7 +158,8 @@ export class LayoutComponent {
               private router: Router, 
               private AuthServ: AuthService,
               private messageServ: MessageService, private datePipe: DatePipe,
-              private cdr: ChangeDetectorRef) {}
+              private cdr: ChangeDetectorRef,
+              private holidayServ: HolidayService) {}
 
               showSweetAlert(
                 message: string, 
@@ -197,8 +201,8 @@ export class LayoutComponent {
     this.onLoadConference();
     this.startEventOngoingChecker();
     this.GetUserConferenceId(String(this.AuthServ.getNameIdentifier()));
-    this.notifiedBookings = new Set<number | null>();
-
+    this.notifiedBookings = new Set<string | null>();
+    this.onGetHolidays();
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -214,7 +218,7 @@ export class LayoutComponent {
     textarea.style.height = `${textarea.scrollHeight}px`; // Adjust height to fit content
   }
 
-  DisplayBookingByID(id: number) {
+  DisplayBookingByID(id: string) {
     console.log(`Searching for booking with ID: ${id}`);
     const booking = this.bookingData.find(b => b.bookingId === id);
   
@@ -400,7 +404,7 @@ export class LayoutComponent {
       },
       complete: () => {
         this.recurringEndDate = null;
-        this.onLoadConference(data.conferenceId);
+        this.onLoadConference(data.conferenceId!);
       }
     });
     
@@ -594,7 +598,7 @@ executeBookingUpdate(data: Booking) {
             console.error("Error updating:", err);
         },
         complete: () => {
-            this.onLoadConference(data.conferenceId);
+            this.onLoadConference(data.conferenceId!);
         }
     });
 }
@@ -633,7 +637,7 @@ executeBookingUpdate(data: Booking) {
     this.bookingServ.onUpdateBookingStatus(data).subscribe({
       next: (res) => {
         if (res.isSuccess){
-          this.onLoadCalendarEvents(Number(this.ConferenceData.conferenceId));
+          this.onLoadCalendarEvents(String(this.ConferenceData.conferenceId));
         }
         else{
           console.error(res.errorMessage);
@@ -851,7 +855,6 @@ executeBookingUpdate(data: Booking) {
       if (info.date.getDay() === 0) {
         info.el.style.pointerEvents = 'none';
         info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-
       }
     },
     hiddenDays: [0],
@@ -859,7 +862,7 @@ executeBookingUpdate(data: Booking) {
   };
 
   handleEventClick(info: any) {
-    this.DisplayBookingByID(Number(info.event.id));
+    this.DisplayBookingByID(String(info.event.id));
     const eventDetails = `
       ID: ${info.event.id}
       Meeting Title: ${info.event.title}
@@ -983,7 +986,7 @@ executeBookingUpdate(data: Booking) {
   // Api calls for data events
   bookingData: Booking[] = [];
 
-  onLoadCalendarEvents(conferenceID: number) {
+  onLoadCalendarEvents(conferenceID: string) {
     this.bookingServ.onGetBookingByConferenceId(conferenceID).subscribe({
       next: (res) => {
         if(res.isSuccess){
@@ -1003,7 +1006,7 @@ executeBookingUpdate(data: Booking) {
     })    
   }
 
-  onLoadConference(id: number = 0) {
+  onLoadConference(id: string = '') {
     this.conferenceServ.onGetAllConference().subscribe({
       next: (res) => {
         if (res.isSuccess) {
@@ -1012,7 +1015,7 @@ executeBookingUpdate(data: Booking) {
           
           // Set default to the first conference in the list
           if (this.ConferenceRoom.length > 0) {
-            this.ConferenceData = id != 0 ? this.ConferenceRoom.find(x => x.conferenceId === id)! : this.ConferenceRoom[0]; 
+            this.ConferenceData = id != '' ? this.ConferenceRoom.find(x => x.conferenceId === id)! : this.ConferenceRoom[0]; 
             
             // Call onConferenceChange here to load calendar events and alert the ID
             this.onConferenceChange();
@@ -1040,12 +1043,13 @@ executeBookingUpdate(data: Booking) {
   }
   onConferenceChange() {
     if (this.ConferenceData) {
-      this.onLoadCalendarEvents(Number(this.ConferenceData.conferenceId));
+      this.onLoadCalendarEvents(String(this.ConferenceData.conferenceId));
       console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
-      this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
+      // this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
+      this.currentID = this.ConferenceData.conferenceId!;
       console.log(this.currentID);
       this.checkEventStarting(this.formattedTimeNow);
-      this.notifiedBookings = new Set<number | null>();
+      this.notifiedBookings = new Set<string | null>();
       // alert(this.currentID);
     }
   }
@@ -1088,7 +1092,7 @@ executeBookingUpdate(data: Booking) {
   
   
   notifSound = new Audio('../assets/notifSound.wav');
-  notifiedBookings = new Set<number | null>();
+  notifiedBookings = new Set<string | null>();
   notifCount: number = 0;
   checkUpcomingBooking(TimeNow: string) {
     this.notifBookings.updates = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
@@ -1178,6 +1182,36 @@ executeBookingUpdate(data: Booking) {
   //   });
   // }
   
+  onGetHolidays(){
+    this.holidayServ.onGetAllHolday().subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.holidays = res.data;
+          console.info(res.data);
+          this.initHolidays()
+        }
+        else {
+          console.log(res.errorMessage);
+        }
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.initHolidays()
+      }
+    })
+  }
+  initHolidays(){
+    this.calendarOptions.dayCellDidMount = (info) => {
+      const formattedEventDate = info.date.toISOString().split('T')[0];
+      if (this.holidays.some((holiday) => holiday.holidayDate === formattedEventDate)) {
+        info.el.style.pointerEvents = 'none';
+        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
+      }
+    };
+  }
+
 }
 
 

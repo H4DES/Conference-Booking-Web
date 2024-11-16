@@ -118,7 +118,7 @@ export class ConferenceManagementComponent {
     }
   }
 
-  onConferenceDelete(id: number){
+  onConferenceDelete(id: string){
     this.conferenceServ.onConferenceDelete(id).subscribe({
       next: (res) => {
         if (res.isSuccess){
