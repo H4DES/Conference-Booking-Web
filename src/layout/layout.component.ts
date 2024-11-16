@@ -627,25 +627,81 @@ toogleExtendMeetingModal(){
   this.isExtendModalVisible = true;
 }
 
-extendMeeting(data: Booking, extended: boolean) {
-  data.extended = extended;
-  if(data.extended){
-    if (this.selectedEndTime) {
-        // Store the selected time in the actual data object
-        const time = this.selectedEndTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        data.bookingEnd = `${time}:00`;
-        this.executeBookingUpdate(data);
-      } else {
-        alert("No time selected.");
-      }
+extendMeeting(data: Booking, _extended: boolean) {
+  if (data.extended == null && this.selectedEndTime == undefined){
+    this.showSweetAlert("Please select valid time.", 'warning', 'Invalid Extend Time');
   }
   else{
-    this.isExtendModalVisible = false;
-    this.showSweetAlert("Your request to extend the meeting has been submitted successfully.", 'success', 'Meeting Extension Requested');
+    if(_extended){  
+      this.isAdminEventModalVisible = false;
+      const _extendedTime: string = data.extendedTime ? data.extendedTime : 'invalid time';
+        data.extended = true;
+        data.bookingEnd = _extendedTime;
+        data.status = Status.extend;
+        this.executeBookingUpdate(data);
+        this.showSweetAlert("Meeting extended successfully.", 'success', 'Succes!');
+        console.log(this.bookingById);
 
+    }
+    else{
+      this.isExtendModalVisible = false;
+      const time = this.selectedEndTime?.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+      data.extended = _extended;
+      data.status = Status.extendPending
+      data.extendedTime = `${time}:00`;
+      this.executeBookingUpdate(data);
+      this.showSweetAlert("Your request to extend the meeting has been submitted successfully.", 'success', 'Meeting Extension Requested');
+    }
   }
 }
 
+cancelExtend(data: Booking){
+  this.isAdminEventModalVisible = false;
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: `Do you want to reject request extend meeting for  ${this.bookingById.purpose}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, reject it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Remarks",
+                input: "textarea",
+                inputPlaceholder: "State reason for rejecting request extend booking",
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+                preConfirm: (remarks) => {
+                    // Validate if remarks are empty
+                    if (!remarks) {
+                        Swal.showValidationMessage("Remarks cannot be empty");
+                    }
+                    return remarks;
+                }
+            }).then((remarkResult) => {
+                if (remarkResult.isConfirmed) {
+                    const remarks = remarkResult.value;
+                    
+                    data.extended = true;
+                    data.status = Status.extendRejected;
+                    data.description = remarks; // Store remarks in `data`
+                    console.log("Remarks set in data.description:", data.description);
+                    Swal.fire({
+                      title: "Success!",
+                      text: `Request extend booking for ${this.bookingById.purpose} Rejected Successfully!`,
+                      icon: "success",
+                    });
+                    this.executeBookingUpdate(data);
+                }
+            });
+        }
+    });
+}
 
 forceEndBooking(data: Booking){
   this.isAdminEventModalVisible = false;
@@ -674,7 +730,7 @@ forceEndBooking(data: Booking){
 }
 
 executeBookingUpdate(data: Booking) {
-  data.bookingEnd = this.ExtraEndTime(data.bookingEnd, 5);
+  // data.bookingEnd = this.ExtraEndTime(data.bookingEnd, 5);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
             console.log("STATUS CHANGE!!!" + res + data);
@@ -749,6 +805,7 @@ executeBookingUpdate(data: Booking) {
   }
 
   checkEventStarting(timeNow: string) {
+    // debugger;
     // console.info(`${this.formattedTimeNow}`);
     // console.log(this.bookingByDate.map(x => x.bookingStart <= timeNow));
     for (let booking of this.bookingByDate) {
@@ -763,14 +820,37 @@ executeBookingUpdate(data: Booking) {
 
         //SECTION A
         // Check if timeNow is greater than or equal to bookingEnd 
+        
         if (timeNow >= booking.bookingEnd && booking.status == Status.ongoing) {
             booking.status = Status.end;
             this.executeBookingUpdate(booking);
             console.log("status DONE");
             continue; // Skip to the next booking
         }
+
+        if (timeNow >= booking.bookingEnd && booking.status == Status.extendPending) {
+          booking.status = Status.end;
+          this.executeBookingUpdate(booking);
+          console.log("status DONE");
+          continue; // Skip to the next booking
+        }
+
+        if (timeNow >= booking.bookingEnd && booking.status == Status.extend) {
+          booking.status = Status.end;
+          this.executeBookingUpdate(booking);
+          console.log("status DONE");
+          continue; // Skip to the next booking
+        }
+
+        if (timeNow >= booking.bookingEnd && booking.status == Status.extendRejected) {
+          booking.status = Status.end;
+          this.executeBookingUpdate(booking);
+          console.log("status DONE");
+          continue; // Skip to the next booking
+        }
+        
       
-        if (booking.status == Status.ongoing){
+        if (booking.status == Status.ongoing || booking.status == Status.extendPending || booking.status == Status.extend){
           continue;
         }
         // Check if timeNow is greater than or equal to bookingStart
@@ -890,9 +970,18 @@ executeBookingUpdate(data: Booking) {
         case 'ended':
           dotClass = 'dot-gray';
           break;
-        case 'ongoing':
-          dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
-          break;
+          case 'ongoing':
+            dotClass = 'dot-blinking-red';
+            break;
+          case 'extension pending':
+            dotClass = 'dot-glowing-blinking-red';
+            break;
+          case 'extension rejected':
+            dotClass = 'dot-blinking-red';
+            break;
+          case 'extended':
+            dotClass = 'dot-blinking-red';
+            break;
         case 'rejected':
           dotClass = 'dot-rejected';
           iconClass = 'ri-close-circle-fill';
@@ -1101,12 +1190,21 @@ executeBookingUpdate(data: Booking) {
       case 'pending':
         return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '3px' };
 
+      case 'extension pending':
+        return { color: 'white', backgroundColor: 'rgb(250, 162, 0)', padding: '3px' };
+
       case 'ongoing':
+        return { color: 'rgb(254, 44, 46)', backgroundColor: 'white', padding: '2px', borderColor: 'white' };
+
+      case 'extended':
         return { color: 'rgb(254, 44, 46)', backgroundColor: 'white', padding: '2px', borderColor: 'white' };
 
       case 'rejected':
         return { color: 'white', backgroundColor: '#f5182d', padding: '4px', border: 'white solid 1px' };
 
+      case 'extension rejected':
+        return { color: 'white', backgroundColor: '#f5182d', padding: '4px', border: 'white solid 1px' };
+      
       case 'ended':
         return { color: 'white', backgroundColor: 'rgb(136, 136, 136)', padding: '4px',};
 
@@ -1114,6 +1212,7 @@ executeBookingUpdate(data: Booking) {
         return { color: 'red', backgroundColor: 'rgba(255, 0, 0, 0.1)' };
     }
   }
+
   
   updateEventStatus() {
   this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });

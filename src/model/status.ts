@@ -5,7 +5,8 @@ export class Status {
   static ongoing: string = 'ongoing';
   static cancel: string = 'cancelled';
   static extend: string = 'extended';
-  static cancelPending: string = 'cancellation pending';
+  // static cancelPending: string = 'cancellation pending';
+  static extendRejected: string = 'extension rejected';
   static extendPending: string = 'extension pending';
   static pending: string = 'pending';
 }

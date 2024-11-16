@@ -420,11 +420,27 @@ html, body {
     color: red;
     animation: blink 0.5s step-start infinite; /* Blinking animation */
   }
+
+  ::ng-deep .dot-glowing-blinking-red, .ongoing{
+    color: red;
+    animation: blink-glow 0.3s step-start infinite; /* Blinking animation */
+  }
   
   /* Blinking animation */
   @keyframes blink {
     50% {
       opacity: 0;
+    }
+  }
+
+  @keyframes blink-glow {
+    0%, 100% {
+      opacity: 1;
+      text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px red; /* Glowing effect */
+    }
+    50% {
+      opacity: 0; /* Text disappears for blinking */
+      text-shadow: none; /* Remove glow during blink */
     }
   }
   
