@@ -17,6 +17,7 @@ export class Booking implements BookingModel{
   recurringType: string | null;
   recurringEndDate: string | null;
   conferenceId: string | null; // Required int
+  extended: boolean | null;
 
   constructor() { 
     this.bookingId = null;//
@@ -35,6 +36,7 @@ export class Booking implements BookingModel{
     this.recurringType = null;
     this.recurringEndDate = null;
     this.conferenceId = null;
+    this.extended = null;
   }
 
 

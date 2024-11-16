@@ -94,6 +94,7 @@ interface ConferenceRoom {
   // encapsulation: ViewEncapsulation.None
 })
 export class LayoutComponent {
+  isExtendModalVisible: boolean = false;
   isBookingModalVisible: boolean = false;
   isEventModalVisible: boolean = false;
   isAdminEventModalVisible: boolean = false;
@@ -117,6 +118,7 @@ export class LayoutComponent {
   admins: User[] = [];
   recurringEndDate!: Date | null;
   userConferenceId: number | null = null;
+  selectedEndTime: Date | null = null;
   recurringOptions: { name: string, type: string }[] = [
     { name: 'Daily', type: 'daily' },
     { name: 'Weekly', type: 'weekly' },
@@ -552,9 +554,23 @@ ExtraEndTime(endTime: string, minutesToAdd: number): string {
   return `${newHours}:${newMinutes}:00`;
 }
 
-extendMeeting(){
-  
+toogleExtendMeetingModal(){
+  this.isEventModalVisible = false;
+  this.isExtendModalVisible = true;
 }
+
+extendMeeting(data: Booking) {
+  debugger;
+  if (this.selectedEndTime) {
+    // Store the selected time in the actual data object
+    const time = this.selectedEndTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    data.bookingEnd = `${time}:00`;
+    this.executeBookingUpdate(data);
+  } else {
+    alert("No time selected.");
+  }
+}
+
 
 forceEndBooking(data: Booking){
   this.isAdminEventModalVisible = false;
@@ -977,7 +993,7 @@ executeBookingUpdate(data: Booking) {
           extendedProps: {
           status: booking.status
         }
-      };
+      };            
       return event;
     });
     this.calendarOptions.events = events;
@@ -1188,7 +1204,7 @@ executeBookingUpdate(data: Booking) {
         if (res.isSuccess){
           this.holidays = res.data;
           console.info(res.data);
-          this.initHolidays(this.holidays.map(x => x.holidayDate!));
+          this.initHolidays()
         }
         else {
           console.log(res.errorMessage);
@@ -1197,21 +1213,13 @@ executeBookingUpdate(data: Booking) {
       error: (err) => {
         console.error(err);
       },
+      complete: () => {
+        this.initHolidays()
+      }
     })
   }
-  initHolidays(holidayDate: string[]){
-    console.info("get here");
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      dayCellDidMount: (info) => {
-        console.info(holidayDate.length)
-        const formattedEventDate = info.date.toISOString().split('T')[0];
-        if (holidayDate.some(date => date === formattedEventDate)) {
-          info.el.style.pointerEvents = 'none';
-          info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-        }
-      }
-    };
+  initHolidays(){
+   
   }
 
 }
