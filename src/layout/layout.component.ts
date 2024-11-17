@@ -465,6 +465,8 @@ export class LayoutComponent {
       next: (res) => {
         if (res.isSuccess){
           this.toastr.success("Holiday removed!", "Success");
+          this.holidays = [];
+          this.onGetHolidays();
         }
         else{
           this.toastr.warning("Something went wrong, please try again", "Notice");
@@ -472,7 +474,6 @@ export class LayoutComponent {
         }
       },
       complete: () => {
-        this.onGetHolidays();
       }
     })
   }
@@ -848,8 +849,6 @@ executeBookingUpdate(data: Booking) {
     }
   }
 
-
-
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     headerToolbar: {
@@ -864,21 +863,21 @@ executeBookingUpdate(data: Booking) {
       { title: 'event 2', date: '2023-04-02' }
     ],
     eventTimeFormat: {
-      hour: '2-digit', 
-      minute: '2-digit', 
-      hour12: true 
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
     },
     // TIME FORMAT CHANGES
     eventContent: (arg) => {
       const startTime = arg.event.start;
       const endTime = arg.event.end;
       const status = arg.event.extendedProps['status']; // Get the status
-      
+
       let dotClass = 'dot-black'; // Default class
       let iconClass = 'pi pi-circle-fill';
       let iconSize = '0.55rem';
       let titleStyle = '';
-    
+
       // Assign classes based on the status
       switch (status) {
         case 'approved':
@@ -903,28 +902,28 @@ executeBookingUpdate(data: Booking) {
         default:
           dotClass = 'dot-black'; // Fallback class
       }
-    
+
       if (!startTime || !endTime) {
         return { html: `<div><strong>Time not available</strong></div>` };
       }
-    
-      const timeDisplay = `<span class="${iconClass} ${dotClass}" style="font-size: ${iconSize};"></span> 
+
+      const timeDisplay = `<span class="${iconClass} ${dotClass}" style="font-size: ${iconSize};"></span>
         ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
 
       const title = arg.event.title || 'No Title';
       const titleDisplay = `<span style="${titleStyle}"><b>${title}</b></span>`;
-    
+
       return {
         html: `<div>${timeDisplay} ${titleDisplay}</div>`,
       };
     },
-    
+
     eventDidMount: (info) => {
       info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)';
       info.el.style.color = '#505050';
       info.el.style.padding = "4px 6px";
       info.el.style.margin = "1px";
-      
+
       info.el.style.overflow = "hidden";
       info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping
       info.el.style.textOverflow = "ellipsis"; // Show "..." when text overflows
@@ -940,57 +939,82 @@ executeBookingUpdate(data: Booking) {
       info.el.addEventListener('mouseleave', () => {
         info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)'; // Revert to original color
         info.el.style.color = '#505050';
-    });
+      });
     },
     dayCellDidMount: (info) => {
       const originalDate = info.date; // Original Date object
       const newDate = new Date(originalDate); // Create a new Date object to avoid mutation
-      newDate.setDate(newDate.getDate() + 1); // Add 1 day
-      const formattedEventDate = newDate.toISOString().split('T')[0]; // Format to 'yyyy-MM-dd'
-      this.holidayServ.onGetAllHolday().subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            if(!this.holidays) this.holidays = res.data;
-            const holiday = this.holidays.find((h: Holiday) => h.holidayDate === formattedEventDate);
-            if (holiday) {
-              // Add styles and holiday information
-              const dayText = info.el.querySelector('.fc-daygrid-day-number');
-              if (dayText) {
-                // Type-cast to HTMLElement to access 'style'
-                (dayText as HTMLElement).style.display = 'none'; // Hide the text
-              }
-              info.el.style.pointerEvents = 'none'; // Disable interaction
-              info.el.style.position = 'relative';
-              info.el.innerHTML = `<div style="
-                                  position: absolute;
-                                  top: 50%;
-                                  left: 50%;
-                                  transform: translate(-50%, -50%);
-                                  height: 100%;
-                                  width: 100%;
-                                  background-color: #FCF596;
-                                  font-weight: bold;
-                                  font-size: 1rem;
-                                  text-align: center; /* Ensure text is horizontally centered */
-                                  align-content: center;
-                                ">
-                                  <u>${info.date.getDate()}.</u>  ${holiday.holidayName}
-                                </div>`;
-            }
-          } else {
-            console.error(res.errorMessage);
-          }
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
+      newDate.setDate(newDate.getDate()); // Adjust to the correct date
+      const formattedEventDate = newDate.toLocaleDateString('en-CA'); // Format to 'yyyy-MM-dd'
 
+      // Find the holiday matching the current date
+      const holiday = this.holidays.find((h: Holiday) => h.holidayDate === formattedEventDate);
+
+      // Check if a holiday exists for the current day
+      if (holiday) {
+        // Find or create holiday content
+        let holidayDiv = info.el.querySelector('.holiday-info') as HTMLElement;
+
+        if (!holidayDiv) {
+          // If the holiday content doesn't exist, create a new one
+          holidayDiv = document.createElement('div');
+          holidayDiv.classList.add('holiday-info');
+          holidayDiv.style.position = 'absolute';
+          holidayDiv.style.top = '50%';
+          holidayDiv.style.left = '50%';
+          holidayDiv.style.transform = 'translate(-50%, -50%)';
+          holidayDiv.style.height = '100%';
+          holidayDiv.style.width = '100%';
+          holidayDiv.style.backgroundColor = '#FCF596';
+          holidayDiv.style.fontWeight = 'bold';
+          holidayDiv.style.fontSize = '1rem';
+          holidayDiv.style.textAlign = 'center';
+          holidayDiv.style.display = 'flex';
+          holidayDiv.style.flexDirection = 'column';
+          holidayDiv.style.justifyContent = 'center';
+          holidayDiv.style.alignItems = 'center';
+
+          // Append the holiday content div to the day cell
+          info.el.appendChild(holidayDiv);
+        }
+
+        // Set or reset the holiday content
+        holidayDiv.innerHTML = `
+          <span>${newDate.toLocaleString('default', { month: 'short' })} ${newDate.getDate()}</span>
+          <span>${holiday.holidayName}</span>
+        `;
+
+        // Hide the day number and apply other styles
+        const dayText = info.el.querySelector('.fc-daygrid-day-number');
+        if (dayText) {
+          (dayText as HTMLElement).style.display = 'none'; // Hide the day number
+        }
+        info.el.style.pointerEvents = 'none'; // Disable interaction
+        info.el.style.position = 'relative'; // Ensure position is relative for the holiday content
+      } else {
+        // If no holiday, reset any previous holiday content
+        const holidayDiv = info.el.querySelector('.holiday-info');
+        if (holidayDiv) {
+          holidayDiv.remove(); // Remove the holiday info if not a holiday day
+        }
+
+        // Ensure the day number is visible again
+        const dayText = info.el.querySelector('.fc-daygrid-day-number') as HTMLElement;
+        if (dayText) {
+          dayText.style.display = ''; // Make sure the day number is visible
+        }
+
+        info.el.style.pointerEvents = ''; // Restore interaction
+        info.el.style.position = ''; // Reset position style
+      }
     },
     aspectRatio: 1.35,
     hiddenDays: [0],
     eventClick: this.handleEventClick.bind(this)
   };
+
+
+
 
   handleEventClick(info: any) {
     this.DisplayBookingByID(String(info.event.id));
@@ -1013,8 +1037,8 @@ executeBookingUpdate(data: Booking) {
   handleDateClick(arg: any) {
     // Allow clicking on other days but not Sundays
     const date = arg.date;
-    date.setDate(date.getDate() + 1);
-    const formattedEventDate = date.toISOString().split('T')[0];
+    date.setDate(date.getDate());
+    const formattedEventDate = date.toLocaleDateString('en-CA');
     const holiday = this.holidays.find(x => x.holidayDate === formattedEventDate);
     if (!holiday) {
       this.isBookingModalVisible = true;
@@ -1124,7 +1148,7 @@ executeBookingUpdate(data: Booking) {
       };
       return event;
     });
-    this.calendarOptions.events = events;
+    this.calendarOptions!.events = events;
   }
 
   // Api calls for data events
@@ -1332,6 +1356,7 @@ executeBookingUpdate(data: Booking) {
         if (res.isSuccess){
           this.holidays = res.data;
           console.info(res.data);
+          this.initHoliday();
         }
         else {
           console.log(res.errorMessage);
@@ -1342,6 +1367,88 @@ executeBookingUpdate(data: Booking) {
       }
     });
   }
+initHoliday() {
+  if (this.holidays) {
+    const dayCells = document.querySelectorAll('.fc-daygrid-day');
+
+    // First, reset all day cells in case holidays were removed (including those in the new month)
+    dayCells.forEach((dayCell) => {
+      if (!(dayCell instanceof HTMLElement)) return; // Ensure it's an HTMLElement
+
+      // Reset styles and content for all day cells
+      const dayText = dayCell.querySelector('.fc-daygrid-day-number');
+      if (dayText && dayText instanceof HTMLElement) {
+        dayText.style.display = ''; // Restore the text visibility
+      }
+
+      (dayCell as HTMLElement).style.pointerEvents = ''; // Enable interaction
+      (dayCell as HTMLElement).style.position = ''; // Reset position style
+
+      // Clear any added holiday content if no holiday is present
+      const holidayContent = dayCell.querySelector('.holiday-info');
+      if (holidayContent) {
+        holidayContent.remove(); // Remove the holiday box if exists
+      }
+    });
+
+    // Now, apply new holiday styles and information
+    this.holidays.forEach((holiday) => {
+      const formattedDate = holiday.holidayDate; // Assuming holidayDate is in 'yyyy-MM-dd'
+
+      const dayCell = Array.from(dayCells).find(
+        (cell) => cell.getAttribute('data-date') === formattedDate
+      );
+
+      if (dayCell && formattedDate) { // Ensure formattedDate is not null
+        // Add styles and holiday information
+        const dayText = dayCell.querySelector('.fc-daygrid-day-number');
+        if (dayText && dayText instanceof HTMLElement) {
+          dayText.style.display = 'none'; // Hide the day number
+        }
+
+        (dayCell as HTMLElement).style.pointerEvents = 'none'; // Disable interaction
+        (dayCell as HTMLElement).style.position = 'relative'; // Positioning for holiday info
+
+        // Add the holiday box, making sure it doesn't interfere with day number
+        let holidayDiv = dayCell.querySelector('.holiday-info') as HTMLElement;
+        if (!holidayDiv) {
+          // Create the holiday box only if it doesn't exist already
+          holidayDiv = document.createElement('div') as HTMLElement;
+          holidayDiv.classList.add('holiday-info');
+          holidayDiv.style.position = 'absolute';
+          holidayDiv.style.top = '50%';
+          holidayDiv.style.left = '50%';
+          holidayDiv.style.transform = 'translate(-50%, -50%)';
+          holidayDiv.style.height = '100%';
+          holidayDiv.style.width = '100%';
+          holidayDiv.style.backgroundColor = '#FCF596';
+          holidayDiv.style.fontWeight = 'bold';
+          holidayDiv.style.fontSize = '1rem';
+          holidayDiv.style.textAlign = 'center';
+          holidayDiv.style.display = 'flex';
+          holidayDiv.style.flexDirection = 'column';
+          holidayDiv.style.justifyContent = 'center';
+          holidayDiv.style.alignItems = 'center';
+
+          holidayDiv.innerHTML = `
+            <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
+            <span>${holiday.holidayName}</span>
+          `;
+
+          dayCell.appendChild(holidayDiv); // Append the holiday div to the day cell
+        } else {
+          // Reset the content in case the div already exists
+          holidayDiv.innerHTML = `
+            <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
+            <span>${holiday.holidayName}</span>
+          `;
+        }
+      }
+    });
+  }
+}
+
+
 
 }
 
