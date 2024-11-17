@@ -242,7 +242,7 @@ html, body {
     font-size: 1.2rem;
 }
 
-::ng-deep .p-calendar .p-inputtext{
+::ng-deep .extend-meeting-input .p-calendar .p-inputtext{
     width: 25rem;
 }
 
