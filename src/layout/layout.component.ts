@@ -200,7 +200,6 @@ export class LayoutComponent {
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
 
   ngOnInit(): void {    
-    this.initCalendar();
     this.onGetHolidays();
     this.tokenRole = this.AuthServ.getUserRole();
     this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
@@ -466,6 +465,8 @@ export class LayoutComponent {
       next: (res) => {
         if (res.isSuccess){
           this.toastr.success("Holiday removed!", "Success");
+          this.holidays = [];
+          this.onGetHolidays();
         }
         else{
           this.toastr.warning("Something went wrong, please try again", "Notice");
@@ -473,7 +474,6 @@ export class LayoutComponent {
         }
       },
       complete: () => {
-        this.onGetHolidays();
       }
     })
   }
@@ -849,142 +849,169 @@ executeBookingUpdate(data: Booking) {
     }
   }
 
-  calendarOptions: CalendarOptions | undefined;
-  initCalendar() {
-    this.calendarOptions = {
-      initialView: 'dayGridMonth',
-      headerToolbar: {
-      left: 'title',
-      center: '',
-      right: 'prev,next today'
+  calendarOptions: CalendarOptions = {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+    left: 'title',
+    center: '',
+    right: 'prev,next today'
+  },
+    plugins: [dayGridPlugin, interactionPlugin],
+    dateClick: (arg) => this.handleDateClick(arg),
+    events: [
+      { title: 'event 1', date: '2023-04-01' },
+      { title: 'event 2', date: '2023-04-02' }
+    ],
+    eventTimeFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
     },
-      plugins: [dayGridPlugin, interactionPlugin],
-      dateClick: (arg) => this.handleDateClick(arg),
-      events: [
-        { title: 'event 1', date: '2023-04-01' },
-        { title: 'event 2', date: '2023-04-02' }
-      ],
-      eventTimeFormat: {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      },
-      // TIME FORMAT CHANGES
-      eventContent: (arg) => {
-        const startTime = arg.event.start;
-        const endTime = arg.event.end;
-        const status = arg.event.extendedProps['status']; // Get the status
+    // TIME FORMAT CHANGES
+    eventContent: (arg) => {
+      const startTime = arg.event.start;
+      const endTime = arg.event.end;
+      const status = arg.event.extendedProps['status']; // Get the status
 
-        let dotClass = 'dot-black'; // Default class
-        let iconClass = 'pi pi-circle-fill';
-        let iconSize = '0.55rem';
-        let titleStyle = '';
+      let dotClass = 'dot-black'; // Default class
+      let iconClass = 'pi pi-circle-fill';
+      let iconSize = '0.55rem';
+      let titleStyle = '';
 
-        // Assign classes based on the status
-        switch (status) {
-          case 'approved':
-            dotClass = 'dot-green';
-            break;
-          case 'pending':
-            dotClass = 'dot-orange';
-            iconSize = '0.60rem';
-            break;
-          case 'ended':
-            dotClass = 'dot-gray';
-            break;
-          case 'ongoing':
-            dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
-            break;
-          case 'rejected':
-            dotClass = 'dot-rejected';
-            iconClass = 'ri-close-circle-fill';
-            iconSize = '0.75rem';
-            titleStyle = 'text-decoration: line-through; color: rgb(236, 53, 20);';
-            break;
-          default:
-            dotClass = 'dot-black'; // Fallback class
-        }
+      // Assign classes based on the status
+      switch (status) {
+        case 'approved':
+          dotClass = 'dot-green';
+          break;
+        case 'pending':
+          dotClass = 'dot-orange';
+          iconSize = '0.60rem';
+          break;
+        case 'ended':
+          dotClass = 'dot-gray';
+          break;
+        case 'ongoing':
+          dotClass = 'dot-blinking-red'; // Use a blinking class for 'ongoing'
+          break;
+        case 'rejected':
+          dotClass = 'dot-rejected';
+          iconClass = 'ri-close-circle-fill';
+          iconSize = '0.75rem';
+          titleStyle = 'text-decoration: line-through; color: rgb(236, 53, 20);';
+          break;
+        default:
+          dotClass = 'dot-black'; // Fallback class
+      }
 
-        if (!startTime || !endTime) {
-          return { html: `<div><strong>Time not available</strong></div>` };
-        }
+      if (!startTime || !endTime) {
+        return { html: `<div><strong>Time not available</strong></div>` };
+      }
 
-        const timeDisplay = `<span class="${iconClass} ${dotClass}" style="font-size: ${iconSize};"></span>
-          ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+      const timeDisplay = `<span class="${iconClass} ${dotClass}" style="font-size: ${iconSize};"></span>
+        ${startTime.getHours() % 12 || 12}${startTime.getHours() < 12 ? 'AM' : 'PM'}-${endTime.getHours() % 12 || 12}${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
 
-        const title = arg.event.title || 'No Title';
-        const titleDisplay = `<span style="${titleStyle}"><b>${title}</b></span>`;
+      const title = arg.event.title || 'No Title';
+      const titleDisplay = `<span style="${titleStyle}"><b>${title}</b></span>`;
 
-        return {
-          html: `<div>${timeDisplay} ${titleDisplay}</div>`,
-        };
-      },
+      return {
+        html: `<div>${timeDisplay} ${titleDisplay}</div>`,
+      };
+    },
 
-      eventDidMount: (info) => {
-        info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)';
-        info.el.style.color = '#505050';
-        info.el.style.padding = "4px 6px";
-        info.el.style.margin = "1px";
+    eventDidMount: (info) => {
+      info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)';
+      info.el.style.color = '#505050';
+      info.el.style.padding = "4px 6px";
+      info.el.style.margin = "1px";
 
-        info.el.style.overflow = "hidden";
-        info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping
-        info.el.style.textOverflow = "ellipsis"; // Show "..." when text overflows
+      info.el.style.overflow = "hidden";
+      info.el.style.whiteSpace = "nowrap"; // Prevent text from wrapping
+      info.el.style.textOverflow = "ellipsis"; // Show "..." when text overflows
 
-        // Set the event width to auto but constrained by its parent cell
+      // Set the event width to auto but constrained by its parent cell
 
 
 
-        info.el.addEventListener('mouseenter', () => {
-          info.el.style.backgroundColor = 'rgba(255, 0 ,0 , 0.5)'; // Change to a darker color
-          info.el.style.color = '#ffffff';
-        });
-        info.el.addEventListener('mouseleave', () => {
-          info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)'; // Revert to original color
-          info.el.style.color = '#505050';
+      info.el.addEventListener('mouseenter', () => {
+        info.el.style.backgroundColor = 'rgba(255, 0 ,0 , 0.5)'; // Change to a darker color
+        info.el.style.color = '#ffffff';
       });
-      },
-      dayCellDidMount: (info) => {
-        const originalDate = info.date; // Original Date object
-        const newDate = new Date(originalDate); // Create a new Date object to avoid mutation
-        newDate.setDate(newDate.getDate()); // Add 1 day
-        const formattedEventDate = newDate.toLocaleDateString('en-CA'); // Format to 'yyyy-MM-dd'
+      info.el.addEventListener('mouseleave', () => {
+        info.el.style.backgroundColor = 'rgba(50,100,230, 0.2)'; // Revert to original color
+        info.el.style.color = '#505050';
+      });
+    },
+    dayCellDidMount: (info) => {
+      const originalDate = info.date; // Original Date object
+      const newDate = new Date(originalDate); // Create a new Date object to avoid mutation
+      newDate.setDate(newDate.getDate()); // Adjust to the correct date
+      const formattedEventDate = newDate.toLocaleDateString('en-CA'); // Format to 'yyyy-MM-dd'
 
-        const holiday = this.holidays.find((h: Holiday) => h.holidayDate === formattedEventDate);
-        if (holiday) {
-          // Add styles and holiday information
-          const dayText = info.el.querySelector('.fc-daygrid-day-number');
-          if (dayText) {
-            (dayText as HTMLElement).style.display = 'none'; // Hide the text
-          }
-          info.el.style.pointerEvents = 'none'; // Disable interaction
-          info.el.style.position = 'relative';
-          info.el.innerHTML = `<div style="
-                              position: absolute;
-                              top: 50%;
-                              left: 50%;
-                              transform: translate(-50%, -50%);
-                              height: 100%;
-                              width: 100%;
-                              background-color: #FCF596;
-                              font-weight: bold;
-                              font-size: 1rem;
-                              text-align: center;
-                              display: flex;
-                              flex-direction: column;
-                              justify-content: center;
-                              align-items: center;
-                            ">
-                              <span>${newDate.toLocaleString('default', { month: 'short' })} ${newDate.getDate()}</span>
-                              <span>${holiday.holidayName}</span>
-                            </div>`;
+      // Find the holiday matching the current date
+      const holiday = this.holidays.find((h: Holiday) => h.holidayDate === formattedEventDate);
+
+      // Check if a holiday exists for the current day
+      if (holiday) {
+        // Find or create holiday content
+        let holidayDiv = info.el.querySelector('.holiday-info') as HTMLElement;
+
+        if (!holidayDiv) {
+          // If the holiday content doesn't exist, create a new one
+          holidayDiv = document.createElement('div');
+          holidayDiv.classList.add('holiday-info');
+          holidayDiv.style.position = 'absolute';
+          holidayDiv.style.top = '50%';
+          holidayDiv.style.left = '50%';
+          holidayDiv.style.transform = 'translate(-50%, -50%)';
+          holidayDiv.style.height = '100%';
+          holidayDiv.style.width = '100%';
+          holidayDiv.style.backgroundColor = '#FCF596';
+          holidayDiv.style.fontWeight = 'bold';
+          holidayDiv.style.fontSize = '1rem';
+          holidayDiv.style.textAlign = 'center';
+          holidayDiv.style.display = 'flex';
+          holidayDiv.style.flexDirection = 'column';
+          holidayDiv.style.justifyContent = 'center';
+          holidayDiv.style.alignItems = 'center';
+
+          // Append the holiday content div to the day cell
+          info.el.appendChild(holidayDiv);
         }
 
-      },
-      aspectRatio: 1.35,
-      hiddenDays: [0],
-      eventClick: this.handleEventClick.bind(this)
-    };
-  }
+        // Set or reset the holiday content
+        holidayDiv.innerHTML = `
+          <span>${newDate.toLocaleString('default', { month: 'short' })} ${newDate.getDate()}</span>
+          <span>${holiday.holidayName}</span>
+        `;
+
+        // Hide the day number and apply other styles
+        const dayText = info.el.querySelector('.fc-daygrid-day-number');
+        if (dayText) {
+          (dayText as HTMLElement).style.display = 'none'; // Hide the day number
+        }
+        info.el.style.pointerEvents = 'none'; // Disable interaction
+        info.el.style.position = 'relative'; // Ensure position is relative for the holiday content
+      } else {
+        // If no holiday, reset any previous holiday content
+        const holidayDiv = info.el.querySelector('.holiday-info');
+        if (holidayDiv) {
+          holidayDiv.remove(); // Remove the holiday info if not a holiday day
+        }
+
+        // Ensure the day number is visible again
+        const dayText = info.el.querySelector('.fc-daygrid-day-number') as HTMLElement;
+        if (dayText) {
+          dayText.style.display = ''; // Make sure the day number is visible
+        }
+
+        info.el.style.pointerEvents = ''; // Restore interaction
+        info.el.style.position = ''; // Reset position style
+      }
+    },
+    aspectRatio: 1.35,
+    hiddenDays: [0],
+    eventClick: this.handleEventClick.bind(this)
+  };
 
 
 
@@ -1340,61 +1367,86 @@ executeBookingUpdate(data: Booking) {
       }
     });
   }
-  initHoliday() {
+initHoliday() {
+  if (this.holidays) {
     const dayCells = document.querySelectorAll('.fc-daygrid-day');
 
+    // First, reset all day cells in case holidays were removed (including those in the new month)
     dayCells.forEach((dayCell) => {
       if (!(dayCell instanceof HTMLElement)) return; // Ensure it's an HTMLElement
 
-      const dateStr = dayCell.getAttribute('data-date'); // Get the date attribute
-      if (!dateStr) {
-        console.warn('Missing data-date attribute on day cell. Skipping refresh.');
-        return;
+      // Reset styles and content for all day cells
+      const dayText = dayCell.querySelector('.fc-daygrid-day-number');
+      if (dayText && dayText instanceof HTMLElement) {
+        dayText.style.display = ''; // Restore the text visibility
       }
 
-      const originalDate = new Date(dateStr); // Parse the date
-      const newDate = new Date(originalDate); // Create a new Date object to avoid mutation
-      newDate.setDate(newDate.getDate());
-      const formattedDate = newDate.toISOString().split('T')[0]; // Format to 'yyyy-MM-dd'
+      (dayCell as HTMLElement).style.pointerEvents = ''; // Enable interaction
+      (dayCell as HTMLElement).style.position = ''; // Reset position style
 
-      const holiday = this.holidays.find(h => h.holidayDate === formattedDate); // Find the holiday
-      if (holiday) {
+      // Clear any added holiday content if no holiday is present
+      const holidayContent = dayCell.querySelector('.holiday-info');
+      if (holidayContent) {
+        holidayContent.remove(); // Remove the holiday box if exists
+      }
+    });
+
+    // Now, apply new holiday styles and information
+    this.holidays.forEach((holiday) => {
+      const formattedDate = holiday.holidayDate; // Assuming holidayDate is in 'yyyy-MM-dd'
+
+      const dayCell = Array.from(dayCells).find(
+        (cell) => cell.getAttribute('data-date') === formattedDate
+      );
+
+      if (dayCell && formattedDate) { // Ensure formattedDate is not null
         // Add styles and holiday information
         const dayText = dayCell.querySelector('.fc-daygrid-day-number');
         if (dayText && dayText instanceof HTMLElement) {
-          dayText.style.display = 'none'; // Hide the text
+          dayText.style.display = 'none'; // Hide the day number
         }
 
-        dayCell.style.pointerEvents = 'none'; // Disable interaction
-        dayCell.style.position = 'relative';
-        dayCell.innerHTML = `<div style="
-                            position: absolute;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            height: 100%;
-                            width: 100%;
-                            background-color: #FCF596;
-                            font-weight: bold;
-                            font-size: 1rem;
-                            text-align: center;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;
-                            align-items: center;
-                          ">
-                            <span>${newDate.toLocaleString('default', { month: 'short' })} ${newDate.getDate()}</span>
-                            <span>${holiday.holidayName}</span>
-                          </div>`;
-      } else {
-        // Remove holiday information and reset styles if no holiday
-        const holidayElement = dayCell.querySelector('.your-holiday-element-class');
-        if (holidayElement) holidayElement.remove();
-        dayCell.style.pointerEvents = 'auto'; // Reset interaction
-        dayCell.style.position = 'static'; // Reset position
+        (dayCell as HTMLElement).style.pointerEvents = 'none'; // Disable interaction
+        (dayCell as HTMLElement).style.position = 'relative'; // Positioning for holiday info
+
+        // Add the holiday box, making sure it doesn't interfere with day number
+        let holidayDiv = dayCell.querySelector('.holiday-info') as HTMLElement;
+        if (!holidayDiv) {
+          // Create the holiday box only if it doesn't exist already
+          holidayDiv = document.createElement('div') as HTMLElement;
+          holidayDiv.classList.add('holiday-info');
+          holidayDiv.style.position = 'absolute';
+          holidayDiv.style.top = '50%';
+          holidayDiv.style.left = '50%';
+          holidayDiv.style.transform = 'translate(-50%, -50%)';
+          holidayDiv.style.height = '100%';
+          holidayDiv.style.width = '100%';
+          holidayDiv.style.backgroundColor = '#FCF596';
+          holidayDiv.style.fontWeight = 'bold';
+          holidayDiv.style.fontSize = '1rem';
+          holidayDiv.style.textAlign = 'center';
+          holidayDiv.style.display = 'flex';
+          holidayDiv.style.flexDirection = 'column';
+          holidayDiv.style.justifyContent = 'center';
+          holidayDiv.style.alignItems = 'center';
+
+          holidayDiv.innerHTML = `
+            <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
+            <span>${holiday.holidayName}</span>
+          `;
+
+          dayCell.appendChild(holidayDiv); // Append the holiday div to the day cell
+        } else {
+          // Reset the content in case the div already exists
+          holidayDiv.innerHTML = `
+            <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
+            <span>${holiday.holidayName}</span>
+          `;
+        }
       }
     });
   }
+}
 
 
 
