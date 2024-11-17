@@ -14,7 +14,132 @@ body {
     height: 100vh;
 }
 
-.booking-card {
+/* Navbar styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #333;
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-wrap: nowrap; /* Ensuring no wrapping of elements */
+}
+
+/* Booking info styles */
+.booking-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Space between button and dropdown */
+}
+
+::ng-deep .booking-info p-button {
+    background-color: #ffffff;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    /* padding: 0.1rem; */
+    transition: background-color 0.3s ease-in-out;
+}
+
+::ng-deep .booking-info .p-dropdown .p-dropdown-label {
+    font-size: 2rem !important;
+    color: #ffffff !important;
+}
+
+.booking-info p-button:hover {
+    background-color: #d4ac0d; /* Slightly darker yellow on hover */
+}
+
+.booking-info p-dropdown {
+    min-width: 40px; /* Setting a small width for the dropdown */
+    overflow: visible; /* Ensure dropdown items are visible */
+}
+
+/* Adjust p-dropdown for responsiveness */
+@media (max-width: 700px) {
+    .booking-info p-dropdown {
+        width: 40px; /* Reducing the width to just show the dropdown arrow */
+        min-width: 0; /* Remove minimum width for small screens */
+    }
+
+    /* Assuming that the PrimeNG dropdown renders a label inside, we hide the label */
+    .booking-info p-dropdown::ng-deep .p-dropdown-label {
+        display: none; /* Hide the dropdown label to only show the icon */
+    }
+
+    .booking-info p-dropdown::ng-deep .p-dropdown-trigger {
+        display: block; /* Keep the dropdown arrow visible */
+    }
+
+    .booking-info p-dropdown::ng-deep .p-dropdown-panel {
+        display: block; /* Ensure dropdown options panel displays properly when opened */
+    }
+}
+
+/* Navbar right-side styling */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Space between the right-side items */
+    flex-shrink: 1; /* Prevents overflowing */
+}
+
+.navbar-static {
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: 500;
+    white-space: nowrap; /* Prevents line breaking */
+}
+
+/* Download button styling */
+.download-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #f1c40f;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.download-button:hover {
+    background-color: #d4ac0d; /* Slightly darker shade for hover effect */
+}
+
+/* Responsive styles */
+@media (max-width: 750px) {
+    .navbar-static {
+        display: none; /* Hide "Important Notice" / Current Time on smaller screens */
+    }
+}
+
+.digital-clock {
+    margin-top: 10px;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    /* text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 40px #00bfff;
+    animation: pulse 1s infinite; */
+}
+
+/* Pulse Animation for the clock */
+@keyframes pulse {
+    0% {
+        text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 40px #00bfff;
+    }
+    50% {
+        text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff, 0 0 60px #00bfff;
+    }
+    100% {
+        text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 40px #00bfff;
+    }
+}
+
+
+/* .booking-card {
     margin: 10px 0;
     margin-right: 30px;
     width: 100%;
@@ -29,18 +154,18 @@ body {
 
 .booking-info {
     display: flex;
-    align-items: center; /* Align items vertically in the center */
+    align-items: center;
 }
 
 .booking-info h1 {
-    margin: 0 15px; /* Add some space around the h1 */
+    margin: 0 15px;
 }
 
 .booking-time {
     display: flex;
-    flex-direction: row; /* Stack time and date vertically */
-    align-items: flex-end; /* Align to the right */
-}
+    flex-direction: row; 
+    align-items: flex-end; 
+} */
 /*
 ::ng-deep .p-panel{
     margin: 10px;
