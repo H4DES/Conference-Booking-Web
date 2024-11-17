@@ -290,6 +290,7 @@
         <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
 
         <div class="d-flex justify-content-end gap-2 mt-4">
+            <p-button *ngIf="tokenRole && tokenRole !== 'UserRole' && currentStep === 1" severity="contrast" label="Set as holiday" (onClick)="addHoliday(formattedDate)"></p-button>
             <p-button styleClass="cancel" label="Cancel" severity="secondary" (onClick)="isBookingModalVisible = false"></p-button>
             <p-button *ngIf="currentStep > 1" label="Previous"s (onClick)="previousStep()"></p-button>
             <p-button class="red-button" *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
@@ -409,7 +410,7 @@
                         
                         
                         <p-floatLabel class="full-width">
-                            <p-calendar 
+                            <p-calendar
                                 inputId="endDate"
                                 [(ngModel)]="recurringEndDate" 
                                 dateFormat="yy-mm-dd"
