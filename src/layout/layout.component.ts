@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -46,6 +46,7 @@ import { Status } from '../model/status';
 import { TooltipModule } from 'primeng/tooltip';
 import { Holiday } from '../model/holiday';
 import { HolidayService } from '../services/holiday-service/holiday.service';
+import { ToastrService } from 'ngx-toastr';
 
 declare var bootstrap: any;
 
@@ -130,6 +131,7 @@ export class LayoutComponent {
     status: []
   };
   holidays: Holiday[] = [];
+  holidayData: Holiday = new Holiday;
 
 
 
@@ -161,7 +163,8 @@ export class LayoutComponent {
               private AuthServ: AuthService,
               private messageServ: MessageService, private datePipe: DatePipe,
               private cdr: ChangeDetectorRef,
-              private holidayServ: HolidayService) {}
+              private holidayServ: HolidayService,
+              private toastr: ToastrService) {}
 
               showSweetAlert(
                 message: string, 
@@ -197,6 +200,7 @@ export class LayoutComponent {
   @ViewChild('step2', { static: true }) step2Template!: TemplateRef<any>;
 
   ngOnInit(): void {    
+    this.onGetHolidays();
     this.tokenRole = this.AuthServ.getUserRole();
     this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
     this.startClock();
@@ -204,7 +208,6 @@ export class LayoutComponent {
     this.startEventOngoingChecker();
     this.GetUserConferenceId(String(this.AuthServ.getNameIdentifier()));
     this.notifiedBookings = new Set<string | null>();
-    this.onGetHolidays();
     //sample data diri i load ang naa didto sa ConferenceBooking table
   //   this.ConferenceRoom = [
   //     { name: 'New York', code: 'NY' },
@@ -412,6 +415,70 @@ export class LayoutComponent {
     
   }
 
+  onAddOrUpdateHoliday(data: Holiday){
+    this.holidayServ.onAddOrUpdateHoliday(data).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          // Swal.fire("Successfully added holiday",);
+          this.toastr.success(res.data, 'Success');
+        }
+        else{
+          this.toastr.warning("Something went wrong, please try again later", "Notice");
+          console.error(res.errorMessage);
+        }
+      },
+      complete: () => {
+        this.onGetHolidays();
+      }
+    });
+  }
+
+  addHoliday(date: string){
+    const formattedDate = new Date(date).toLocaleDateString('en-CA');
+    this.isBookingModalVisible = false;
+    const holidayData: Holiday = new Holiday;
+    holidayData.holidayDate = formattedDate;
+    holidayData.holidayId = null;
+    Swal.fire({
+      title: `Set Holiday \n ${date}`,
+      input: "text",
+      inputPlaceholder: "Enter holiday name...",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
+      preConfirm: (text) => {
+        if (!text) {
+          Swal.showValidationMessage("Holiday name is required!");
+        }
+        return text;
+      }
+    }).then((result) => {
+      if (result.isConfirmed){
+        holidayData.holidayName = result.value;
+        this.onAddOrUpdateHoliday(holidayData);
+      }
+    })
+  }
+  deleteHoliday(id: string){
+    this.holidayServ.onHolidayDelete(id).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.toastr.success("Holiday removed!", "Success");
+        }
+        else{
+          this.toastr.warning("Something went wrong, please try again", "Notice");
+          console.error(res.errorMessage);
+        }
+      },
+      complete: () => {
+        this.onGetHolidays();
+      }
+    })
+  }
+
+
+
   handleBooking(data: Booking, action: string) {
     
     if (action === "approve") {
@@ -441,23 +508,23 @@ export class LayoutComponent {
                 },
                 html: `
                 <div id="charCount">79 characters remaining</div>
-            `,
-             didOpen: () => {
-        const remarksInput = Swal.getInput() as HTMLTextAreaElement | null; // Access Swal's default input
-        const charCount = Swal.getPopup()?.querySelector('#charCount') as HTMLDivElement | null;
-        
-        // Check if elements are found and add event listener
-        if (remarksInput && charCount) {
-            remarksInput.addEventListener('input', () => {
-                const remaining = 79 - remarksInput.value.length;
-                charCount.textContent = `${remaining} characters remaining`;
-            });
-        }
-    },
-    preConfirm: () => {
-        const remarksInput = Swal.getInput() as HTMLTextAreaElement | null;
-        return remarksInput ? remarksInput.value : "";
-    }
+                `,
+                didOpen: () => {
+                  const remarksInput = Swal.getInput() as HTMLTextAreaElement | null; // Access Swal's default input
+                  const charCount = Swal.getPopup()?.querySelector('#charCount') as HTMLDivElement | null;
+
+                  // Check if elements are found and add event listener
+                  if (remarksInput && charCount) {
+                      remarksInput.addEventListener('input', () => {
+                          const remaining = 79 - remarksInput.value.length;
+                          charCount.textContent = `${remaining} characters remaining`;
+                      });
+                  }
+                },
+                preConfirm: () => {
+                    const remarksInput = Swal.getInput() as HTMLTextAreaElement | null;
+                    return remarksInput ? remarksInput.value : "";
+                }
               }).then((remarkResult) => {
                   if (remarkResult.isConfirmed) {
                       const remarks = remarkResult.value;
@@ -781,6 +848,8 @@ executeBookingUpdate(data: Booking) {
     }
   }
 
+
+
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     headerToolbar: {
@@ -873,13 +942,52 @@ executeBookingUpdate(data: Booking) {
         info.el.style.color = '#505050';
     });
     },
-    aspectRatio: 1.35, // Lower value to make the calendar taller and fill more screen space
     dayCellDidMount: (info) => {
-      if (info.date.getDay() === 0) {
-        info.el.style.pointerEvents = 'none';
-        info.el.style.backgroundColor = 'rgb(169, 169, 169)';
-      }
+      const originalDate = info.date; // Original Date object
+      const newDate = new Date(originalDate); // Create a new Date object to avoid mutation
+      newDate.setDate(newDate.getDate() + 1); // Add 1 day
+      const formattedEventDate = newDate.toISOString().split('T')[0]; // Format to 'yyyy-MM-dd'
+      this.holidayServ.onGetAllHolday().subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            if(!this.holidays) this.holidays = res.data;
+            const holiday = this.holidays.find((h: Holiday) => h.holidayDate === formattedEventDate);
+            if (holiday) {
+              // Add styles and holiday information
+              const dayText = info.el.querySelector('.fc-daygrid-day-number');
+              if (dayText) {
+                // Type-cast to HTMLElement to access 'style'
+                (dayText as HTMLElement).style.display = 'none'; // Hide the text
+              }
+              info.el.style.pointerEvents = 'none'; // Disable interaction
+              info.el.style.position = 'relative';
+              info.el.innerHTML = `<div style="
+                                  position: absolute;
+                                  top: 50%;
+                                  left: 50%;
+                                  transform: translate(-50%, -50%);
+                                  height: 100%;
+                                  width: 100%;
+                                  background-color: #FCF596;
+                                  font-weight: bold;
+                                  font-size: 1rem;
+                                  text-align: center; /* Ensure text is horizontally centered */
+                                  align-content: center;
+                                ">
+                                  <u>${info.date.getDate()}.</u>  ${holiday.holidayName}
+                                </div>`;
+            }
+          } else {
+            console.error(res.errorMessage);
+          }
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+
     },
+    aspectRatio: 1.35,
     hiddenDays: [0],
     eventClick: this.handleEventClick.bind(this)
   };
@@ -904,15 +1012,28 @@ executeBookingUpdate(data: Booking) {
 
   handleDateClick(arg: any) {
     // Allow clicking on other days but not Sundays
-    if (arg.date.getDay() !== 0) {
+    const date = arg.date;
+    date.setDate(date.getDate() + 1);
+    const formattedEventDate = date.toISOString().split('T')[0];
+    const holiday = this.holidays.find(x => x.holidayDate === formattedEventDate);
+    if (!holiday) {
       this.isBookingModalVisible = true;
-  
       // Set the selected date from the clicked date (arg.dateStr is in YYYY-MM-DD format)
       this.selectedDate = arg.dateStr;
-  
       this.formattedDate = this.convertDateToLongFormat(this.selectedDate);
-
-      
+    }
+    if (holiday && this.tokenRole && this.tokenRole !== 'UserRole'){
+      Swal.fire({
+        title: holiday.holidayName!,
+        text: "Remove this holiday?",
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed){
+          this.deleteHoliday(holiday.holidayId!);
+        }
+      })
     }
   }
 
@@ -1000,12 +1121,12 @@ executeBookingUpdate(data: Booking) {
           extendedProps: {
           status: booking.status
         }
-      };            
+      };
       return event;
     });
     this.calendarOptions.events = events;
   }
-  
+
   // Api calls for data events
   bookingData: Booking[] = [];
 
@@ -1211,7 +1332,6 @@ executeBookingUpdate(data: Booking) {
         if (res.isSuccess){
           this.holidays = res.data;
           console.info(res.data);
-          this.initHolidays()
         }
         else {
           console.log(res.errorMessage);
@@ -1219,14 +1339,8 @@ executeBookingUpdate(data: Booking) {
       },
       error: (err) => {
         console.error(err);
-      },
-      complete: () => {
-        this.initHolidays()
       }
-    })
-  }
-  initHolidays(){
-   
+    });
   }
 
 }

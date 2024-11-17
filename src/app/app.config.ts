@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
+      progressBar: true
     }),
   ]
 };
