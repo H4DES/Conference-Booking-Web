@@ -4,9 +4,29 @@
     rel="stylesheet"
 />
 
-  
+<nav class="navbar">
+    <div class="booking-info">
+        <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
+      
+        <p-dropdown 
+            [options]="ConferenceRoom" 
+            [(ngModel)]="ConferenceData" 
+            optionLabel="conferenceName" 
+            placeholder="Select Conference Rooms" 
+            (onChange)="onConferenceChange()">
+        </p-dropdown>
+    </div>
+    <div class="navbar-right">
+        <div class="navbar-static">
+            <h2 class="digital-clock">{{ currentTime | date: 'h:mm:ss a' }}</h2>
+        </div>
+            <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
+            <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount" (click)="notifVisible = true"></i>
+    </div>
+</nav>
+
     <div class="booking-card">
-        <div class="booking-info">
+        <!-- <div class="booking-info">
             <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
           
             <p-dropdown 
@@ -16,11 +36,11 @@
                 placeholder="Select Conference Rooms" 
                 (onChange)="onConferenceChange()">
             </p-dropdown>
-        </div>
+        </div> -->
 
         <div class="booking-time">
-            <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
-            <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount" (click)="notifVisible = true"></i>
+            <!-- <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
+            <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount" (click)="notifVisible = true"></i> -->
 
             <p-sidebar [(visible)]="notifVisible" position="right" [style]="{ width: '450px' }">
                 <ng-template pTemplate="headless">
@@ -245,8 +265,8 @@
                 </ng-template>
             </p-sidebar>
             <div class="date">
-                <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
-                <p>{{ currentTime | date: 'MMMM d, y' }}</p>                
+                <!-- <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
+                <p>{{ currentTime | date: 'MMMM d, y' }}</p>                 -->
             </div>
         </div>
     </div>
