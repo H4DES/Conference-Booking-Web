@@ -302,14 +302,102 @@ export class LayoutComponent {
     }
     return '';
   }
+
+
+  checkBookingConflict(data: Booking): Booking | null{
+    const bookingConflict = this.bookingData.find(x => {
+      if (x.status === Status.approve){
+        if (data.bookingStart >= x.bookingStart && data.bookingStart <= x.bookingEnd && x.bookedDate === data.bookedDate) {
+          return x;
+        }
+        if (data.bookingEnd >= x.bookingStart && data.bookingEnd <= x.bookingEnd && x.bookedDate === data.bookedDate) {
+          return x;
+        }
+        if (data.bookingStart <= x.bookingStart && data.bookingEnd >= x.bookingEnd && x.bookedDate === data.bookedDate) {
+          return x;
+        }
+      }
+      return null;
+    });
+    return bookingConflict || null;
+  }
   
  
   BookConference(data: Booking) {
+    const proceedWithBookings = () => {
+
+
+      // Convert the time to the correct format (HH:mm:ss) before sending to the backend
+      const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
+      const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
+
+      // -- Validation handling for booking available time range -- //
+      if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
+        this.isBookingModalVisible = false;
+        this.showSweetAlert('Please select a booking time starting from 8:00 AM or later.', 'warning', 'Invalid Booking Time', true);
+        return;
+      }
+
+      // -- Validation handling for start-end time -- //
+      if(data.bookingStart > data.bookingEnd) {
+        this.isBookingModalVisible = false;
+        this.showSweetAlert("Booking end time can't be earlier than booking start time!", 'warning', 'Invalid Time Range', true);
+        return;
+      }
+
+      // -- Validation if start and end is equal -- //
+      if(data.bookingStart == data.bookingEnd){
+        this.isBookingModalVisible = false;
+        this.showSweetAlert("Booking start time can't be equal to booking end time!", 'warning', 'Invalid Time Range');
+        return;
+      }
+
+      if (bookingStart && bookingEnd) {
+        data.bookingStart = bookingStart;
+        data.bookingEnd = bookingEnd;
+      }
+      if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
+        this.isBookingModalVisible = false;
+        this.showSweetAlert(`The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity}`, 'warning', 'Exceeded Conference Capacity', true);
+        return;
+      }
+      if(data.recurringType){
+        data.recurringEndDate = this.recurringEndDate!.toISOString().split('T')[0];
+
+      }else{
+        data.recurringType = null;
+        data.recurringEndDate = null;
+      }
+      console.log(data.recurringEndDate);
+      console.table(data);
+      this.bookingServ.onAddOrUpdateBooking(data).subscribe({
+        next: (res) => {
+          console.log(res);
+          if (res.isSuccess) {
+            this.isBookingModalVisible = false;
+            this.showSweetAlert("Booking successfully completed!", 'success', 'Success!', false);
+            this.data = new Booking();
+          } else {
+            this.isBookingModalVisible = false;
+            this.showSweetAlert("Booking failed. Please try again.", 'error', 'Error!');
+          }
+        },
+        error: (err) => {
+          console.error('Error inserting:', err); // Log any errors
+          this.isBookingModalVisible = false;
+          this.showSweetAlert("An unexpected error occurred. Please try again later.", 'error', 'Error!');
+        },
+        complete: () => {
+          this.recurringEndDate = null;
+          this.onLoadConference(data.conferenceId!);
+        }
+      });
+    }
     data.bookingId = null;
     data.conferenceId = this.currentID;
     data.bookedDate = this.selectedDate;
 
-// -- Validation handling for inputs -- //
+    // -- Validation handling for inputs -- //
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
       this.isBookingModalVisible = false;
       console.log(this.formattedDateNow);
@@ -317,101 +405,32 @@ export class LayoutComponent {
       return;
     }
 
-    // -- Validation handling for time slot conflict checking -- //
-    const isBooked = this.bookingData.some(x => {
-      if (data.bookingStart >= x.bookingStart && data.bookingStart <= x.bookingEnd && x.bookedDate === data.bookedDate) {
-        return true;
-      }
-      if (data.bookingEnd >= x.bookingStart && data.bookingEnd <= x.bookingEnd && x.bookedDate === data.bookedDate) {
-        return true;
-      }
-      if (data.bookingStart <= x.bookingStart && data.bookingEnd >= x.bookingEnd && x.bookedDate === data.bookedDate) {
-        return true;
-      }
-      return false;
-    })
-    if (isBooked){
+    const conflictBooking = this.checkBookingConflict(data);
+    if (conflictBooking){
+      console.info('conflict found');
       this.isBookingModalVisible = false;
-      this.showSweetAlert('Time slot already booked. Please choose a different time.', 'warning', 'Booking Conflict', true);
-      return;
-    }
-
-    // Convert the time to the correct format (HH:mm:ss) before sending to the backend
-    const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
-    const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
-
-    // -- Validation handling for booking available time range -- //
-    if(data.bookingStart >= '00:00:00' && data.bookingStart < '07:59:00') {
-      this.isBookingModalVisible = false;
-      this.showSweetAlert('Please select a booking time starting from 8:00 AM or later.', 'warning', 'Invalid Booking Time', true);
-      return;
-    } 
-    // else if (data.bookingEnd > '17:00:00' && data.bookingEnd <= '23:59:00'){
-    //   this.isBookingModalVisible = false;
-    //   Swal.fire({
-    //     title: "Error!",
-    //     text: "Please select booking time from 8:00AM to 5:00PM",
-    //     icon: "error",
-    //   }).then(() => {
-    //     this.isBookingModalVisible = true;
-    //   });
-    //    return;
-    // }
-  
-    // -- Validation handling for start-end time -- //
-    if(data.bookingStart > data.bookingEnd) {
-      this.isBookingModalVisible = false;
-      this.showSweetAlert("Booking end time can't be earlier than booking start time!", 'warning', 'Invalid Time Range', true);
-      return;
-    }
-
-    // -- Validation if start and end is equal -- //
-    if(data.bookingStart == data.bookingEnd){
-      this.isBookingModalVisible = false;
-      this.showSweetAlert("Booking start time can't be equal to booking end time!", 'warning', 'Invalid Time Range');
-      return;
-    }
-
-    if (bookingStart && bookingEnd) {
-      data.bookingStart = bookingStart;
-      data.bookingEnd = bookingEnd;
-    }
-    if (Number(this.ConferenceData.capacity) < Number(data.expectedAttendees)){
-      this.isBookingModalVisible = false;
-      this.showSweetAlert(`The expected number of attendees has exceeded the conference capacity of ${this.ConferenceData.capacity}`, 'warning', 'Exceeded Conference Capacity', true);
-      return;
-    }
-    if(data.recurringType){
-      data.recurringEndDate = this.recurringEndDate!.toISOString().split('T')[0];
-
-    }else{
-      data.recurringType = null;
-      data.recurringEndDate = null;
-    }
-    console.log(data.recurringEndDate);
-    console.table(data);
-    this.bookingServ.onAddOrUpdateBooking(data).subscribe({
-      next: (res) => {
-        console.log(res);
-        if (res.isSuccess) {
-          this.isBookingModalVisible = false;
-          this.showSweetAlert("Booking successfully completed!", 'success', 'Success!', false);
-          this.data = new Booking();
+      Swal.fire({
+        title: 'Booking Conflict',
+        text: `Time slot already booked for ${conflictBooking.purpose}, continue booking?`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((res) => {
+        if (res.isDismissed){
+          Swal.fire({
+            title: 'Booking has been cancelled',
+            icon: 'info'
+          });
         } else {
-          this.isBookingModalVisible = false;
-          this.showSweetAlert("Booking failed. Please try again.", 'error', 'Error!');
+          proceedWithBookings();
         }
-      },
-      error: (err) => {
-        console.error('Error inserting:', err); // Log any errors
-        this.isBookingModalVisible = false;
-        this.showSweetAlert("An unexpected error occurred. Please try again later.", 'error', 'Error!');     
-      },
-      complete: () => {
-        this.recurringEndDate = null;
-        this.onLoadConference(data.conferenceId!);
-      }
-    });
+      })
+    } else{
+      proceedWithBookings();
+    }
+
+
+
     
   }
 
@@ -481,77 +500,102 @@ export class LayoutComponent {
 
 
   handleBooking(data: Booking, action: string) {
-    
-    if (action === "approve") {
-        this.isAdminEventModalVisible = false;
-
-        Swal.fire({
-          title: "Booking Remarks (Optional)",
-          text: "Would you like to add any remarks for this booking? This is optional.",
-          icon: "info",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#33d92e",
-          confirmButtonText: "Add Remarks",
-          cancelButtonText: "Accept Booking"
+    const proceedHandling = () => {
+      Swal.fire({
+        title: "Booking Remarks (Optional)",
+        text: "Would you like to add any remarks for this booking? This is optional.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#33d92e",
+        confirmButtonText: "Add Remarks",
+        cancelButtonText: "Accept Booking"
       }).then((result) => {
-          if (result.isConfirmed) {
-              Swal.fire({
-                  title: "Add Your Remarks",
-                  input: "textarea",
-                  inputPlaceholder: "Enter remarks for this booking",
-                  icon: "info",
-                  showCancelButton: true,
-                  confirmButtonText: "Submit",
-                  cancelButtonText: "Cancel",
-                  inputAttributes: {
-                    maxlength: "79" // Limit input to 79 characters
-                },
-                html: `
-                <div id="charCount">79 characters remaining</div>
-                `,
-                didOpen: () => {
-                  const remarksInput = Swal.getInput() as HTMLTextAreaElement | null; // Access Swal's default input
-                  const charCount = Swal.getPopup()?.querySelector('#charCount') as HTMLDivElement | null;
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Add Your Remarks",
+            input: "textarea",
+            inputPlaceholder: "Enter remarks for this booking",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Submit",
+            cancelButtonText: "Cancel",
+            inputAttributes: {
+              maxlength: "79" // Limit input to 79 characters
+            },
+            html: `
+            <div id="charCount">79 characters remaining</div>
+            `,
+            didOpen: () => {
+              const remarksInput = Swal.getInput() as HTMLTextAreaElement | null; // Access Swal's default input
+              const charCount = Swal.getPopup()?.querySelector('#charCount') as HTMLDivElement | null;
 
-                  // Check if elements are found and add event listener
-                  if (remarksInput && charCount) {
-                      remarksInput.addEventListener('input', () => {
-                          const remaining = 79 - remarksInput.value.length;
-                          charCount.textContent = `${remaining} characters remaining`;
-                      });
-                  }
-                },
-                preConfirm: () => {
-                    const remarksInput = Swal.getInput() as HTMLTextAreaElement | null;
-                    return remarksInput ? remarksInput.value : "";
-                }
-              }).then((remarkResult) => {
-                  if (remarkResult.isConfirmed) {
-                      const remarks = remarkResult.value;
-                      data.status = Status.approve;
-                      data.description = remarks; // Store remarks in `data`
-                      this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
-                      this.checkEndedBookings(data);
-                      this.executeBookingUpdate(data);
-                  }else{
-                    this.isAdminEventModalVisible = true;
-                  }
-              });
-          }else {
-            // debugger;
-            data.status = Status.approve;
-            data.description = "";
-            this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
-            this.checkEndedBookings(data);
-            this.executeBookingUpdate(data);
+              // Check if elements are found and add event listener
+              if (remarksInput && charCount) {
+                remarksInput.addEventListener('input', () => {
+                  const remaining = 79 - remarksInput.value.length;
+                  charCount.textContent = `${remaining} characters remaining`;
+                });
+              }
+            },
+            preConfirm: () => {
+              const remarksInput = Swal.getInput() as HTMLTextAreaElement | null;
+              return remarksInput ? remarksInput.value : "";
+            }
+          }).then((remarkResult) => {
+            if (remarkResult.isConfirmed) {
+              const remarks = remarkResult.value;
+              data.status = Status.approve;
+              data.description = remarks; // Store remarks in `data`
+              this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
+              this.checkEndedBookings(data);
+              this.executeBookingUpdate(data);
+            }else{
+              this.isAdminEventModalVisible = true;
+            }
+          });
+        }else {
+          // debugger;
+          data.status = Status.approve;
+          data.description = "";
+          this.showSweetAlert(`Booking ${this.bookingById.purpose} accepted successfully!`, 'success', 'Success!');
+          this.checkEndedBookings(data);
+          this.executeBookingUpdate(data);
         }
       });
-      } else if (action === "reject") {
-        this.rejectBooking(data);
     }
-
-}
+    if (action === "approve") {
+      this.isAdminEventModalVisible = false;
+      const conflictBooking = this.checkBookingConflict(data);
+      if (conflictBooking){
+        console.info("conflict Found");
+        Swal.fire({
+          title: 'Booking conflict',
+          text: 'Time slot already booked, continuing will automatically reject prior approved booking',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Continue',
+          cancelButtonText: 'Cancel'
+        }).then((res) => {
+          if (res.isDismissed){
+            Swal.fire({
+              title: 'Cancelled',
+              text: 'Booking approval has been cancelled',
+              icon: 'info'
+            });
+           return;
+          }
+          else{
+            proceedHandling();
+          }
+        });
+      }else{
+        proceedHandling();
+      }
+    } else if (action === "reject") {
+      this.rejectBooking(data);
+    }
+  }
 
 rejectBooking(data: Booking) {
     this.isAdminEventModalVisible = false;
@@ -1098,7 +1142,7 @@ executeBookingUpdate(data: Booking) {
       }
     },
     aspectRatio: 1.35,
-    hiddenDays: [0],
+    // hiddenDays: [0],
     eventClick: this.handleEventClick.bind(this)
   };
 
@@ -1366,7 +1410,7 @@ executeBookingUpdate(data: Booking) {
                                                      && !(TimeNow > b.bookingEnd)
                                                      && b.status === Status.approve || b.status === Status.ongoing);
     
-    this.notifBookings.status = this.bookingByDate.filter(b => b.status === Status.approve || b.status === Status.cancel);
+    this.notifBookings.status = this.bookingByDate.filter(b => (b.status === Status.approve || b.status === Status.cancel) && !this.notifBookings.updates.some(x => x.bookingId === b.bookingId));
     this.notifBookings.notice = this.bookingByDate.filter(b => b.status === Status.reject || b.status === Status.extend);
 
 

@@ -32,7 +32,7 @@
                     <p-tabView class="notif">
                         <p-tabPanel>
                             <ng-template pTemplate="header">
-                                <span>Updates</span>
+                                <span>Updates<sup *ngIf="notifBookings.updates.length > 0" [style.color]="'royalblue'">{{ notifBookings.updates.length }}</sup></span>
                             </ng-template>
                             <p-scrollPanel class="notif-updates" [style]="{ width: '100%', height: '85vh' }">
                                 <p-dataView #dv [value]="notifBookings.updates">
@@ -90,12 +90,6 @@
                                                         </div>
                                                     </ng-template>
                                                 </p-panel>
-                                                        
-
-
-
-
-                                                
                                             </div>
                                         </div>
                                     </ng-template>
@@ -106,7 +100,7 @@
                         <p-tabPanel >
                             <ng-template pTemplate="header" >
                                 <div>
-                                    <span>Status<sup [style.color]="'blue'">{{ notifBookings.status.length }}</sup></span>
+                                    <span>Status<sup *ngIf="notifBookings.status.length > 0" [style.color]="'royalblue'">{{ notifBookings.status.length }}</sup></span>
                                     
                                 </div>
                             </ng-template>         
@@ -129,7 +123,6 @@
                                                                     </span>
                                                                 </span>
                                                             </div>
-
                                                             <!-- Status with dynamic color and border -->
                                                             <div *ngIf="booking.status" [ngStyle]="{
                                                                 'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
@@ -149,7 +142,7 @@
 
                                                     <!-- Panel Content -->
                                                     <ng-template pTemplate="body">
-                                                        <div [style]="{ height: '25px', overflow: 'hidden' }">
+                                                        <div [style]="{ minHeight: '25px', wordBreak: 'break-word' }">
                                                             <p>{{ notifStatusDescription(booking) }}</p>
                                                         </div>
                                                     </ng-template>
@@ -166,12 +159,6 @@
                                                         </div>
                                                     </ng-template>
                                                 </p-panel>
-                                                        
-
-
-
-
-                                                
                                             </div>
                                         </div>
                                     </ng-template>
@@ -182,7 +169,7 @@
 
                         <p-tabPanel>
                             <ng-template pTemplate="header">
-                                <span>Notice</span>
+                                <span>Notice<sup *ngIf="notifBookings.notice.length > 0" [style.color]="'royalblue'">{{ notifBookings.notice.length }}</sup></span>
 
                             </ng-template>
                             <p-scrollPanel class="notif-notice" [style]="{ width: '100%', height: '85vh' }">
@@ -224,7 +211,7 @@
 
                                                     <!-- Panel Content -->
                                                     <ng-template pTemplate="body">
-                                                        <div [style]="{ height: '25px', overflow: 'hidden' }">
+                                                        <div [style]="{ minHeight: '25px', wordBreak: 'break-word' }">
                                                             <p>{{ booking.description }}</p>
                                                         </div>
                                                     </ng-template>
@@ -257,14 +244,6 @@
                     </p-tabView>
                 </ng-template>
             </p-sidebar>
-
-
-
-
-
-
-
-
             <div class="date">
                 <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
                 <p>{{ currentTime | date: 'MMMM d, y' }}</p>                
@@ -378,56 +357,54 @@
         </div> -->
         
         <!-- Recurring Panel -->
-        <div class="recurring">
-
-            <p-panel [toggleable]="true" [collapsed]="true" [style]="{ marginTop: '-10px' }">
-    
-                <ng-template pTemplate="header">
-                    <div class="d-flex align-items-center justify-content-between text-secondary" [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
-                        <span class="font-medium text-lg text-900">
-                            Recurring meeting options
-                            <span class="text-sm text-secondary">
-                                (Optional)
-                            </span>
-                        </span>
-                    </div>
-                </ng-template>
-                <ng-template pTemplate="body">
-                    <div class="side-by-side">
-                        <p-floatLabel class="full-width">
-                            <p-dropdown 
-                                inputId="recurringType"
-                                [options]="recurringOptions" 
-                                [(ngModel)]="data.recurringType"
-                                optionLabel="name"
-                                optionValue="type"
-                                [showClear]="true"
-                                class="full-width"
-                                appendTo="body"
-                            ></p-dropdown>
-                            <label for="recurringType">Select recurring type</label>
-                        </p-floatLabel>
-                        
-                        
-                        <p-floatLabel class="full-width">
-                            <p-calendar
-                                inputId="endDate"
-                                [(ngModel)]="recurringEndDate" 
-                                dateFormat="yy-mm-dd"
-                                appendTo="body"
-                                class="full-width"
-                                [style]="{ marginLeft: '10px' }"
-                            ></p-calendar>
-                            <label for="endDate" style="padding-left: 10px;">Recurring end date</label>
-                        </p-floatLabel>
-                    </div>
-                </ng-template>
-
-            </p-panel>
+<div class="recurring">
+  <p-panel [toggleable]="true" [collapsed]="true" [style]="{ marginTop: '-10px' }">
+    <ng-template pTemplate="header">
+      <div class="d-flex align-items-center justify-content-between text-secondary" [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+        <span class="font-medium text-lg text-900">
+          Recurring meeting options
+          <span class="text-sm text-secondary">
+            (Optional)
+          </span>
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="body">
+      <div class="side-by-side">
+        <div class="textbox">
+          <p-floatLabel class="full-width">
+            <p-dropdown
+              inputId="recurringType"
+              [options]="recurringOptions"
+              [(ngModel)]="data.recurringType"
+              optionLabel="name"
+              optionValue="type"
+              [showClear]="true"
+              class="full-width fixed-width"
+              appendTo="body"
+            ></p-dropdown>
+            <label for="recurringType">Select recurring type</label>
+          </p-floatLabel>
         </div>
+        <div class="textbox">
+          <p-floatLabel class="full-width">
+            <p-calendar
+              inputId="endDate"
+              [(ngModel)]="recurringEndDate"
+              dateFormat="yy-mm-dd"
+              appendTo="body"
+              class="full-width fixed-width"
+            ></p-calendar>
+            <label for="endDate" style="padding-left: 10px;">Recurring end date</label>
+          </p-floatLabel>
+        </div>
+      </div>
+    </ng-template>
+  </p-panel>
+</div>
     </div>
-    
-    
+
+
 </ng-template>
 
 <!-- THIS IS FOR THE USER ROLE EVENT MODAL -->
