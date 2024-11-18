@@ -224,12 +224,12 @@ export class LayoutComponent {
   }
 
   DisplayBookingByID(id: string) {
-    console.log(`Searching for booking with ID: ${id}`);
+    ////console.`Searching for booking with ID: ${id}`);
     const booking = this.bookingData.find(b => b.bookingId === id);
   
     if (booking) {
       this.bookingById = booking;
-      console.log("Booking found:", this.bookingById);
+      //////console."Booking found:", this.bookingById);
     } 
     else {
       console.error("No booking found with the provided ID.");
@@ -242,14 +242,14 @@ export class LayoutComponent {
 
   // DisplayBookingByID(id: number){
   //   this.bookingById = this.bookingData.find(b => b.bookingId === id)!;
-  //   console.log("reached here");
+  //   ////console."reached here");
 
     // this.bookingServ.onGetBookingByBookingId(id).subscribe({
     //   next: (res) => {
-    //     console.log(res);
+    //     ////console.res);
     //     if (res.isSuccess) {
     //       this.bookingById = res.data
-    //       console.table(this.bookingById)
+    //       //console.table(this.bookingById)
           
     //     } else {
     //       alert("Get failed!");
@@ -301,6 +301,20 @@ export class LayoutComponent {
       );
     }
     return '';
+  }
+
+  checkBookingConflictExtend(data: Booking): Booking | null {
+    const bookingConflict = this.bookingData.find(x => {
+      if (x.status === Status.approve){
+        if (data.extendedTime! >= x.bookingStart && data.extendedTime! <= x.bookingEnd && x.bookedDate === data.bookedDate){
+          this.toastr.info('dayum it got in boi');
+          return x;
+        }
+        return null;
+      }
+      return null;
+    });
+    return bookingConflict || null;
   }
 
 
@@ -368,11 +382,11 @@ export class LayoutComponent {
         data.recurringType = null;
         data.recurringEndDate = null;
       }
-      console.log(data.recurringEndDate);
-      console.table(data);
+      ////console.data.recurringEndDate);
+      //console.table(data);
       this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
-          console.log(res);
+          ////console.res);
           if (res.isSuccess) {
             this.isBookingModalVisible = false;
             this.showSweetAlert("Booking successfully completed!", 'success', 'Success!', false);
@@ -400,14 +414,14 @@ export class LayoutComponent {
     // -- Validation handling for inputs -- //
     if (!data.organizer || !data.department || !data.contactNumber || !data.purpose || !data.bookingStart || !data.bookingEnd || !data.expectedAttendees) {
       this.isBookingModalVisible = false;
-      console.log(this.formattedDateNow);
+      ////console.this.formattedDateNow);
       this.showSweetAlert('All fields must be filled out before booking.', 'warning', 'Required Fields Missing', true);
       return;
     }
 
     const conflictBooking = this.checkBookingConflict(data);
     if (conflictBooking){
-      console.info('conflict found');
+      //console.info('conflict found');
       this.isBookingModalVisible = false;
       Swal.fire({
         title: 'Booking Conflict',
@@ -568,7 +582,7 @@ export class LayoutComponent {
       this.isAdminEventModalVisible = false;
       const conflictBooking = this.checkBookingConflict(data);
       if (conflictBooking){
-        console.info("conflict Found");
+        //console.info("conflict Found");
         Swal.fire({
           title: 'Booking conflict',
           text: 'Time slot already booked, continuing will automatically reject prior approved booking',
@@ -631,7 +645,7 @@ rejectBooking(data: Booking) {
                     
                     data.status = Status.reject;
                     data.description = remarks; // Store remarks in `data`
-                    console.log("Remarks set in data.description:", data.description);
+                    ////console."Remarks set in data.description:", data.description);
                     Swal.fire({
                       title: "Success!",
                       text: `Booking ${this.bookingById.purpose} Rejected Successfully!`,
@@ -676,25 +690,66 @@ extendMeeting(data: Booking, _extended: boolean) {
     this.showSweetAlert("Please select valid time.", 'warning', 'Invalid Extend Time');
   }
   else{
-    if(_extended){  
+    if(_extended){
       this.isAdminEventModalVisible = false;
       const _extendedTime: string = data.extendedTime ? data.extendedTime : 'invalid time';
+      const conflictBooking = this.checkBookingConflictExtend(data);
+      const proceedApproveExtend = () => {
+        data.status = Status.extend;
         data.extended = true;
         data.bookingEnd = _extendedTime;
-        data.status = Status.extend;
         this.executeBookingUpdate(data);
         this.showSweetAlert("Meeting extended successfully.", 'success', 'Succes!');
-        console.log(this.bookingById);
-
+        ////console.this.bookingById);
+      }
+      if(conflictBooking){
+        Swal.fire({
+          title: 'Conflict booking found',
+          text: `Requested extend time found for ${conflictBooking.purpose}`,
+          icon: 'warning',
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          confirmButtonText: 'Approve Extension'
+        }).then((res) => {
+          if (res.isConfirmed){
+            proceedApproveExtend();
+          }else {
+            this.toastr.info('Extend approval cancelled');
+          }
+        })
+      }else {
+        proceedApproveExtend();
+      }
     }
     else{
       this.isExtendModalVisible = false;
       const time = this.selectedEndTime?.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-      data.extended = _extended;
-      data.status = Status.extendPending
-      data.extendedTime = `${time}:00`;
-      this.executeBookingUpdate(data);
-      this.showSweetAlert("Your request to extend the meeting has been submitted successfully.", 'success', 'Meeting Extension Requested');
+      const conflictBooking = this.checkBookingConflictExtend(data);
+      const proceedExtend = () => {
+        data.extended = _extended;
+        data.status = Status.extendPending
+        data.extendedTime = `${time}:00`;
+        this.executeBookingUpdate(data);
+        this.showSweetAlert("Your request to extend the meeting has been submitted successfully.", 'success', 'Meeting Extension Requested');
+      }
+      if (conflictBooking){
+        Swal.fire({
+          title: 'Conflict booking found',
+          text: `Extended time already booked for ${conflictBooking.purpose}, continue?`,
+          icon: 'warning',
+          showCancelButton: true,
+          cancelButtonText: 'No',
+          confirmButtonText: 'Yes'
+        }).then((res) => {
+          if (res.isConfirmed){
+            proceedExtend();
+          }else {
+            this.toastr.info("Extend request cancelled", "Cancelled");
+          }
+        })
+      }else {
+        proceedExtend();
+      }
     }
   }
 }
@@ -734,7 +789,7 @@ cancelExtend(data: Booking){
                     data.extended = true;
                     data.status = Status.extendRejected;
                     data.description = remarks; // Store remarks in `data`
-                    console.log("Remarks set in data.description:", data.description);
+                    ////console."Remarks set in data.description:", data.description);
                     Swal.fire({
                       title: "Success!",
                       text: `Request extend booking for ${this.bookingById.purpose} Rejected Successfully!`,
@@ -777,9 +832,9 @@ executeBookingUpdate(data: Booking) {
   // data.bookingEnd = this.ExtraEndTime(data.bookingEnd, 5);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
-            console.log("STATUS CHANGE!!!" + res + data);
+            ////console."STATUS CHANGE!!!" + res + data);
             if (res.isSuccess) {
-                console.table(this.bookingData)
+                //console.table(this.bookingData)
                 this.isBookingModalVisible = false;
             } else {
                 alert("Operation Failed!");
@@ -850,8 +905,8 @@ executeBookingUpdate(data: Booking) {
 
   checkEventStarting(timeNow: string) {
     // debugger;
-    // console.info(`${this.formattedTimeNow}`);
-    // console.log(this.bookingByDate.map(x => x.bookingStart <= timeNow));
+    // //console.info(`${this.formattedTimeNow}`);
+    // ////console.this.bookingByDate.map(x => x.bookingStart <= timeNow));
     for (let booking of this.bookingByDate) {
         // Check if timeNow is less than bookingStart
         if (timeNow < booking.bookingStart) {
@@ -868,28 +923,28 @@ executeBookingUpdate(data: Booking) {
         if (timeNow >= booking.bookingEnd && booking.status == Status.ongoing) {
             booking.status = Status.end;
             this.executeBookingUpdate(booking);
-            console.log("status DONE");
+            ////console."status DONE");
             continue; // Skip to the next booking
         }
 
         if (timeNow >= booking.bookingEnd && booking.status == Status.extendPending) {
           booking.status = Status.end;
           this.executeBookingUpdate(booking);
-          console.log("status DONE");
+          ////console."status DONE");
           continue; // Skip to the next booking
         }
 
         if (timeNow >= booking.bookingEnd && booking.status == Status.extend) {
           booking.status = Status.end;
           this.executeBookingUpdate(booking);
-          console.log("status DONE");
+          ////console."status DONE");
           continue; // Skip to the next booking
         }
 
         if (timeNow >= booking.bookingEnd && booking.status == Status.extendRejected) {
           booking.status = Status.end;
           this.executeBookingUpdate(booking);
-          console.log("status DONE");
+          ////console."status DONE");
           continue; // Skip to the next booking
         }
         
@@ -903,11 +958,11 @@ executeBookingUpdate(data: Booking) {
             this.updateEvent();
             // this.updateBookingData.bookingId = booking.bookingId;
             // this.onUpdateStatus(this.updateBookingData);
-            console.log("status ONGOING");
+            ////console."status ONGOING");
         }
     }
 
-    console.log("Finished processing all bookings");
+    ////console."Finished processing all bookings");
 }
 
   
@@ -1142,7 +1197,7 @@ executeBookingUpdate(data: Booking) {
       }
     },
     aspectRatio: 1.35,
-    // hiddenDays: [0],
+    hiddenDays: [0],
     eventClick: this.handleEventClick.bind(this)
   };
 
@@ -1302,13 +1357,13 @@ executeBookingUpdate(data: Booking) {
       next: (res) => {
         if(res.isSuccess){
           this.bookingData = res.data;
-          console.table(this.bookingData);          
+          //console.table(this.bookingData);
           this.updateEvent();
           this.getBookingByDate();
           this.formattedTimeNow = this.currentTime.toLocaleTimeString('en-GB', { hour12: false });
           this.checkUpcomingBooking(this.formattedTimeNow);
         }else {
-          console.log(res.errorMessage);
+          ////console.res.errorMessage);
         }
       },
       error: (err) => {
@@ -1322,7 +1377,7 @@ executeBookingUpdate(data: Booking) {
       next: (res) => {
         if (res.isSuccess) {
           this.ConferenceRoom = res.data.filter(x => x.isActive)
-          console.log("Conference Rooms: ", this.ConferenceRoom);
+          ////console."Conference Rooms: ", this.ConferenceRoom);
           
           // Set default to the first conference in the list
           if (this.ConferenceRoom.length > 0) {
@@ -1355,10 +1410,10 @@ executeBookingUpdate(data: Booking) {
   onConferenceChange() {
     if (this.ConferenceData) {
       this.onLoadCalendarEvents(String(this.ConferenceData.conferenceId));
-      console.log("Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
+      ////console."Conference data changed!: " + this.ConferenceData.conferenceId?.toString());
       // this.currentID = parseInt(this.ConferenceData.conferenceId?.toString() || '0', 10);
       this.currentID = this.ConferenceData.conferenceId!;
-      console.log(this.currentID);
+      ////console.this.currentID);
       this.checkEventStarting(this.formattedTimeNow);
       this.notifiedBookings = new Set<string | null>();
       // alert(this.currentID);
@@ -1431,7 +1486,7 @@ executeBookingUpdate(data: Booking) {
 
       
     
-    console.log("Checked the upcoming booked events");
+    ////console."Checked the upcoming booked events");
   }
 
   notifStatusDescription(booking: Booking): string | null{
@@ -1502,11 +1557,11 @@ executeBookingUpdate(data: Booking) {
       next: (res) => {
         if (res.isSuccess){
           this.holidays = res.data;
-          console.info(res.data);
+          //console.info(res.data);
           this.initHoliday();
         }
         else {
-          console.log(res.errorMessage);
+          ////console.res.errorMessage);
         }
       },
       error: (err) => {
