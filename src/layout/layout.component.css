@@ -543,12 +543,12 @@ html, body {
     color: black;
   }
   
-  ::ng-deep .dot-blinking-red, .ongoing{
+  ::ng-deep .dot-blinking-red, .ongoing, .extended{
     color: red;
     animation: blink 0.5s step-start infinite; /* Blinking animation */
   }
 
-  ::ng-deep .dot-glowing-blinking-red, .ongoing{
+  ::ng-deep .dot-glowing-blinking-red, .extension{
     color: red;
     animation: blink-glow 0.3s step-start infinite; /* Blinking animation */
   }
