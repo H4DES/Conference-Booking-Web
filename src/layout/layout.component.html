@@ -318,7 +318,17 @@
         
             <div class="textbox">
                 <p-floatLabel>
-                    <input pInputText type="text" class="form-control small-input primengFloat" name="contactNumber" id="floatingInput" [(ngModel)]="data.contactNumber">
+                    <input 
+                        pInputText 
+                        type="text" 
+                        class="form-control small-input primengFloat" 
+                        name="contactNumber" 
+                        id="floatingInput" 
+                        [(ngModel)]="data.contactNumber" 
+                        (input)="onInput($event)" 
+                        maxlength="15" 
+                        pattern="^[0-9.]*$"
+                    />
                     <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
                 </p-floatLabel>
             </div>
