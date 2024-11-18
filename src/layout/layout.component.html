@@ -488,8 +488,8 @@
             <div class="col-12 text-center">
                 <button *ngIf="this.bookingById.status != 'ongoing' && this.bookingById.status != 'extended' && this.bookingById.status != 'extension rejected'" type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
 
-                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'" (onClick)="toogleExtendMeetingModal()" label="Request Extend Meeting" type="submit"></p-button>
-                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'" (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'" (onClick)="toogleExtendMeetingModal()" label="Extend Meeting" class="px-4" type="submit"></p-button>
+                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'" (click)="isEventModalVisible = false" styleClass="cancel" label="Cancel Extend" severity="secondary" type="submit"></p-button>
             </div>
 
             
@@ -585,12 +585,12 @@
 </div>
 
 <!-- REQUEST EXTEND MEETING EVENT MODAL -->
-<div class="card flex justify-content-center">
+<div class="request-extend card flex justify-content-center">
     <p-dialog 
               [(visible)]="isExtendModalVisible" 
               [modal]="true" 
               [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
-              [style]="{ width: '40vw', height: '38vh'}" 
+              [style]="{ width: '40vw', height: '53vh'}" 
               [draggable]="false" 
               [resizable]="false">
 
@@ -634,8 +634,8 @@
 
             <!-- Okay Button -->
             <div class="col-12 text-center pt-4">
-                <p-button (onClick)="extendMeeting(bookingById, false)" label="Request Extend Meeting" type="submit"></p-button>
-                <p-button (click)="isExtendModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
+                <p-button class="p-2" (onClick)="extendMeeting(bookingById, false)" label="Request Extend Meeting" type="submit"></p-button>
+                <!-- <p-button (click)="isExtendModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
                 <!-- <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
             </div>
 
