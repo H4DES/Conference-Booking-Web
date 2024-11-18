@@ -236,7 +236,9 @@ html, body {
 }
 
 
-
+::ng-deep .request-extend .p-button{
+    padding: 10px;
+}
  
 
 ::ng-deep .p-button{
