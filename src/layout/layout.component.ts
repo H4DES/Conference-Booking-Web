@@ -315,7 +315,6 @@ export class LayoutComponent {
     const bookingConflict = this.bookingData.find(x => {
       if (x.status === Status.approve){
         if (data.extendedTime! >= x.bookingStart && data.extendedTime! <= x.bookingEnd && x.bookedDate === data.bookedDate){
-          this.toastr.info('dayum it got in boi');
           return x;
         }
         return null;
