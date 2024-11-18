@@ -1374,21 +1374,25 @@ executeBookingUpdate(data: Booking) {
         let statusColor = '';
 
         switch (status.toLowerCase()) {
-            case 'approved':
+            case Status.approve:
                 statusText = 'approved';
                 statusColor = 'green';
                 break;
-            case 'ongoing':
+            case Status.ongoing:
                 statusText = 'ongoing';
                 statusColor = 'red';
                 break;
-            case 'ended':
+            case Status.end:
                 statusText = 'ended';
                 statusColor = 'gray';
                 break;
-            case 'rejected':
+            case Status.reject:
                 statusText = 'rejected';
                 statusColor = 'black';
+                break;
+            case Status.extend:
+                statusText = 'ongoing (extended)';
+                statusColor = 'red';
                 break;
             default:
                 statusText = 'unknown';
@@ -1408,10 +1412,10 @@ executeBookingUpdate(data: Booking) {
   checkUpcomingBooking(TimeNow: string) {
     this.notifBookings.updates = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)
-                                                     && b.status === Status.approve || b.status === Status.ongoing);
+                                                     && (b.status === Status.approve || b.status === Status.ongoing || b.status === Status.extend));
     
     this.notifBookings.status = this.bookingByDate.filter(b => (b.status === Status.approve || b.status === Status.cancel) && !this.notifBookings.updates.some(x => x.bookingId === b.bookingId));
-    this.notifBookings.notice = this.bookingByDate.filter(b => b.status === Status.reject || b.status === Status.extend);
+    this.notifBookings.notice = this.bookingByDate.filter(b => b.status === Status.reject || b.status === Status.extendRejected);
 
 
     this.notifCount = Object.values(this.notifBookings).reduce((sum, array) => sum + array.length, 0);
@@ -1510,86 +1514,86 @@ executeBookingUpdate(data: Booking) {
       }
     });
   }
-initHoliday() {
-  if (this.holidays) {
-    const dayCells = document.querySelectorAll('.fc-daygrid-day');
+  initHoliday() {
+    if (this.holidays) {
+      const dayCells = document.querySelectorAll('.fc-daygrid-day');
 
-    // First, reset all day cells in case holidays were removed (including those in the new month)
-    dayCells.forEach((dayCell) => {
-      if (!(dayCell instanceof HTMLElement)) return; // Ensure it's an HTMLElement
+      // First, reset all day cells in case holidays were removed (including those in the new month)
+      dayCells.forEach((dayCell) => {
+        if (!(dayCell instanceof HTMLElement)) return; // Ensure it's an HTMLElement
 
-      // Reset styles and content for all day cells
-      const dayText = dayCell.querySelector('.fc-daygrid-day-number');
-      if (dayText && dayText instanceof HTMLElement) {
-        dayText.style.display = ''; // Restore the text visibility
-      }
-
-      (dayCell as HTMLElement).style.pointerEvents = ''; // Enable interaction
-      (dayCell as HTMLElement).style.position = ''; // Reset position style
-
-      // Clear any added holiday content if no holiday is present
-      const holidayContent = dayCell.querySelector('.holiday-info');
-      if (holidayContent) {
-        holidayContent.remove(); // Remove the holiday box if exists
-      }
-    });
-
-    // Now, apply new holiday styles and information
-    this.holidays.forEach((holiday) => {
-      const formattedDate = holiday.holidayDate; // Assuming holidayDate is in 'yyyy-MM-dd'
-
-      const dayCell = Array.from(dayCells).find(
-        (cell) => cell.getAttribute('data-date') === formattedDate
-      );
-
-      if (dayCell && formattedDate) { // Ensure formattedDate is not null
-        // Add styles and holiday information
+        // Reset styles and content for all day cells
         const dayText = dayCell.querySelector('.fc-daygrid-day-number');
         if (dayText && dayText instanceof HTMLElement) {
-          dayText.style.display = 'none'; // Hide the day number
+          dayText.style.display = ''; // Restore the text visibility
         }
 
-        (dayCell as HTMLElement).style.pointerEvents = 'none'; // Disable interaction
-        (dayCell as HTMLElement).style.position = 'relative'; // Positioning for holiday info
+        (dayCell as HTMLElement).style.pointerEvents = ''; // Enable interaction
+        (dayCell as HTMLElement).style.position = ''; // Reset position style
 
-        // Add the holiday box, making sure it doesn't interfere with day number
-        let holidayDiv = dayCell.querySelector('.holiday-info') as HTMLElement;
-        if (!holidayDiv) {
-          // Create the holiday box only if it doesn't exist already
-          holidayDiv = document.createElement('div') as HTMLElement;
-          holidayDiv.classList.add('holiday-info');
-          holidayDiv.style.position = 'absolute';
-          holidayDiv.style.top = '50%';
-          holidayDiv.style.left = '50%';
-          holidayDiv.style.transform = 'translate(-50%, -50%)';
-          holidayDiv.style.height = '100%';
-          holidayDiv.style.width = '100%';
-          holidayDiv.style.backgroundColor = '#FCF596';
-          holidayDiv.style.fontWeight = 'bold';
-          holidayDiv.style.fontSize = '1rem';
-          holidayDiv.style.textAlign = 'center';
-          holidayDiv.style.display = 'flex';
-          holidayDiv.style.flexDirection = 'column';
-          holidayDiv.style.justifyContent = 'center';
-          holidayDiv.style.alignItems = 'center';
-
-          holidayDiv.innerHTML = `
-            <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
-            <span>${holiday.holidayName}</span>
-          `;
-
-          dayCell.appendChild(holidayDiv); // Append the holiday div to the day cell
-        } else {
-          // Reset the content in case the div already exists
-          holidayDiv.innerHTML = `
-            <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
-            <span>${holiday.holidayName}</span>
-          `;
+        // Clear any added holiday content if no holiday is present
+        const holidayContent = dayCell.querySelector('.holiday-info');
+        if (holidayContent) {
+          holidayContent.remove(); // Remove the holiday box if exists
         }
-      }
-    });
+      });
+
+      // Now, apply new holiday styles and information
+      this.holidays.forEach((holiday) => {
+        const formattedDate = holiday.holidayDate; // Assuming holidayDate is in 'yyyy-MM-dd'
+
+        const dayCell = Array.from(dayCells).find(
+          (cell) => cell.getAttribute('data-date') === formattedDate
+        );
+
+        if (dayCell && formattedDate) { // Ensure formattedDate is not null
+          // Add styles and holiday information
+          const dayText = dayCell.querySelector('.fc-daygrid-day-number');
+          if (dayText && dayText instanceof HTMLElement) {
+            dayText.style.display = 'none'; // Hide the day number
+          }
+
+          (dayCell as HTMLElement).style.pointerEvents = 'none'; // Disable interaction
+          (dayCell as HTMLElement).style.position = 'relative'; // Positioning for holiday info
+
+          // Add the holiday box, making sure it doesn't interfere with day number
+          let holidayDiv = dayCell.querySelector('.holiday-info') as HTMLElement;
+          if (!holidayDiv) {
+            // Create the holiday box only if it doesn't exist already
+            holidayDiv = document.createElement('div') as HTMLElement;
+            holidayDiv.classList.add('holiday-info');
+            holidayDiv.style.position = 'absolute';
+            holidayDiv.style.top = '50%';
+            holidayDiv.style.left = '50%';
+            holidayDiv.style.transform = 'translate(-50%, -50%)';
+            holidayDiv.style.height = '100%';
+            holidayDiv.style.width = '100%';
+            holidayDiv.style.backgroundColor = '#FCF596';
+            holidayDiv.style.fontWeight = 'bold';
+            holidayDiv.style.fontSize = '1rem';
+            holidayDiv.style.textAlign = 'center';
+            holidayDiv.style.display = 'flex';
+            holidayDiv.style.flexDirection = 'column';
+            holidayDiv.style.justifyContent = 'center';
+            holidayDiv.style.alignItems = 'center';
+
+            holidayDiv.innerHTML = `
+              <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
+              <span>${holiday.holidayName}</span>
+            `;
+
+            dayCell.appendChild(holidayDiv); // Append the holiday div to the day cell
+          } else {
+            // Reset the content in case the div already exists
+            holidayDiv.innerHTML = `
+              <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
+              <span>${holiday.holidayName}</span>
+            `;
+          }
+        }
+      });
+    }
   }
-}
 
 
 
