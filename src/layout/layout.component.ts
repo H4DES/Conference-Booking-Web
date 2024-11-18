@@ -346,8 +346,6 @@ export class LayoutComponent {
  
   BookConference(data: Booking) {
     const proceedWithBookings = () => {
-
-
       // Convert the time to the correct format (HH:mm:ss) before sending to the backend
       const bookingStart = this.convertTimeToSQLFormat(this.data.bookingStart);
       const bookingEnd = this.convertTimeToSQLFormat(this.data.bookingEnd);
@@ -391,6 +389,7 @@ export class LayoutComponent {
       }
       ////console.data.recurringEndDate);
       //console.table(data);
+      data.bookingEnd = this.ExtraEndTime(data.bookingEnd, 5);
       this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
           ////console.res);
@@ -704,7 +703,7 @@ extendMeeting(data: Booking, _extended: boolean) {
       const proceedApproveExtend = () => {
         data.status = Status.extend;
         data.extended = true;
-        data.bookingEnd = _extendedTime;
+        data.bookingEnd = this.ExtraEndTime(_extendedTime, 5);
         this.executeBookingUpdate(data);
         this.showSweetAlert("Meeting extended successfully.", 'success', 'Succes!');
         ////console.this.bookingById);
@@ -836,7 +835,6 @@ forceEndBooking(data: Booking){
 }
 
 executeBookingUpdate(data: Booking) {
-  // data.bookingEnd = this.ExtraEndTime(data.bookingEnd, 5);
     this.bookingServ.onAddOrUpdateBooking(data).subscribe({
         next: (res) => {
             ////console."STATUS CHANGE!!!" + res + data);
@@ -1168,6 +1166,7 @@ executeBookingUpdate(data: Booking) {
           holidayDiv.style.flexDirection = 'column';
           holidayDiv.style.justifyContent = 'center';
           holidayDiv.style.alignItems = 'center';
+          holidayDiv.style.zIndex = '100';
 
           // Append the holiday content div to the day cell
           info.el.appendChild(holidayDiv);
@@ -1453,8 +1452,12 @@ executeBookingUpdate(data: Booking) {
                 statusColor = 'black';
                 break;
             case Status.extend:
-                statusText = 'ongoing (extended)';
+                statusText = 'extended';
                 statusColor = 'red';
+                break;
+            case Status.extendPending:
+                statusText = 'extend pending';
+                statusColor = 'rgb(250, 162, 0)';
                 break;
             default:
                 statusText = 'unknown';
@@ -1474,7 +1477,7 @@ executeBookingUpdate(data: Booking) {
   checkUpcomingBooking(TimeNow: string) {
     this.notifBookings.updates = this.bookingByDate.filter(b => TimeNow >= this.subtractMinutes(b.bookingStart, 30) 
                                                      && !(TimeNow > b.bookingEnd)
-                                                     && (b.status === Status.approve || b.status === Status.ongoing || b.status === Status.extend));
+                                                     && (b.status === Status.approve || b.status === Status.ongoing || b.status === Status.extend || b.status === Status.extendPending));
     
     this.notifBookings.status = this.bookingByDate.filter(b => (b.status === Status.approve || b.status === Status.cancel) && !this.notifBookings.updates.some(x => x.bookingId === b.bookingId));
     this.notifBookings.notice = this.bookingByDate.filter(b => b.status === Status.reject || b.status === Status.extendRejected);
@@ -1638,6 +1641,7 @@ executeBookingUpdate(data: Booking) {
             holidayDiv.style.flexDirection = 'column';
             holidayDiv.style.justifyContent = 'center';
             holidayDiv.style.alignItems = 'center';
+            holidayDiv.style.zIndex = '100';
 
             holidayDiv.innerHTML = `
               <span>${new Date(formattedDate).toLocaleString('default', { month: 'short' })} ${new Date(formattedDate).getDate()}</span>
