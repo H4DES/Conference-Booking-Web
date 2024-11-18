@@ -218,6 +218,14 @@ export class LayoutComponent {
   // ];
   }
 
+  onInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // Only allow numbers and one dot, and limit input length to 20 characters
+    if (!/^[0-9.]*$/.test(input.value)) {
+      input.value = input.value.replace(/[^0-9.]/g, ''); // Remove any non-numeric or non-dot characters
+    }
+  }
+
   autoResize(textarea: HTMLTextAreaElement) {
     textarea.style.height = 'auto'; // Reset height to recalculate
     textarea.style.height = `${textarea.scrollHeight}px`; // Adjust height to fit content
