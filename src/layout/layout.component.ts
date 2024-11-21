@@ -1661,7 +1661,28 @@ executeBookingUpdate(data: Booking) {
     }
   }
 
-
+  onBookingDelete(data: Booking) {
+    this.bookingServ.onBookingDelete(data.bookingId!).subscribe({
+      next: (res) => {
+        if (res.isSuccess){
+          this.toastr.info('Removed booked meeting', 'Success');
+        }else{
+          Swal.fire({
+            title: 'A problem occured, please try again later',
+            icon: 'info'
+          })
+          console.error(res.errorMessage)
+        }
+      },
+      error: (err) => {
+        console.error(err)
+      },
+      complete: () => {
+        this.onLoadConference(data.conferenceId!)
+        this.isAdminEventModalVisible = false;
+      }
+    })
+  } 
 
 }
 

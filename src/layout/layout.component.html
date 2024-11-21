@@ -1,32 +1,29 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<link
-    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
-    rel="stylesheet"
-/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
 
 <nav class="navbar">
-    <div class="booking-info">
-        <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
-      
-        <p-dropdown 
-            [options]="ConferenceRoom" 
-            [(ngModel)]="ConferenceData" 
-            optionLabel="conferenceName" 
-            placeholder="Select Conference Rooms" 
-            (onChange)="onConferenceChange()">
-        </p-dropdown>
+  <div class="booking-info">
+    <p-button (onClick)="toggleSidebar()" icon="pi pi-bars"
+      *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
+
+    <p-dropdown [options]="ConferenceRoom" [(ngModel)]="ConferenceData" optionLabel="conferenceName"
+      placeholder="Select Conference Rooms" (onChange)="onConferenceChange()">
+    </p-dropdown>
+  </div>
+  <div class="navbar-right">
+    <div class="navbar-static">
+      <h2 class="digital-clock">{{ currentTime | date: 'h:mm:ss a' }}</h2>
     </div>
-    <div class="navbar-right">
-        <div class="navbar-static">
-            <h2 class="digital-clock">{{ currentTime | date: 'h:mm:ss a' }}</h2>
-        </div>
-            <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
-            <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount" (click)="notifVisible = true"></i>
-    </div>
+    <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px"
+      (click)="notifVisible = true"></i>
+    <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount"
+      (click)="notifVisible = true"></i>
+  </div>
 </nav>
 
-    <div class="booking-card">
-        <!-- <div class="booking-info">
+<div class="booking-card">
+  <!-- <div class="booking-info">
             <p-button (onClick)="toggleSidebar()" icon="pi pi-bars" *ngIf="tokenRole === 'AdminRole' || tokenRole === 'SuperAdmin'"></p-button>
           
             <p-dropdown 
@@ -38,602 +35,586 @@
             </p-dropdown>
         </div> -->
 
-        <div class="booking-time">
-            <!-- <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
+  <div class="booking-time">
+    <!-- <i *ngIf="notifCount === 0" class="pi pi-bell" style="font-size: 1.5rem; margin: 30px" (click)="notifVisible = true"></i>
             <i *ngIf="notifCount > 0" class="pi pi-bell" pBadge style="font-size: 1.5rem; margin: 30px" [value]="notifCount" (click)="notifVisible = true"></i> -->
 
-            <p-sidebar [(visible)]="notifVisible" position="right" [style]="{ width: '450px' }">
-                <ng-template pTemplate="headless">
-                    <div class="d-flex align-items-center">
-                        <i class="pi pi-times" style="font-size: 1rem; margin: 30px" (click)="notifVisible = false"></i>
-                        <span class="ml-2">Meeting Notifications</span>
-                    </div>
-                      
-                    <p-tabView class="notif">
-                        <p-tabPanel>
-                            <ng-template pTemplate="header">
-                                <span>Updates<sup *ngIf="notifBookings.updates.length > 0" [style.color]="'royalblue'">{{ notifBookings.updates.length }}</sup></span>
-                            </ng-template>
-                            <p-scrollPanel class="notif-updates" [style]="{ width: '100%', height: '85vh' }">
-                                <p-dataView #dv [value]="notifBookings.updates">
-                                    <ng-template pTemplate="list" let-bookings>
-                                        <div class="grid grid-nogutter">
-                                            <div class="col-12" *ngFor="let booking of bookings; let first = first">
-                                                <!-- Booking Box -->
-                                                <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
-                                                    <!-- Custom Header -->
-                                                    <ng-template pTemplate="header">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <span class="font-medium text-lg text-900">
-                                                                    {{ booking.purpose }}
-                                                                    <span class="text-sm text-secondary">
-                                                                        ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} - 
-                                                                        {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-
-                                                            <!-- Status with dynamic color and border -->
-                                                            <div *ngIf="booking.status" [ngStyle]="{
-                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
-                                                                'padding': '2px 5px',
-                                                                'margin': '0 10px',
-                                                                'border-radius': '10px',
-                                                                'color': 'white',
-                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
-                                                                'font-weight': 'bold',
-                                                                'font-size': '0.65rem',
-                                                                'display': 'inline-block'
-                                                            }" [class]="booking.status">
-                                                                {{ getStatusLabel(booking.status).split('|')[0] }}
-                                                            </div>
-                                                        </div>
-                                                    </ng-template>
-
-                                                    <!-- Panel Content -->
-                                                    <ng-template pTemplate="body">
-                                                        <div [style]="{ height: '25px', overflow: 'hidden' }">
-                                                            <p>{{ calculateTimeUntilStart(booking.bookingStart) }}</p>
-                                                        </div>
-                                                    </ng-template>
-
-                                                    <!-- Footer with Divider -->
-                                                    <ng-template pTemplate="footer">
-                                                        <div class="d-flex align-items-center justify-content-between text-secondary" 
-                                                             [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
-                                                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
-                                                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
-                                                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }" layout="vertical"></p-divider>
-                                                            <span [style]="{ flexShrink: 0 }">Department:</span>
-                                                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
-                                                        </div>
-                                                    </ng-template>
-                                                </p-panel>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dataView>              
-                            </p-scrollPanel>
-                        </p-tabPanel>
-
-                        <p-tabPanel >
-                            <ng-template pTemplate="header" >
-                                <div>
-                                    <span>Status<sup *ngIf="notifBookings.status.length > 0" [style.color]="'royalblue'">{{ notifBookings.status.length }}</sup></span>
-                                    
-                                </div>
-                            </ng-template>         
-                            <p-scrollPanel class="notif-status" [style]="{ width: '100%', height: '85vh' }">
-                                <p-dataView #dv [value]="notifBookings.status">
-                                    <ng-template pTemplate="list" let-bookings>
-                                        <div class="grid grid-nogutter">
-                                            <div class="col-12" *ngFor="let booking of bookings; let first = first">
-                                                <!-- Booking Box -->
-                                                <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
-                                                    <!-- Custom Header -->
-                                                    <ng-template pTemplate="header">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <span class="font-medium text-lg text-900">
-                                                                    {{ booking.purpose }}
-                                                                    <span class="text-sm text-secondary">
-                                                                        ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} - 
-                                                                        {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                            <!-- Status with dynamic color and border -->
-                                                            <div *ngIf="booking.status" [ngStyle]="{
-                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
-                                                                'padding': '2px 5px',
-                                                                'margin': '0 10px',
-                                                                'border-radius': '10px',
-                                                                'color': 'white',
-                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
-                                                                'font-weight': 'bold',
-                                                                'font-size': '0.65rem',
-                                                                'display': 'inline-block'
-                                                            }" [class]="booking.status">
-                                                                {{ getStatusLabel(booking.status).split('|')[0] }}
-                                                            </div>
-                                                        </div>
-                                                    </ng-template>
-
-                                                    <!-- Panel Content -->
-                                                    <ng-template pTemplate="body">
-                                                        <div [style]="{ minHeight: '25px', wordBreak: 'break-word' }">
-                                                            <p>{{ notifStatusDescription(booking) }}</p>
-                                                        </div>
-                                                    </ng-template>
-
-                                                    <!-- Footer with Divider -->
-                                                    <ng-template pTemplate="footer">
-                                                        <div class="d-flex align-items-center justify-content-between text-secondary" 
-                                                             [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
-                                                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
-                                                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
-                                                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }" layout="vertical"></p-divider>
-                                                            <span [style]="{ flexShrink: 0 }">Department:</span>
-                                                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
-                                                        </div>
-                                                    </ng-template>
-                                                </p-panel>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dataView>              
-                            </p-scrollPanel>        
-                                      
-                        </p-tabPanel>
-
-                        <p-tabPanel>
-                            <ng-template pTemplate="header">
-                                <span>Notice<sup *ngIf="notifBookings.notice.length > 0" [style.color]="'royalblue'">{{ notifBookings.notice.length }}</sup></span>
-
-                            </ng-template>
-                            <p-scrollPanel class="notif-notice" [style]="{ width: '100%', height: '85vh' }">
-                                <p-dataView #dv [value]="notifBookings.notice">
-                                    <ng-template pTemplate="list" let-bookings>
-                                        <div class="grid grid-nogutter">
-                                            <div class="col-12" *ngFor="let booking of bookings; let first = first">
-                                                <!-- Booking Box -->
-                                                <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
-                                                    <!-- Custom Header -->
-                                                    <ng-template pTemplate="header">
-                                                        <div class="d-flex justify-content-between align-items-center" [style.color]="'white'">
-                                                            <div>
-                                                                <span class="font-medium text-lg text-900">
-                                                                    {{ booking.purpose }}
-                                                                    <span class="text-sm">
-                                                                        ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} - 
-                                                                        {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-
-                                                            <!-- Status with dynamic color and border -->
-                                                            <div *ngIf="booking.status" [ngStyle]="{
-                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
-                                                                'padding': '2px 5px',
-                                                                'margin': '0 10px',
-                                                                'border-radius': '10px',
-                                                                'color': 'white',
-                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
-                                                                'font-weight': 'bold',
-                                                                'font-size': '0.65rem',
-                                                                'display': 'inline-block'
-                                                            }" [class]="booking.status">
-                                                                {{ getStatusLabel(booking.status).split('|')[0] }}
-                                                            </div>
-                                                        </div>
-                                                    </ng-template>
-
-                                                    <!-- Panel Content -->
-                                                    <ng-template pTemplate="body">
-                                                        <div [style]="{ minHeight: '25px', wordBreak: 'break-word' }">
-                                                            <p>{{ booking.description }}</p>
-                                                        </div>
-                                                    </ng-template>
-
-                                                    <!-- Footer with Divider -->
-                                                    <ng-template pTemplate="footer">
-                                                        <div class="d-flex align-items-center justify-content-between text-secondary" 
-                                                             [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
-                                                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
-                                                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
-                                                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }" layout="vertical"></p-divider>
-                                                            <span [style]="{ flexShrink: 0 }">Department:</span>
-                                                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
-                                                        </div>
-                                                    </ng-template>
-                                                </p-panel>
-                                                        
-
-
-
-
-                                                
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dataView>              
-                            </p-scrollPanel> 
-
-                        </p-tabPanel>
-                    </p-tabView>
-                </ng-template>
-            </p-sidebar>
-            <div class="date">
-                <!-- <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
-                <p>{{ currentTime | date: 'MMMM d, y' }}</p>                 -->
-            </div>
+    <p-sidebar [(visible)]="notifVisible" position="right" [style]="{ width: '450px' }">
+      <ng-template pTemplate="headless">
+        <div class="d-flex align-items-center">
+          <i class="pi pi-times" style="font-size: 1rem; margin: 30px" (click)="notifVisible = false"></i>
+          <span class="ml-2">Meeting Notifications</span>
         </div>
+
+        <p-tabView class="notif">
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <span>Updates<sup *ngIf="notifBookings.updates.length > 0" [style.color]="'royalblue'">{{
+                  notifBookings.updates.length }}</sup></span>
+            </ng-template>
+            <p-scrollPanel class="notif-updates" [style]="{ width: '100%', height: '85vh' }">
+              <p-dataView #dv [value]="notifBookings.updates">
+                <ng-template pTemplate="list" let-bookings>
+                  <div class="grid grid-nogutter">
+                    <div class="col-12" *ngFor="let booking of bookings; let first = first">
+                      <!-- Booking Box -->
+                      <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
+                        <!-- Custom Header -->
+                        <ng-template pTemplate="header">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <span class="font-medium text-lg text-900">
+                                {{ booking.purpose }}
+                                <span class="text-sm text-secondary">
+                                  ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} -
+                                  {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
+                                </span>
+                              </span>
+                            </div>
+
+                            <!-- Status with dynamic color and border -->
+                            <div *ngIf="booking.status" [ngStyle]="{
+                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
+                                                                'padding': '2px 5px',
+                                                                'margin': '0 10px',
+                                                                'border-radius': '10px',
+                                                                'color': 'white',
+                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
+                                                                'font-weight': 'bold',
+                                                                'font-size': '0.65rem',
+                                                                'display': 'inline-block'
+                                                            }" [class]="booking.status">
+                              {{ getStatusLabel(booking.status).split('|')[0] }}
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <!-- Panel Content -->
+                        <ng-template pTemplate="body">
+                          <div [style]="{ height: '25px', overflow: 'hidden' }">
+                            <p>{{ calculateTimeUntilStart(booking.bookingStart) }}</p>
+                          </div>
+                        </ng-template>
+
+                        <!-- Footer with Divider -->
+                        <ng-template pTemplate="footer">
+                          <div class="d-flex align-items-center justify-content-between text-secondary"
+                            [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
+                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
+                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }"
+                              layout="vertical"></p-divider>
+                            <span [style]="{ flexShrink: 0 }">Department:</span>
+                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
+                          </div>
+                        </ng-template>
+                      </p-panel>
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dataView>
+            </p-scrollPanel>
+          </p-tabPanel>
+
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div>
+                <span>Status<sup *ngIf="notifBookings.status.length > 0" [style.color]="'royalblue'">{{
+                    notifBookings.status.length }}</sup></span>
+
+              </div>
+            </ng-template>
+            <p-scrollPanel class="notif-status" [style]="{ width: '100%', height: '85vh' }">
+              <p-dataView #dv [value]="notifBookings.status">
+                <ng-template pTemplate="list" let-bookings>
+                  <div class="grid grid-nogutter">
+                    <div class="col-12" *ngFor="let booking of bookings; let first = first">
+                      <!-- Booking Box -->
+                      <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
+                        <!-- Custom Header -->
+                        <ng-template pTemplate="header">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <span class="font-medium text-lg text-900">
+                                {{ booking.purpose }}
+                                <span class="text-sm text-secondary">
+                                  ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} -
+                                  {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
+                                </span>
+                              </span>
+                            </div>
+                            <!-- Status with dynamic color and border -->
+                            <div *ngIf="booking.status" [ngStyle]="{
+                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
+                                                                'padding': '2px 5px',
+                                                                'margin': '0 10px',
+                                                                'border-radius': '10px',
+                                                                'color': 'white',
+                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
+                                                                'font-weight': 'bold',
+                                                                'font-size': '0.65rem',
+                                                                'display': 'inline-block'
+                                                            }" [class]="booking.status">
+                              {{ getStatusLabel(booking.status).split('|')[0] }}
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <!-- Panel Content -->
+                        <ng-template pTemplate="body">
+                          <div [style]="{ minHeight: '25px', wordBreak: 'break-word' }">
+                            <p>{{ notifStatusDescription(booking) }}</p>
+                          </div>
+                        </ng-template>
+
+                        <!-- Footer with Divider -->
+                        <ng-template pTemplate="footer">
+                          <div class="d-flex align-items-center justify-content-between text-secondary"
+                            [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
+                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
+                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }"
+                              layout="vertical"></p-divider>
+                            <span [style]="{ flexShrink: 0 }">Department:</span>
+                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
+                          </div>
+                        </ng-template>
+                      </p-panel>
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dataView>
+            </p-scrollPanel>
+
+          </p-tabPanel>
+
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <span>Notice<sup *ngIf="notifBookings.notice.length > 0" [style.color]="'royalblue'">{{
+                  notifBookings.notice.length }}</sup></span>
+
+            </ng-template>
+            <p-scrollPanel class="notif-notice" [style]="{ width: '100%', height: '85vh' }">
+              <p-dataView #dv [value]="notifBookings.notice">
+                <ng-template pTemplate="list" let-bookings>
+                  <div class="grid grid-nogutter">
+                    <div class="col-12" *ngFor="let booking of bookings; let first = first">
+                      <!-- Booking Box -->
+                      <p-panel class="notif-panel" [style]="{ padding: '0 20px 20px 20px' }" [toggleable]="true">
+                        <!-- Custom Header -->
+                        <ng-template pTemplate="header">
+                          <div class="d-flex justify-content-between align-items-center" [style.color]="'white'">
+                            <div>
+                              <span class="font-medium text-lg text-900">
+                                {{ booking.purpose }}
+                                <span class="text-sm">
+                                  ({{ '1970-01-01T' + booking.bookingStart | date: 'h:mm a' }} -
+                                  {{ '1970-01-01T' + booking.bookingEnd | date: 'h:mm a' }})
+                                </span>
+                              </span>
+                            </div>
+
+                            <!-- Status with dynamic color and border -->
+                            <div *ngIf="booking.status" [ngStyle]="{
+                                                                'border': '2px solid ' + getStatusLabel(booking.status).split('|')[1],
+                                                                'padding': '2px 5px',
+                                                                'margin': '0 10px',
+                                                                'border-radius': '10px',
+                                                                'color': 'white',
+                                                                'background-color': getStatusLabel(booking.status).split('|')[1],
+                                                                'font-weight': 'bold',
+                                                                'font-size': '0.65rem',
+                                                                'display': 'inline-block'
+                                                            }" [class]="booking.status">
+                              {{ getStatusLabel(booking.status).split('|')[0] }}
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <!-- Panel Content -->
+                        <ng-template pTemplate="body">
+                          <div [style]="{ minHeight: '25px', wordBreak: 'break-word' }">
+                            <p>{{ booking.description }}</p>
+                          </div>
+                        </ng-template>
+
+                        <!-- Footer with Divider -->
+                        <ng-template pTemplate="footer">
+                          <div class="d-flex align-items-center justify-content-between text-secondary"
+                            [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+                            <span [style]="{ flexShrink: 0 }">Organizer:</span>
+                            <span [style]="{ flexShrink: 0 }">{{ booking.organizer || 'N/A' }}</span>
+                            <p-divider [style]="{ height: '15px', margin: '0 5px', flexShrink: 0 }"
+                              layout="vertical"></p-divider>
+                            <span [style]="{ flexShrink: 0 }">Department:</span>
+                            <span [style]="{ flexShrink: 0 }">{{ booking.department || 'N/A' }}</span>
+                          </div>
+                        </ng-template>
+                      </p-panel>
+
+
+
+
+
+
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dataView>
+            </p-scrollPanel>
+
+          </p-tabPanel>
+        </p-tabView>
+      </ng-template>
+    </p-sidebar>
+    <div class="date">
+      <!-- <h2>{{ currentTime | date: 'h:mm:ss a' }}</h2>
+                <p>{{ currentTime | date: 'MMMM d, y' }}</p>                 -->
     </div>
+  </div>
+</div>
 
 
 <div class="calendar-container">
-    <full-calendar [options]="calendarOptions"></full-calendar>
+  <full-calendar [options]="calendarOptions"></full-calendar>
 </div>
 
 <div class="card flex justify-content-center">
-    <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" 
-              [draggable]="false" [modal]="true" 
-              [baseZIndex]="100"
-              [(visible)]="isBookingModalVisible" 
-              [style]="{ width: '35rem' }" 
-              (onHide)="resetModal()">
-              <!-- <i class="pi pi-calendar-clock" style="font-size: 1.3rem"></i> -->
-        <h5 class="p-text-secondary block mb-3 mt-3"><b>{{ formattedDate }}</b></h5>
+  <p-dialog header="Section {{ currentStep }}: {{ currentTitle }}" [draggable]="false" [modal]="true" [baseZIndex]="100"
+    [(visible)]="isBookingModalVisible" [style]="{ width: '35rem' }" (onHide)="resetModal()">
+    <!-- <i class="pi pi-calendar-clock" style="font-size: 1.3rem"></i> -->
+    <h5 class="p-text-secondary block mb-3 mt-3"><b>{{ formattedDate }}</b></h5>
 
-        <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
+    <ng-container *ngTemplateOutlet="getCurrentStepTemplate()"></ng-container>
 
-        <div class="d-flex justify-content-end gap-2 mt-4">
-            <p-button *ngIf="tokenRole && tokenRole !== 'UserRole' && currentStep === 1" severity="contrast" label="Set as holiday" (onClick)="addHoliday(formattedDate)"></p-button>
-            <p-button styleClass="cancel" label="Cancel" severity="secondary" (onClick)="isBookingModalVisible = false"></p-button>
-            <p-button *ngIf="currentStep > 1" label="Previous"s (onClick)="previousStep()"></p-button>
-            <p-button class="red-button" *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
-            <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)"></p-button>
-        </div>    
-    </p-dialog>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <p-button *ngIf="tokenRole && tokenRole !== 'UserRole' && currentStep === 1" severity="contrast"
+        label="Set as holiday" (onClick)="addHoliday(formattedDate)"></p-button>
+      <p-button styleClass="cancel" label="Cancel" severity="secondary"
+        (onClick)="isBookingModalVisible = false"></p-button>
+      <p-button *ngIf="currentStep > 1" label="Previous" s (onClick)="previousStep()"></p-button>
+      <p-button class="red-button" *ngIf="currentStep < 2" label="Next" (onClick)="nextStep()"></p-button>
+      <p-button *ngIf="currentStep === 2" label="Book" type="submit" (onClick)="BookConference(data)"></p-button>
+    </div>
+  </p-dialog>
 </div>
 
 <!-- Step 1 Template -->
 <ng-template #step1>
-    <div class="user-input">
-       
-            <div class="textbox">
-                <p-floatLabel>
-                    <input pInputText type="text" class="form-control small-input primengFloat" name="organizer" id="floatingInput"[(ngModel)]="data.organizer">
-                    <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
-                </p-floatLabel>
-            </div>
-        
-            <div class="textbox">
-                <p-floatLabel>
-                    <input pInputText type="text" class="form-control small-input primengFloat" name="department" id="floatingInput" [(ngModel)]="data.department">
-                    <label for="floatingInput" class="font-bold block mb-2"> Department </label>
-                </p-floatLabel>
-            </div>
-        
-            <div class="textbox">
-                <p-floatLabel>
-                    <input 
-                        pInputText 
-                        type="text" 
-                        class="form-control small-input primengFloat" 
-                        name="contactNumber" 
-                        id="floatingInput" 
-                        [(ngModel)]="data.contactNumber" 
-                        (input)="onInput($event)" 
-                        maxlength="15" 
-                        pattern="^[0-9.]*$"
-                    />
-                    <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
-                </p-floatLabel>
-            </div>
-        
-            <div class="textbox">
-                <p-floatLabel>
-                    <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.emailAddress">
-                    <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
-                </p-floatLabel>
-            </div>
+  <div class="user-input">
+
+    <div class="textbox">
+      <p-floatLabel>
+        <input pInputText type="text" class="form-control small-input primengFloat" name="organizer" id="floatingInput"
+          [(ngModel)]="data.organizer">
+        <label for="floatingInput" class="font-bold block mb-2"> Name of Organizer </label>
+      </p-floatLabel>
     </div>
+
+    <div class="textbox">
+      <p-floatLabel>
+        <input pInputText type="text" class="form-control small-input primengFloat" name="department" id="floatingInput"
+          [(ngModel)]="data.department">
+        <label for="floatingInput" class="font-bold block mb-2"> Department </label>
+      </p-floatLabel>
+    </div>
+
+    <div class="textbox">
+      <p-floatLabel>
+        <input pInputText type="text" class="form-control small-input primengFloat" name="contactNumber"
+          id="floatingInput" [(ngModel)]="data.contactNumber" (input)="onInput($event)" maxlength="15"
+          pattern="^[0-9.]*$" />
+        <label for="floatingInput" class="font-bold block mb-2"> Contact/IP </label>
+      </p-floatLabel>
+    </div>
+
+    <div class="textbox">
+      <p-floatLabel>
+        <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress"
+          id="floatingInput" [(ngModel)]="data.emailAddress">
+        <label for="floatingInput" class="font-bold block mb-2"> Email Address </label>
+      </p-floatLabel>
+    </div>
+  </div>
 </ng-template>
 
 <!-- Step 2 Template -->
 <ng-template #step2>
-    <div class="user-input">
-        <!-- Meeting Title -->
-        <div class="textbox">
-            <p-floatLabel>
-                <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.purpose">
-                <label for="floatingInput" class="font-bold block mb-2"> Meeting Details </label>
-            </p-floatLabel>
-        </div>
-    
-        <!-- Start and End Time with Bootstrap Floating Labels -->
-        <div class="d-flex justify-content-between time-inputs">
-            <div class="form-floating flex-grow-1 me-3">
-                <input type="time" min="08:00" max="17:00" class="form-control" id="startTime" placeholder="Start Time" [(ngModel)]="data.bookingStart">
-                <label for="startTime">Start Time</label>
-            </div>
-    
-            <div class="form-floating flex-grow-1">
-                <input pInputText pTooltip="Note: 5 extra minutes added to wrap up meeting." 
-                tooltipPosition="bottom"
-                tooltipEvent="focus"  
-                placeholder="Bottom" type="time" class="form-control" id="endTime" [(ngModel)]="data.bookingEnd">
-                <label for="endTime">End Time</label>
-                
-            </div>
-        </div>
-    
-        <!-- Expected number of Attendees -->
-        <div class="textbox" style="margin-top: 5px">
-            <p-floatLabel>
-                <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress" id="floatingInput" [(ngModel)]="data.expectedAttendees">
-                <label for="floatingInput" class="font-bold block mb-2"> Expected number of Attendees </label>
-            </p-floatLabel>
-        </div>
-        
-        <!-- Recurring Meeting Checkbox -->
-        <!-- <div class="form-check mt-4">
+  <div class="user-input">
+    <!-- Meeting Title -->
+    <div class="textbox">
+      <p-floatLabel>
+        <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress"
+          id="floatingInput" [(ngModel)]="data.purpose">
+        <label for="floatingInput" class="font-bold block mb-2"> Meeting Details </label>
+      </p-floatLabel>
+    </div>
+
+    <!-- Start and End Time with Bootstrap Floating Labels -->
+    <div class="d-flex justify-content-between time-inputs">
+      <div class="form-floating flex-grow-1 me-3">
+        <input type="time" min="08:00" max="17:00" class="form-control" id="startTime" placeholder="Start Time"
+          [(ngModel)]="data.bookingStart">
+        <label for="startTime">Start Time</label>
+      </div>
+
+      <div class="form-floating flex-grow-1">
+        <input pInputText pTooltip="Note: 5 extra minutes added to wrap up meeting." tooltipPosition="bottom"
+          tooltipEvent="focus" placeholder="Bottom" type="time" class="form-control" id="endTime"
+          [(ngModel)]="data.bookingEnd">
+        <label for="endTime">End Time</label>
+
+      </div>
+    </div>
+
+    <!-- Expected number of Attendees -->
+    <div class="textbox" style="margin-top: 5px">
+      <p-floatLabel>
+        <input pInputText type="email" class="form-control small-input primengFloat" name="emailAddress"
+          id="floatingInput" [(ngModel)]="data.expectedAttendees">
+        <label for="floatingInput" class="font-bold block mb-2"> Expected number of Attendees </label>
+      </p-floatLabel>
+    </div>
+
+    <!-- Recurring Meeting Checkbox -->
+    <!-- <div class="form-check mt-4">
             <input class="form-check-input" type="checkbox" id="recurringMeeting" [(ngModel)]="checked">
             <label class="form-check-label" for="recurringMeeting">
                 Recurring Meeting
             </label>
         </div> -->
-        
-        <!-- Recurring Panel -->
-<div class="recurring">
-  <p-panel [toggleable]="true" [collapsed]="true" [style]="{ marginTop: '-10px' }">
-    <ng-template pTemplate="header">
-      <div class="d-flex align-items-center justify-content-between text-secondary" [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
-        <span class="font-medium text-lg text-900">
-          Recurring meeting options
-          <span class="text-sm text-secondary">
-            (Optional)
-          </span>
-        </span>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="body">
-      <div class="side-by-side">
-        <div class="textbox">
-          <p-floatLabel class="full-width">
-            <p-dropdown
-              inputId="recurringType"
-              [options]="recurringOptions"
-              [(ngModel)]="data.recurringType"
-              optionLabel="name"
-              optionValue="type"
-              [showClear]="true"
-              class="full-width fixed-width"
-              appendTo="body"
-            ></p-dropdown>
-            <label for="recurringType">Select recurring type</label>
-          </p-floatLabel>
-        </div>
-        <div class="textbox">
-          <p-floatLabel class="full-width">
-            <p-calendar
-              inputId="endDate"
-              [(ngModel)]="recurringEndDate"
-              dateFormat="yy-mm-dd"
-              appendTo="body"
-              class="full-width fixed-width"
-            ></p-calendar>
-            <label for="endDate" style="padding-left: 10px;">Recurring end date</label>
-          </p-floatLabel>
-        </div>
-      </div>
-    </ng-template>
-  </p-panel>
-</div>
+
+    <!-- Recurring Panel -->
+    <div class="recurring">
+      <p-panel [toggleable]="true" [collapsed]="true" [style]="{ marginTop: '-10px' }">
+        <ng-template pTemplate="header">
+          <div class="d-flex align-items-center justify-content-between text-secondary"
+            [style]="{ padding: '2px 5px', height: '20px', fontSize: '0.9rem' }">
+            <span class="font-medium text-lg text-900">
+              Recurring meeting options
+              <span class="text-sm text-secondary">
+                (Optional)
+              </span>
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="body">
+          <div class="side-by-side">
+            <div class="textbox">
+              <p-floatLabel class="full-width">
+                <p-dropdown inputId="recurringType" [options]="recurringOptions" [(ngModel)]="data.recurringType"
+                  optionLabel="name" optionValue="type" [showClear]="true" class="full-width fixed-width"
+                  appendTo="body"></p-dropdown>
+                <label for="recurringType">Select recurring type</label>
+              </p-floatLabel>
+            </div>
+            <div class="textbox">
+              <p-floatLabel class="full-width">
+                <p-calendar inputId="endDate" [(ngModel)]="recurringEndDate" dateFormat="yy-mm-dd" appendTo="body"
+                  class="full-width fixed-width"></p-calendar>
+                <label for="endDate" style="padding-left: 10px;">Recurring end date</label>
+              </p-floatLabel>
+            </div>
+          </div>
+        </ng-template>
+      </p-panel>
     </div>
+  </div>
 
 
 </ng-template>
 
 <!-- THIS IS FOR THE USER ROLE EVENT MODAL -->
 <div class="card flex justify-content-center">
-    <p-dialog 
-              [(visible)]="isEventModalVisible" 
-              [modal]="true" 
-              [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
-              [style]="{ width: '50vw' }" 
-              [draggable]="false" 
-              [resizable]="false">
+  <p-dialog [(visible)]="isEventModalVisible" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
 
-              <ng-template pTemplate="header">
-                <div class="d-flex align-items-center">
-                    <h5 class="m-0"><strong>{{ bookingById.purpose }}</strong></h5> <!-- Header Text -->
-                    <p-tag 
-                        styleClass="tag-header" 
-                        [value]="bookingById.status ?? 'Pending' | titlecase" 
-                        [rounded]="true" 
-                        class="ml-2 tag-header" 
-                        [style]="getTagStyle(bookingById.status ?? '')">
-                    </p-tag>
-                </div>
-            </ng-template>
+    <ng-template pTemplate="header">
+      <div class="d-flex align-items-center">
+        <h5 class="m-0"><strong>{{ bookingById.purpose }}</strong></h5> <!-- Header Text -->
+        <p-tag styleClass="tag-header" [value]="bookingById.status ?? 'Pending' | titlecase" [rounded]="true"
+          class="ml-2 tag-header" [style]="getTagStyle(bookingById.status ?? '')">
+        </p-tag>
+      </div>
+    </ng-template>
 
-        <!-- Modal Content -->
-        <div class="row g-3">
-            <!-- Organizer Name -->
-            <div class="col-12 form-label-header">
-                <label for="organizerName" class="form-label">Organizer Name</label>
-                <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.organizer" disabled>
-            </div>
+    <!-- Modal Content -->
+    <div class="row g-3">
+      <!-- Organizer Name -->
+      <div class="col-12 form-label-header">
+        <label for="organizerName" class="form-label">Organizer Name</label>
+        <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.organizer" disabled>
+      </div>
 
-            <!-- Start Time and End Time -->
-            <div class="col-6">
-                <label for="startTime" class="form-label">Start Time</label>
-                <input type="text" id="startTime" class="form-control" [(ngModel)]="formattedStartTime" disabled>
-            </div>
-            <div class="col-6">
-                <label for="endTime" class="form-label">End Time</label>
-                <input type="text" id="endTime" class="form-control" [(ngModel)]="formattedEndTime"  disabled>
-            </div>
-            <!-- Department -->
-            <div class="col-12">
-                <label for="department" class="form-label">Department</label>
-                <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
-            </div>
+      <!-- Start Time and End Time -->
+      <div class="col-6">
+        <label for="startTime" class="form-label">Start Time</label>
+        <input type="text" id="startTime" class="form-control" [(ngModel)]="formattedStartTime" disabled>
+      </div>
+      <div class="col-6">
+        <label for="endTime" class="form-label">End Time</label>
+        <input type="text" id="endTime" class="form-control" [(ngModel)]="formattedEndTime" disabled>
+      </div>
+      <!-- Department -->
+      <div class="col-12">
+        <label for="department" class="form-label">Department</label>
+        <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
+      </div>
 
-            <!-- Number of Attendees -->
-            <div class="col-12">
-                <label for="attendees" class="form-label">Number of Attendees</label>
-                <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
-            </div>
+      <!-- Number of Attendees -->
+      <div class="col-12">
+        <label for="attendees" class="form-label">Number of Attendees</label>
+        <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
+      </div>
 
-            <div class="col-12" *ngIf="this.bookingById.description != ''">
-                <label for="attendees" class="form-label">Remarks</label>
-                <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
-            </div>
+      <div class="col-12" *ngIf="this.bookingById.description != ''">
+        <label for="attendees" class="form-label">Remarks</label>
+        <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
+      </div>
 
-            <!-- Okay Button -->
-            <div class="col-12 text-center">
-                <button *ngIf="this.bookingById.status != 'ongoing' && this.bookingById.status != 'extended' && this.bookingById.status != 'extension rejected'" type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
+      <!-- Okay Button -->
+      <div class="col-12 text-center">
+        <button
+          *ngIf="this.bookingById.status != 'ongoing' && this.bookingById.status != 'extended' && this.bookingById.status != 'extension rejected'"
+          type="button" (click)="isEventModalVisible = false" class="btn btn-danger">Close</button>
 
-                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'" (onClick)="toogleExtendMeetingModal()" label="Extend Meeting" class="px-4" type="submit"></p-button>
-                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'" (click)="isEventModalVisible = false" styleClass="cancel" label="Cancel Extend" severity="secondary" type="submit"></p-button>
-            </div>
+        <p-button
+          *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'"
+          (onClick)="toogleExtendMeetingModal()" label="Extend Meeting" class="px-4" type="submit"></p-button>
+        <p-button
+          *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected'"
+          (click)="isEventModalVisible = false" styleClass="cancel" label="Cancel Extend" severity="secondary"
+          type="submit"></p-button>
+      </div>
 
-            
-        </div>
 
-    </p-dialog>
+    </div>
+
+  </p-dialog>
 </div>
 
 <!-- THIS IS FOR THE ADMIN ROLE EVENT MODAL -->
 <div class="card flex justify-content-center">
-    <p-dialog 
-              [(visible)]="isAdminEventModalVisible" 
-              [modal]="true" 
-              [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
-              [style]="{ width: '50vw' }" 
-              [draggable]="false" 
-              [resizable]="false">
+  <p-dialog [(visible)]="isAdminEventModalVisible" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
 
-              <ng-template pTemplate="header">
-                <div class="d-flex align-items-center">
-                    <h5 class="m-0"><strong>{{ bookingById.purpose }}</strong></h5> <!-- Header Text -->
-                    <p-tag 
-                        styleClass="tag-header" 
-                        [value]="bookingById.status ?? 'Pending' | titlecase" 
-                        [rounded]="true" 
-                        class="ml-2 tag-header" 
-                        [style]="getTagStyle(bookingById.status ?? '')">
-                    </p-tag>
-                </div>
-            </ng-template>
+    <ng-template pTemplate="header">
+      <div class="d-flex align-items-center">
+        <h5 class="m-0"><strong>{{ bookingById.purpose }}</strong></h5> <!-- Header Text -->
+        <p-tag styleClass="tag-header" [value]="bookingById.status ?? 'Pending' | titlecase" [rounded]="true"
+          class="ml-2 tag-header" [style]="getTagStyle(bookingById.status ?? '')">
+        </p-tag>
+      </div>
+    </ng-template>
 
-        <!-- Modal Content -->
-        <div class="row g-3">
-            <!-- Organizer Name -->
-            <div class="col-12 form-label-header">
-                <label for="organizerName" class="form-label">Organizer Name</label>
-                <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.organizer" disabled>
-            </div>
+    <!-- Modal Content -->
+    <div class="row g-3">
+      <!-- Organizer Name -->
+      <div class="col-12 form-label-header">
+        <label for="organizerName" class="form-label">Organizer Name</label>
+        <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.organizer" disabled>
+      </div>
 
-            <!-- Start Time and End Time -->
-            <div class="col-6">
-                <label for="startTime" class="form-label">Start Time</label>
-                <input type="text" id="startTime" class="form-control" [value]="formattedStartTime" disabled>
-            </div>
-            <div class="col-6">
-                <label for="endTime" class="form-label">End Time</label>
-                <input type="text" id="endTime" class="form-control" [value]="formattedEndTime" disabled>
-            </div>
-            
+      <!-- Start Time and End Time -->
+      <div class="col-6">
+        <label for="startTime" class="form-label">Start Time</label>
+        <input type="text" id="startTime" class="form-control" [value]="formattedStartTime" disabled>
+      </div>
+      <div class="col-6">
+        <label for="endTime" class="form-label">End Time</label>
+        <input type="text" id="endTime" class="form-control" [value]="formattedEndTime" disabled>
+      </div>
 
-            <!-- Contact IP -->
-            <div class="col-12">
-                <label for="contact" class="form-label">Contact IP</label>
-                <input type="text" id="contact" class="form-control" [(ngModel)]="bookingById.contactNumber" disabled>
-            </div>
 
-            <!-- Department -->
-            <div class="col-6">
-                <label for="department" class="form-label">Department</label>
-                <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
-            </div>
+      <!-- Contact IP -->
+      <div class="col-12">
+        <label for="contact" class="form-label">Contact IP</label>
+        <input type="text" id="contact" class="form-control" [(ngModel)]="bookingById.contactNumber" disabled>
+      </div>
 
-             <!-- Number of Attendees -->
-             <div class="col-6">
-                <label for="attendees" class="form-label">Number of Attendees</label>
-                <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
-            </div>
-           
+      <!-- Department -->
+      <div class="col-6">
+        <label for="department" class="form-label">Department</label>
+        <input type="text" id="department" class="form-control" [(ngModel)]="bookingById.department" disabled>
+      </div>
 
-            <div class="col-12" *ngIf="this.bookingById.description != ''">
-                <label for="attendees" class="form-label">Remarks</label>
-                <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
-            </div>
+      <!-- Number of Attendees -->
+      <div class="col-6">
+        <label for="attendees" class="form-label">Number of Attendees</label>
+        <input type="text" id="attendees" class="form-control" [(ngModel)]="bookingById.expectedAttendees" disabled>
+      </div>
 
-            <!-- Okay Button -->
-            <div class="col-12 text-center approval-btn">
-                <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'approve')" label="Approve" type="submit"></p-button>
-                <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'reject')" styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
-                <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved' || this.bookingById.status === 'rejected'" type="button" (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
 
-                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended'  || this.bookingById.status === 'extension rejected'" (onClick)="forceEndBooking(bookingById)" label="End Meeting" type="submit"></p-button>
-                <p-button *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected' " (click)="isAdminEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button>
+      <div class="col-12" *ngIf="this.bookingById.description != ''">
+        <label for="attendees" class="form-label">Remarks</label>
+        <input type="text" id="remarks" class="form-control" [(ngModel)]="bookingById.description" disabled>
+      </div>
 
-                <p-button *ngIf="this.bookingById.extended == false " (onClick)="extendMeeting(bookingById, true)" label="Approve Extend Meeting" type="submit"></p-button>
-                <p-button *ngIf="this.bookingById.extended == false " (onClick)="cancelExtend(bookingById)" styleClass="cancel" label="Reject Extend Meeting" type="submit"></p-button>
-                
-            </div>
+      <!-- Okay Button -->
+      <div class="col-12 text-center approval-btn">
+        <p-button *ngIf="this.bookingById.status === 'rejected'" (onClick)="onBookingDelete(bookingById)"
+          label="Delete"></p-button>
+        <p-button *ngIf="this.bookingById.status === 'rejected'" (onClick)="isAdminEventModalVisible = false"
+          label="Close"></p-button>
+        <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'approve')"
+          label="Approve" type="submit"></p-button>
+        <p-button *ngIf="this.bookingById.status === 'pending' " (onClick)="handleBooking(bookingById, 'reject')"
+          styleClass="cancel" label="Reject" severity="secondary" type="submit"></p-button>
+        <button *ngIf="this.bookingById.status === 'ended' || this.bookingById.status === 'approved'" type="button"
+          (click)="isAdminEventModalVisible = false" class="btn btn-danger">Close</button>
 
-            
-        </div>
+        <p-button
+          *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended'  || this.bookingById.status === 'extension rejected'"
+          (onClick)="forceEndBooking(bookingById)" label="End Meeting" type="submit"></p-button>
+        <p-button
+          *ngIf="this.bookingById.status === 'ongoing' || this.bookingById.status === 'extended' || this.bookingById.status === 'extension rejected' "
+          (click)="isAdminEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary"
+          type="submit"></p-button>
+        <p-button *ngIf="this.bookingById.extended === false && this.bookingById.status !== 'ended'"
+          (onClick)="extendMeeting(bookingById, true)" label="Approve Extend Meeting" type="submit"></p-button>
+        <p-button *ngIf="this.bookingById.extended === false && this.bookingById.status !== 'ended'"
+          (onClick)="cancelExtend(bookingById)" styleClass="cancel" label="Reject Extend Meeting"
+          type="submit"></p-button>
 
-    </p-dialog>
+      </div>
+
+
+    </div>
+
+  </p-dialog>
 </div>
 
 <!-- REQUEST EXTEND MEETING EVENT MODAL -->
 <div class="request-extend card flex justify-content-center">
-    <p-dialog 
-              [(visible)]="isExtendModalVisible" 
-              [modal]="true" 
-              [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
-              [style]="{ width: '40vw', height: '53vh'}" 
-              [draggable]="false" 
-              [resizable]="false">
+  <p-dialog [(visible)]="isExtendModalVisible" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [style]="{ width: '40vw', height: '53vh'}" [draggable]="false" [resizable]="false">
 
-              <ng-template pTemplate="header">
-                <div class="d-flex align-items-center">
-                    <h5 class="m-0"><strong>Request Extend Meeting</strong></h5> <!-- Header Text -->
-                </div>
-            </ng-template>
+    <ng-template pTemplate="header">
+      <div class="d-flex align-items-center">
+        <h5 class="m-0"><strong>Request Extend Meeting</strong></h5> <!-- Header Text -->
+      </div>
+    </ng-template>
 
-        <!-- Modal Content -->
-        <div class="d-flex flex-column">
-            <!-- Organizer Name -->            
-            <div class="extend-meeting-input">
-                <div class="text-center p-2">
-                    <label for="calendar-timeonly" class="">Select extend time</label>
-                </div>
-                <div class="extend-meeting-input text-center p-2">
-                    <p-calendar
-                inputId="calendar-timeonly" 
-                [(ngModel)]="selectedEndTime" 
-                [timeOnly]="true"
-                [hourFormat]='"12"'
-                class="center-text-input"/>
-                </div>
-            </div>
+    <!-- Modal Content -->
+    <div class="d-flex flex-column">
+      <!-- Organizer Name -->
+      <div class="extend-meeting-input">
+        <div class="text-center p-2">
+          <label for="calendar-timeonly" class="">Select extend time</label>
+        </div>
+        <div class="extend-meeting-input text-center p-2">
+          <p-calendar inputId="calendar-timeonly" [(ngModel)]="selectedEndTime" [timeOnly]="true" [hourFormat]='"12"'
+            class="center-text-input" />
+        </div>
+      </div>
 
-            <!-- <div class="col-12 form-label-header">
+      <!-- <div class="col-12 form-label-header">
                 <label for="organizerName" class="form-label">Remarks</label>
                 <input type="text" id="organizerName" class="form-control" [(ngModel)]="bookingById.description">
             </div> -->
 
-            <!-- Start Time and End Time -->
-            <!-- <div class="col-6">
+      <!-- Start Time and End Time -->
+      <!-- <div class="col-6">
                 <label for="startTime" class="form-label">Start Time</label>
                 <input type="text" id="startTime" class="form-control" [(ngModel)]="formattedStartTime" disabled>
             </div>
@@ -642,18 +623,19 @@
                 <input type="text" id="endTime" class="form-control" [(ngModel)]="formattedEndTime"  disabled>
             </div> -->
 
-            <!-- Okay Button -->
-            <div class="col-12 text-center pt-4">
-                <p-button class="p-2" (onClick)="extendMeeting(bookingById, false)" label="Request Extend Meeting" type="submit"></p-button>
-                <!-- <p-button (click)="isExtendModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
-                <!-- <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
-            </div>
+      <!-- Okay Button -->
+      <div class="col-12 text-center pt-4">
+        <p-button class="p-2" (onClick)="extendMeeting(bookingById, false)" label="Request Extend Meeting"
+          type="submit"></p-button>
+        <!-- <p-button (click)="isExtendModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
+        <!-- <p-button *ngIf="this.bookingById.status === 'ongoing' " (click)="isEventModalVisible = false" styleClass="cancel" label="Close" severity="secondary" type="submit"></p-button> -->
+      </div>
 
 
-            
-        </div>
 
-    </p-dialog>
+    </div>
+
+  </p-dialog>
 </div>
 
 
@@ -680,20 +662,21 @@
 </div> -->
 <app-sidebar [(visible)]="sidebarVisible"></app-sidebar>
 
-<p-toast
-    position="bottom-right"
-    [baseZIndex]="5000">
+<p-toast position="bottom-right" [baseZIndex]="5000">
 
 </p-toast>
 
 
-<div class="persistent-button-container" >
-    
-    <p-button class="login-btn" *ngIf="!tokenRole" [routerLink]="['/login']" label="Login" icon="pi pi-sign-in"></p-button>
-    <p-button class="logout-btn" *ngIf="tokenRole" (onClick)="onLogout()" [style]="{ marginLeft: '15px' }" label="Logout" icon="pi pi-sign-out"></p-button>
+<div class="persistent-button-container">
+
+  <p-button class="login-btn" *ngIf="!tokenRole" [routerLink]="['/login']" label="Login"
+    icon="pi pi-sign-in"></p-button>
+  <p-button class="logout-btn" *ngIf="tokenRole" (onClick)="onLogout()" [style]="{ marginLeft: '15px' }" label="Logout"
+    icon="pi pi-sign-out"></p-button>
 </div>
-  
+
 
 <app-sweet-alert #customAlert (alertClosed)="onAlertClosed()"></app-sweet-alert>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <router-outlet></router-outlet>
